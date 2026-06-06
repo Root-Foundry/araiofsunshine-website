@@ -1,4 +1,4 @@
-// Hero Background Carousel
+// Hero Background Carousel with Crossfade
 document.addEventListener('DOMContentLoaded', function() {
     const hero = document.querySelector('.hero');
     
@@ -18,13 +18,38 @@ document.addEventListener('DOMContentLoaded', function() {
         
         let currentIndex = 0;
         
-        // Set initial background
-        hero.style.backgroundImage = `url('${images[currentIndex]}')`;
+        // Create background layers for crossfade effect
+        const bg1 = document.createElement('div');
+        const bg2 = document.createElement('div');
+        bg1.className = 'hero-bg-layer';
+        bg2.className = 'hero-bg-layer';
         
-        // Change background every 5 seconds
+        bg1.style.backgroundImage = `url('${images[0]}')`;
+        bg1.style.opacity = '1';
+        bg2.style.opacity = '0';
+        
+        hero.insertBefore(bg2, hero.firstChild);
+        hero.insertBefore(bg1, hero.firstChild);
+        
+        let isFirstLayer = true;
+        
+        // Change background every 5 seconds with crossfade
         setInterval(function() {
             currentIndex = (currentIndex + 1) % images.length;
-            hero.style.backgroundImage = `url('${images[currentIndex]}')`;
+            
+            if (isFirstLayer) {
+                // Fade to bg2
+                bg2.style.backgroundImage = `url('${images[currentIndex]}')`;
+                bg2.style.opacity = '1';
+                bg1.style.opacity = '0';
+            } else {
+                // Fade to bg1
+                bg1.style.backgroundImage = `url('${images[currentIndex]}')`;
+                bg1.style.opacity = '1';
+                bg2.style.opacity = '0';
+            }
+            
+            isFirstLayer = !isFirstLayer;
         }, 5000); // 5000ms = 5 seconds
     }
 });

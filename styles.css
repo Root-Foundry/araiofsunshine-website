@@ -310,16 +310,26 @@ a:hover {
 
 .hero {
     position: relative;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
     min-height: 600px;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     color: white;
-    transition: background-image 1s ease-in-out;
+    overflow: hidden;
+}
+
+.hero-bg-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: opacity 2s ease-in-out;
+    z-index: 0;
 }
 
 .hero-overlay {
@@ -329,11 +339,12 @@ a:hover {
     right: 0;
     bottom: 0;
     background: linear-gradient(135deg, rgba(74, 144, 226, 0.85), rgba(255, 140, 66, 0.75));
+    z-index: 1;
 }
 
 .hero-content {
     position: relative;
-    z-index: 1;
+    z-index: 2;
     max-width: 800px;
     padding: var(--spacing-lg);
 }
