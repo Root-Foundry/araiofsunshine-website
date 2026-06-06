@@ -310,7 +310,6 @@ a:hover {
 
 .hero {
     position: relative;
-    background-image: url('hero-background.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -320,6 +319,7 @@ a:hover {
     justify-content: center;
     text-align: center;
     color: white;
+    transition: background-image 1s ease-in-out;
 }
 
 .hero-overlay {

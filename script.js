@@ -1,3 +1,34 @@
+// Hero Background Carousel
+document.addEventListener('DOMContentLoaded', function() {
+    const hero = document.querySelector('.hero');
+    
+    if (hero) {
+        // Array of background images from the pictures folder
+        const images = [
+            'pictures/1000057667-1.jpg',
+            'pictures/1000057698.jpg',
+            'pictures/1765820837120.jpg',
+            'pictures/571256292_1205811701577881_8532757700362765109_n.jpg',
+            'pictures/571274867_1206477381511313_6460864454838217308_n.jpg',
+            'pictures/571351855_1205811724911212_4181540521471198377_n.jpg',
+            'pictures/571374457_1205811461577905_4848722281407988578_n.jpg',
+            'pictures/702676692_1457713459731741_6817820080791380090_n.jpg',
+            'pictures/711116410_1026842980012722_3840939579753963428_n.jpg'
+        ];
+        
+        let currentIndex = 0;
+        
+        // Set initial background
+        hero.style.backgroundImage = `url('${images[currentIndex]}')`;
+        
+        // Change background every 5 seconds
+        setInterval(function() {
+            currentIndex = (currentIndex + 1) % images.length;
+            hero.style.backgroundImage = `url('${images[currentIndex]}')`;
+        }, 5000); // 5000ms = 5 seconds
+    }
+});
+
 // Mobile Menu Toggle
 document.addEventListener('DOMContentLoaded', function() {
     const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
