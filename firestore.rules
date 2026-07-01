@@ -1,0 +1,14 @@
+rules_version='2'
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Events collection
+    match /events/{eventId} {
+      // Anyone can read events (public calendar)
+      allow read: if true;
+      
+      // Only authenticated admin users can create, update, or delete events
+      allow create, update, delete: if request.auth != null;
+    }
+  }
+}

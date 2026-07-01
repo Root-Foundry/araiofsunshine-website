@@ -10,6 +10,126 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- FullCalendar CSS -->
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css' rel='stylesheet' />
+    
+    <style>
+        .calendar-container {
+            background: white;
+            padding: var(--spacing-xl);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        #calendar {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        
+        .fc {
+            font-family: 'Open Sans', sans-serif;
+        }
+        
+        .fc-button-primary {
+            background-color: var(--warm-orange) !important;
+            border-color: var(--warm-orange) !important;
+        }
+        
+        .fc-button-primary:hover {
+            background-color: #e67a30 !important;
+            border-color: #e67a30 !important;
+        }
+        
+        .fc-event {
+            background-color: var(--sky-blue);
+            border-color: var(--sky-blue);
+        }
+        
+        .fc-event:hover {
+            background-color: #3a7bc8;
+        }
+        
+        .event-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .event-modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: var(--spacing-xxl);
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+            animation: slideDown 0.3s ease;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .event-modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            color: #aaa;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        
+        .event-modal-close:hover {
+            color: #000;
+        }
+        
+        .event-modal h2 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--dark-gray);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .event-modal-date {
+            color: var(--warm-orange);
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: var(--spacing-md);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .event-modal-location {
+            color: var(--sky-blue);
+            font-weight: 600;
+            margin-bottom: var(--spacing-md);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .event-modal-description {
+            color: var(--medium-gray);
+            line-height: 1.7;
+            margin-bottom: var(--spacing-lg);
+        }
+    </style>
 
     <script>
   window._rootfoundry = {
@@ -67,6 +187,32 @@
             <p class="page-subtitle">Celebrating our community and connections</p>
         </div>
     </section>
+
+    <!-- CALENDAR SECTION -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title text-center">Upcoming Events Calendar</h2>
+            <p class="section-subtitle text-center">
+                View our upcoming community meetings, workshops, and special events. 
+                Click on any event to see more details.
+            </p>
+            
+            <div class="calendar-container">
+                <div id="calendar"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Event Details Modal -->
+    <div id="eventModal" class="event-modal">
+        <div class="event-modal-content">
+            <span class="event-modal-close">&times;</span>
+            <h2 id="modalTitle"></h2>
+            <div id="modalDate" class="event-modal-date"></div>
+            <div id="modalLocation" class="event-modal-location"></div>
+            <div id="modalDescription" class="event-modal-description"></div>
+        </div>
+    </div>
 
     <!-- EVENT SPACE RENTAL -->
     <section class="section">
@@ -185,5 +331,139 @@
     </footer>
 
     <script src="script.js"></script>
+    
+    <!-- FullCalendar JS -->
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+    
+    <!-- Firebase SDK and Calendar Integration -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, collection, getDocs, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyD260jUFHNr0Tt_MLC3-ogJn4tJTPYZwSU",
+            authDomain: "araiofsunshine.firebaseapp.com",
+            projectId: "araiofsunshine",
+            storageBucket: "araiofsunshine.firebasestorage.app",
+            messagingSenderId: "741022041696",
+            appId: "1:741022041696:web:336a94177b337cf8e5a505"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Initialize calendar when DOM is ready
+        document.addEventListener('DOMContentLoaded', async function() {
+            const calendarEl = document.getElementById('calendar');
+            
+            // Load events from Firestore
+            const events = await loadEventsFromFirestore();
+            
+            // Initialize FullCalendar
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,listMonth'
+                },
+                events: events,
+                eventClick: function(info) {
+                    showEventModal(info.event);
+                },
+                height: 'auto',
+                eventColor: '#4A90E2'
+            });
+            
+            calendar.render();
+        });
+
+        // Load events from Firestore
+        async function loadEventsFromFirestore() {
+            const events = [];
+            const q = query(collection(db, 'events'), orderBy('date', 'asc'));
+            
+            try {
+                const querySnapshot = await getDocs(q);
+                
+                querySnapshot.forEach((doc) => {
+                    const event = doc.data();
+                    events.push({
+                        id: doc.id,
+                        title: event.title,
+                        start: event.date,
+                        extendedProps: {
+                            time: event.time,
+                            location: event.location,
+                            description: event.description
+                        }
+                    });
+                });
+            } catch (error) {
+                console.error('Error loading events:', error);
+            }
+            
+            return events;
+        }
+
+        // Show event details modal
+        function showEventModal(event) {
+            const modal = document.getElementById('eventModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalDate = document.getElementById('modalDate');
+            const modalLocation = document.getElementById('modalLocation');
+            const modalDescription = document.getElementById('modalDescription');
+            
+            // Format date
+            const eventDate = new Date(event.start);
+            const formattedDate = eventDate.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            // Set modal content
+            modalTitle.textContent = event.title;
+            modalDate.innerHTML = `<i class="fas fa-calendar-alt"></i> ${formattedDate}`;
+            
+            if (event.extendedProps.time) {
+                modalDate.innerHTML += ` at ${event.extendedProps.time}`;
+            }
+            
+            if (event.extendedProps.location) {
+                modalLocation.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${event.extendedProps.location}`;
+                modalLocation.style.display = 'flex';
+            } else {
+                modalLocation.style.display = 'none';
+            }
+            
+            if (event.extendedProps.description) {
+                modalDescription.textContent = event.extendedProps.description;
+                modalDescription.style.display = 'block';
+            } else {
+                modalDescription.style.display = 'none';
+            }
+            
+            // Show modal
+            modal.style.display = 'block';
+        }
+
+        // Close modal handlers
+        const modal = document.getElementById('eventModal');
+        const closeBtn = document.querySelector('.event-modal-close');
+        
+        closeBtn.onclick = function() {
+            modal.style.display = 'none';
+        }
+        
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
 </body>
 </html>
