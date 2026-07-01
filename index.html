@@ -192,49 +192,18 @@
             <h2 class="section-title text-center">Upcoming Events</h2>
             <p class="section-subtitle text-center">Join us at our next community gathering</p>
             
-            <div class="two-column-grid">
-                <!-- Monthly Meeting -->
-                <div class="feature-box" style="border-left: 4px solid var(--warm-orange);">
-                    <div class="feature-icon" style="text-align: left;">
-                        <i class="fas fa-calendar-alt"></i>
-                    </div>
-                    <h3 class="feature-title">Monthly Group Meeting</h3>
-                    <p style="color: var(--warm-orange); font-weight: 600; margin-bottom: 12px;">
-                        <i class="fas fa-clock"></i> Last Sunday of Every Month
-                    </p>
-                    <p class="feature-description">
-                        Our monthly meetings provide a supportive space for families to connect, 
-                        share experiences, and access resources. 
-                    </p>
-                    <p style="margin-top: 16px; font-size: 14px; color: var(--medium-gray);">
-                        <i class="fas fa-map-marker-alt"></i> Jefferson County, FL<br>
-                        <i class="fas fa-info-circle"></i> Contact us for location details
-                    </p>
-                    <a href="contact.html" class="service-link" style="margin-top: 16px; display: inline-block;">
-                        RSVP or Get Info <i class="fas fa-arrow-right"></i>
-                    </a>
+            <div id="upcomingEvents" class="two-column-grid">
+                <!-- Loading state -->
+                <div class="feature-box" style="text-align: center; grid-column: 1 / -1;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 48px; color: var(--warm-orange); margin-bottom: 20px;"></i>
+                    <p style="color: var(--medium-gray);">Loading upcoming events...</p>
                 </div>
-
-                <!-- Special Event Placeholder -->
-                <div class="feature-box" style="border-left: 4px solid var(--sky-blue);">
-                    <div class="feature-icon" style="text-align: left;">
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <h3 class="feature-title">Special Community Events</h3>
-                    <p style="color: var(--sky-blue); font-weight: 600; margin-bottom: 12px;">
-                        <i class="fas fa-calendar-check"></i> Throughout the Year
-                    </p>
-                    <p class="feature-description">
-                        We host special events including workshops, training sessions, fundraisers, 
-                        and community celebrations.
-                    </p>
-                    <p style="margin-top: 16px; font-size: 14px; color: var(--medium-gray);">
-                        <i class="fas fa-bell"></i> Sign up for our newsletter to stay informed
-                    </p>
-                    <a href="contact.html" class="service-link" style="margin-top: 16px; display: inline-block;">
-                        Get Event Updates <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 40px;">
+                <a href="events.html" class="btn-primary">
+                    <i class="fas fa-calendar-alt"></i> VIEW FULL CALENDAR
+                </a>
             </div>
         </div>
     </section>
@@ -378,5 +347,109 @@
     </footer>
 
     <script src="script.js"></script>
+    
+    <!-- Firebase SDK for Upcoming Events -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, collection, getDocs, query, orderBy, limit, where } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyD260jUFHNr0Tt_MLC3-ogJn4tJTPYZwSU",
+            authDomain: "araiofsunshine.firebaseapp.com",
+            projectId: "araiofsunshine",
+            storageBucket: "araiofsunshine.firebasestorage.app",
+            messagingSenderId: "741022041696",
+            appId: "1:741022041696:web:336a94177b337cf8e5a505"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Load upcoming events
+        async function loadUpcomingEvents() {
+            const eventsContainer = document.getElementById('upcomingEvents');
+            const today = new Date().toISOString().split('T')[0];
+            
+            try {
+                const q = query(
+                    collection(db, 'events'),
+                    where('date', '>=', today),
+                    orderBy('date', 'asc'),
+                    limit(4)
+                );
+                
+                const querySnapshot = await getDocs(q);
+                
+                if (querySnapshot.empty) {
+                    eventsContainer.innerHTML = `
+                        <div class="feature-box" style="text-align: center; grid-column: 1 / -1;">
+                            <i class="fas fa-calendar-times" style="font-size: 48px; color: var(--warm-orange); margin-bottom: 20px;"></i>
+                            <h3 style="color: var(--dark-gray); margin-bottom: 12px;">No Upcoming Events Yet</h3>
+                            <p style="color: var(--medium-gray);">Check back soon or contact us for more information about our community meetings.</p>
+                            <a href="contact.html" class="service-link" style="margin-top: 16px; display: inline-block;">
+                                Contact Us <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                eventsContainer.innerHTML = '';
+                const colors = ['var(--warm-orange)', 'var(--sky-blue)', 'var(--success-green)', '#9b59b6'];
+                let colorIndex = 0;
+                
+                querySnapshot.forEach((doc) => {
+                    const event = doc.data();
+                    const eventDate = new Date(event.date);
+                    const formattedDate = eventDate.toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                    
+                    const color = colors[colorIndex % colors.length];
+                    colorIndex++;
+                    
+                    const eventCard = document.createElement('div');
+                    eventCard.className = 'feature-box';
+                    eventCard.style.borderLeft = `4px solid ${color}`;
+                    eventCard.innerHTML = `
+                        <div class="feature-icon" style="text-align: left;">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <h3 class="feature-title">${event.title}</h3>
+                        <p style="color: ${color}; font-weight: 600; margin-bottom: 12px;">
+                            <i class="fas fa-clock"></i> ${formattedDate}${event.time ? ' at ' + event.time : ''}
+                        </p>
+                        ${event.description ? `<p class="feature-description">${event.description}</p>` : ''}
+                        ${event.location ? `
+                            <p style="margin-top: 16px; font-size: 14px; color: var(--medium-gray);">
+                                <i class="fas fa-map-marker-alt"></i> ${event.location}
+                            </p>
+                        ` : ''}
+                        <a href="events.html" class="service-link" style="margin-top: 16px; display: inline-block;">
+                            View Details <i class="fas fa-arrow-right"></i>
+                        </a>
+                    `;
+                    
+                    eventsContainer.appendChild(eventCard);
+                });
+            } catch (error) {
+                console.error('Error loading events:', error);
+                eventsContainer.innerHTML = `
+                    <div class="feature-box" style="text-align: center; grid-column: 1 / -1;">
+                        <i class="fas fa-exclamation-circle" style="font-size: 48px; color: #e74c3c; margin-bottom: 20px;"></i>
+                        <p style="color: var(--medium-gray);">Unable to load events at this time. Please try again later.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Load events when page loads
+        document.addEventListener('DOMContentLoaded', loadUpcomingEvents);
+    </script>
 </body>
 </html>
