@@ -107,19 +107,20 @@
         @media (max-width: 768px) {
             .sponsor-item {
                 flex-direction: column;
-                padding: var(--spacing-md);
+                padding: 16px;
+                gap: 16px;
             }
             
             .sponsor-info {
                 flex-direction: column;
-                gap: var(--spacing-md);
+                gap: 16px;
+                width: 100%;
             }
             
             .sponsor-logo-preview {
                 width: 100%;
-                max-width: 200px;
-                height: auto;
-                aspect-ratio: 1;
+                max-width: 150px;
+                height: 150px;
                 margin: 0 auto;
             }
             
@@ -127,11 +128,11 @@
                 flex-direction: row;
                 width: 100%;
                 justify-content: center;
+                gap: 16px;
             }
             
             .btn-icon {
-                flex: 1;
-                max-width: 120px;
+                flex: 0 0 auto;
             }
         }
         
@@ -236,6 +237,9 @@
             max-height: 70vh;
             overflow-y: auto;
             padding-right: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
         }
         
         .sponsors-list::-webkit-scrollbar {
@@ -258,16 +262,19 @@
         
         .sponsor-item {
             background: white;
-            padding: var(--spacing-lg);
+            padding: 20px;
             border-radius: 12px;
-            margin-bottom: var(--spacing-lg);
             display: flex;
+            flex-direction: row;
             justify-content: space-between;
-            align-items: start;
-            gap: var(--spacing-lg);
+            align-items: flex-start;
+            gap: 20px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             border: 2px solid transparent;
             transition: all 0.3s ease;
+            position: relative;
+            width: 100%;
+            box-sizing: border-box;
         }
         
         .sponsor-item:hover {
@@ -279,61 +286,80 @@
         .sponsor-info {
             flex: 1;
             display: flex;
-            gap: var(--spacing-lg);
-            align-items: start;
+            flex-direction: row;
+            gap: 20px;
+            align-items: flex-start;
+            min-width: 0;
         }
         
         .sponsor-logo-preview {
-            width: 120px;
-            height: 120px;
+            width: 100px;
+            height: 100px;
             object-fit: contain;
             background: var(--soft-cream);
-            border-radius: 12px;
-            padding: 12px;
+            border-radius: 8px;
+            padding: 10px;
             border: 2px solid #e0e0e0;
             flex-shrink: 0;
+            display: block;
         }
         
         .sponsor-details {
             flex: 1;
             min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
         
         .sponsor-name {
             font-weight: 700;
             color: var(--dark-gray);
-            margin-bottom: 12px;
-            font-size: 18px;
-            line-height: 1.3;
+            font-size: 16px;
+            line-height: 1.4;
+            margin: 0;
+            padding: 0;
         }
         
         .sponsor-meta {
             color: var(--medium-gray);
-            font-size: 15px;
-            line-height: 1.8;
+            font-size: 14px;
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
         }
         
         .sponsor-meta div {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 8px;
-            margin-bottom: 6px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
         
         .sponsor-meta i {
             width: 16px;
             color: var(--sky-blue);
             flex-shrink: 0;
+            margin-top: 2px;
         }
         
         .sponsor-meta a {
             word-break: break-all;
+            color: var(--sky-blue);
+            text-decoration: none;
+        }
+        
+        .sponsor-meta a:hover {
+            text-decoration: underline;
         }
         
         .sponsor-actions {
             display: flex;
             flex-direction: column;
-            gap: var(--spacing-xs);
+            gap: 8px;
+            flex-shrink: 0;
         }
         
         .btn-icon {
@@ -341,20 +367,21 @@
             border: 2px solid #e0e0e0;
             color: var(--medium-gray);
             cursor: pointer;
-            padding: 12px;
-            border-radius: 8px;
+            padding: 10px;
+            border-radius: 6px;
             transition: all 0.3s ease;
-            font-size: 18px;
-            width: 48px;
-            height: 48px;
+            font-size: 16px;
+            width: 44px;
+            height: 44px;
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-shrink: 0;
         }
         
         .btn-icon:hover {
             background: white;
-            transform: scale(1.1);
+            transform: scale(1.05);
         }
         
         .btn-icon.edit:hover {
@@ -371,14 +398,20 @@
         
         .empty-state {
             text-align: center;
-            padding: var(--spacing-xxl);
+            padding: 40px 20px;
             color: var(--medium-gray);
+            width: 100%;
         }
         
         .empty-state i {
             font-size: 48px;
             color: #ddd;
-            margin-bottom: var(--spacing-md);
+            margin-bottom: 16px;
+            display: block;
+        }
+        
+        .empty-state p {
+            margin: 0;
         }
         
         .success-message,
@@ -600,25 +633,53 @@
                     
                     const sponsorItem = document.createElement('div');
                     sponsorItem.className = 'sponsor-item';
+                    
+                    // Build description HTML
+                    let descriptionHTML = '';
+                    if (sponsor.description) {
+                        descriptionHTML = `<div><i class="fas fa-align-left"></i> <span>${sponsor.description}</span></div>`;
+                    }
+                    
+                    // Build website HTML
+                    let websiteHTML = '';
+                    if (sponsor.website) {
+                        websiteHTML = `<div><i class="fas fa-globe"></i> <a href="${sponsor.website}" target="_blank">${sponsor.website}</a></div>`;
+                    }
+                    
+                    // Build email HTML
+                    let emailHTML = '';
+                    if (sponsor.email) {
+                        emailHTML = `<div><i class="fas fa-envelope"></i> <span>${sponsor.email}</span></div>`;
+                    }
+                    
+                    // Build phone HTML
+                    let phoneHTML = '';
+                    if (sponsor.phone) {
+                        phoneHTML = `<div><i class="fas fa-phone"></i> <span>${sponsor.phone}</span></div>`;
+                    }
+                    
                     sponsorItem.innerHTML = `
                         <div class="sponsor-info">
-                            <img src="${sponsor.logoUrl}" alt="${sponsor.name}" class="sponsor-logo-preview" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22120%22 height=%22120%22%3E%3Crect fill=%22%23f5f5f5%22 width=%22120%22 height=%22120%22/%3E%3Ctext x=%2250%%22 y=%2250%%22 font-size=%2216%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22%3ENo Image%3C/text%3E%3C/svg%3E'">
+                            <img src="${sponsor.logoUrl}" 
+                                 alt="${sponsor.name}" 
+                                 class="sponsor-logo-preview" 
+                                 onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22%3E%3Crect fill=%22%23f5f5f5%22 width=%22100%22 height=%22100%22/%3E%3Ctext x=%2250%%22 y=%2250%%22 font-size=%2212%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22%3ENo Logo%3C/text%3E%3C/svg%3E'">
                             <div class="sponsor-details">
                                 <div class="sponsor-name">${sponsor.name}</div>
                                 <div class="sponsor-meta">
-                                    ${sponsor.description ? `<div><i class="fas fa-align-left"></i> ${sponsor.description}</div>` : ''}
-                                    ${sponsor.website ? `<div><i class="fas fa-globe"></i> <a href="${sponsor.website}" target="_blank" style="color: var(--sky-blue); text-decoration: none;">${sponsor.website}</a></div>` : ''}
-                                    ${sponsor.email ? `<div><i class="fas fa-envelope"></i> ${sponsor.email}</div>` : ''}
-                                    ${sponsor.phone ? `<div><i class="fas fa-phone"></i> ${sponsor.phone}</div>` : ''}
-                                    <div style="margin-top: 8px;"><i class="fas fa-sort-numeric-down"></i> <strong>Display Order:</strong> ${sponsor.order || 0}</div>
+                                    ${descriptionHTML}
+                                    ${websiteHTML}
+                                    ${emailHTML}
+                                    ${phoneHTML}
+                                    <div><i class="fas fa-sort-numeric-down"></i> <span><strong>Order:</strong> ${sponsor.order || 0}</span></div>
                                 </div>
                             </div>
                         </div>
                         <div class="sponsor-actions">
-                            <button class="btn-icon edit" data-id="${doc.id}" title="Edit Sponsor">
+                            <button class="btn-icon edit" data-id="${doc.id}" title="Edit Sponsor" type="button">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button class="btn-icon delete" data-id="${doc.id}" title="Delete Sponsor">
+                            <button class="btn-icon delete" data-id="${doc.id}" title="Delete Sponsor" type="button">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
