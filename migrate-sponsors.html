@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Migrate Sponsors to Firebase</title>
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .status {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+        .status.info {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        .status.success {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+        .status.error {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+        button {
+            background: #FF8C42;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        button:hover {
+            background: #e67a35;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .log {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 6px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .log-entry {
+            margin: 5px 0;
+            padding: 8px;
+            border-left: 3px solid #FF8C42;
+            background: white;
+        }
+        .warning {
+            color: #f57c00;
+            font-weight: 500;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 Sponsor Migration Tool</h1>
+        
+        <div class="status info">
+            This tool will migrate all existing sponsors from the static HTML to your Firebase database.
+            <br><br>
+            <strong>⚠️ Important:</strong> This is a ONE-TIME migration. Only run this if the sponsors are not yet in the database.
+        </div>
+
+        <p class="warning">
+            Make sure you're logged in as admin before running this migration!
+        </p>
+
+        <button id="migrateBtn" onclick="migrateSponsorss()">Start Migration</button>
+
+        <div id="statusLog" class="log" style="display: none;">
+            <h3>Migration Log:</h3>
+            <div id="logEntries"></div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+        import { getFirestore, collection, addDoc, getDocs } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyD260jUFHNr0Tt_MLC3-ogJn4tJTPYZwSU",
+            authDomain: "araiofsunshine.firebaseapp.com",
+            projectId: "araiofsunshine",
+            storageBucket: "araiofsunshine.firebasestorage.app",
+            messagingSenderId: "741022041696",
+            appId: "1:741022041696:web:336a94177b337cf8e5a505"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // Store Firebase modules globally
+        window.firebaseModules = { db, collection, addDoc, getDocs };
+        
+        // Check authentication status
+        onAuthStateChanged(auth, (user) => {
+            const migrateBtn = document.getElementById('migrateBtn');
+            if (!user) {
+                migrateBtn.disabled = true;
+                migrateBtn.textContent = '⚠️ Please log in as admin first';
+                addLogEntry('You must be logged in as admin to run this migration.', 'error');
+            } else {
+                addLogEntry(`Logged in as: ${user.email}`, 'success');
+            }
+        });
+    </script>
+
+    <script>
+        // Sponsor data extracted from sponsors.html
+        const sponsorsData = [
+            {
+                name: "Amy's Website Design Co.",
+                logoUrl: "https://araiofsunshine.web.app/sponsors/modern-logo-for-amys-website-design-co.png",
+                website: "",
+                email: "amyswebsitedesignco@gmail.com",
+                phone: "(229) 690-8888",
+                description: "Professional website design and digital solutions",
+                order: 1
+            },
+            {
+                name: "Root Foundry",
+                logoUrl: "https://araiofsunshine.web.app/sponsors/rootfoundry-transparent.png",
+                website: "https://root-foundry.com",
+                email: "",
+                phone: "",
+                description: "Innovation and technology solutions",
+                order: 2
+            },
+            {
+                name: "Elle Ignite",
+                logoUrl: "https://araiofsunshine.web.app/sponsors/elleignite-logo-final-.png",
+                website: "",
+                email: "admin@elleignite.com",
+                phone: "850-347-8252",
+                description: "Empowering community through connection",
+                order: 3
+            },
+            {
+                name: "GPS (Gator Payroll Services)",
+                logoUrl: "https://araiofsunshine.web.app/sponsors/gps_logo.png",
+                website: "https://www.gatorpayroll352.com",
+                email: "",
+                phone: "352-372-3822",
+                description: "Gator Payroll Services",
+                order: 4
+            },
+            {
+                name: "Madman Graphics",
+                logoUrl: "https://araiofsunshine.web.app/sponsors/madman-graphics.jpg",
+                website: "https://www.facebook.com/MadManGraphicsLLC/",
+                email: "madmangrfx@gmail.com",
+                phone: "850-556-9698",
+                description: "Creative design and printing solutions",
+                order: 5
+            },
+            {
+                name: "C.R. Pies Pizzeria",
+                logoUrl: "https://araiofsunshine.web.app/sponsors/CR.jpg",
+                website: "https://www.facebook.com/profile.php?id=61552556874908",
+                email: "",
+                phone: "(850) 997-4000",
+                description: "Delicious homemade pizza and Italian cuisine",
+                order: 6
+            },
+            {
+                name: "Velvet Home",
+                logoUrl: "https://araiofsunshine.web.app/sponsors/velvet-home-logo_edited.png",
+                website: "https://www.velvethomecaresolution.com/",
+                email: "consultations@velvethomecaresolution.com",
+                phone: "850-825-3094",
+                description: "Home furnishings and decor",
+                order: 7
+            },
+            {
+                name: "APMJR Services",
+                logoUrl: "https://araiofsunshine.web.app/sponsors/5803857672999117866.png",
+                website: "",
+                email: "APMJRSERVICES@GMAIL.COM",
+                phone: "352-554-6239",
+                description: "Supporting our mission",
+                order: 8
+            },
+            {
+                name: "Zane Marshall ~ Astro Extermination Services",
+                logoUrl: "https://araiofsunshine.web.app/sponsors/702c0f66-9a16-46fd-a895-3a1ee9c078c8.png",
+                website: "",
+                email: "zanemarshall@astroexterminating.com",
+                phone: "850-666-0641",
+                description: "Professional pest control services",
+                order: 9
+            },
+            {
+                name: "Enhanced Family Services",
+                logoUrl: "https://araiofsunshine.web.app/sponsors/ab76a510-d371-11f0-ac1a-8b7bc892c4c3.png",
+                website: "",
+                email: "",
+                phone: "",
+                description: "Supporting families in our community",
+                order: 10
+            },
+            {
+                name: "Tru' Training Center",
+                logoUrl: "https://araiofsunshine.web.app/sponsors/fb_img_1765044809238.png",
+                website: "https://www.facebook.com/profile.php?id=100091339730959",
+                email: "truhealthcareacademy@gmail.com",
+                phone: "",
+                description: "Healthcare training and education",
+                order: 11
+            },
+            {
+                name: "Gem Nails and More",
+                logoUrl: "https://araiofsunshine.web.app/sponsors/fulllogo.png",
+                website: "https://www.gemnailsandmore.com",
+                email: "gemnailsandmore@gmail.com",
+                phone: "",
+                description: "Beauty and nail services",
+                order: 12
+            },
+            {
+                name: "The Lemonade Crew",
+                logoUrl: "https://araiofsunshine.web.app/sponsors/image0-1.png",
+                website: "",
+                email: "Nickyseaton.care@gmail.com",
+                phone: "",
+                description: "Supporting our mission",
+                order: 13
+            },
+            {
+                name: "Dirt Works",
+                logoUrl: "https://araiofsunshine.web.app/sponsors/fulllogo_nobuffer.png",
+                website: "",
+                email: "",
+                phone: "850-779-6052",
+                description: "Professional excavation and land services",
+                order: 14
+            },
+            {
+                name: "Monticello Tabernacle of Praise Ministries",
+                logoUrl: "https://araiofsunshine.web.app/sponsors/messenger_creation_af3fb8ba-b86e-499a-ae79-5063d5838481.png",
+                website: "",
+                email: "",
+                phone: "",
+                description: "Community faith organization",
+                order: 15
+            },
+            {
+                name: "The Luckenbooth Shop",
+                logoUrl: "https://araiofsunshine.web.app/sponsors/image00000014.png",
+                website: "https://www.theluckenboothshop.com",
+                email: "",
+                phone: "(448) 222-7026",
+                description: "Unique gifts and specialty items",
+                order: 16
+            },
+            {
+                name: "Johnstons Meat Market",
+                logoUrl: "https://araiofsunshine.web.app/sponsors/spreading-light-in-our-community-48-x-24.5-in-2.png",
+                website: "",
+                email: "",
+                phone: "850-997-5622",
+                description: "Quality meats and local products",
+                order: 17
+            },
+            {
+                name: "P&P Lawn Care",
+                logoUrl: "https://araiofsunshine.web.app/sponsors/spreading-light-in-our-community-48-x-24.5-in-3.204-x-3-in-1.png",
+                website: "https://www.pplawncare.com",
+                email: "",
+                phone: "850-694-8273",
+                description: "Professional lawn care and landscaping",
+                order: 18
+            }
+        ];
+
+        function addLogEntry(message, type = 'info') {
+            const statusLog = document.getElementById('statusLog');
+            const logEntries = document.getElementById('logEntries');
+            
+            statusLog.style.display = 'block';
+            
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.style.borderLeftColor = type === 'success' ? '#4caf50' : 
+                                         type === 'error' ? '#f44336' : '#FF8C42';
+            entry.textContent = `${new Date().toLocaleTimeString()} - ${message}`;
+            
+            logEntries.appendChild(entry);
+            logEntries.scrollTop = logEntries.scrollHeight;
+        }
+
+        async function migrateSponsorss() {
+            const { db, collection, addDoc, getDocs } = window.firebaseModules;
+            const migrateBtn = document.getElementById('migrateBtn');
+            
+            migrateBtn.disabled = true;
+            migrateBtn.textContent = '⏳ Migrating...';
+            
+            addLogEntry('Starting migration process...', 'info');
+            
+            try {
+                // Check if sponsors already exist
+                const sponsorsSnapshot = await getDocs(collection(db, 'sponsors'));
+                
+                if (!sponsorsSnapshot.empty) {
+                    const confirmMigration = confirm(
+                        `WARNING: ${sponsorsSnapshot.size} sponsors already exist in the database.\n\n` +
+                        `This will ADD ${sponsorsData.length} more sponsors (it won't replace existing ones).\n\n` +
+                        `Continue anyway?`
+                    );
+                    
+                    if (!confirmMigration) {
+                        addLogEntry('Migration cancelled by user.', 'info');
+                        migrateBtn.disabled = false;
+                        migrateBtn.textContent = 'Start Migration';
+                        return;
+                    }
+                }
+                
+                let successCount = 0;
+                let errorCount = 0;
+                
+                for (const sponsor of sponsorsData) {
+                    try {
+                        await addDoc(collection(db, 'sponsors'), sponsor);
+                        successCount++;
+                        addLogEntry(`✓ Added: ${sponsor.name}`, 'success');
+                    } catch (error) {
+                        errorCount++;
+                        addLogEntry(`✗ Failed to add ${sponsor.name}: ${error.message}`, 'error');
+                    }
+                }
+                
+                addLogEntry('', 'info');
+                addLogEntry(`Migration Complete! ✅`, 'success');
+                addLogEntry(`Successfully added: ${successCount} sponsors`, 'success');
+                
+                if (errorCount > 0) {
+                    addLogEntry(`Failed: ${errorCount} sponsors`, 'error');
+                }
+                
+                addLogEntry('', 'info');
+                addLogEntry('You can now close this page and check the admin panel!', 'info');
+                
+                migrateBtn.textContent = '✓ Migration Complete';
+                
+            } catch (error) {
+                addLogEntry(`Migration failed: ${error.message}`, 'error');
+                migrateBtn.disabled = false;
+                migrateBtn.textContent = 'Retry Migration';
+            }
+        }
+
+        // Make function globally available
+        window.migrateSponsorss = migrateSponsorss;
+    </script>
+</body>
+</html>
