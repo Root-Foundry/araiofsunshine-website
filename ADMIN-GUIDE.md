@@ -1,12 +1,12 @@
-# Event Calendar System - Setup & Usage Guide
+# Event Calendar & Sponsor Management System - Setup & Usage Guide
 
 ## 🎉 System Overview
 
-Your website now has a fully functional event calendar system with:
-- **Interactive calendar** on the Events page (FullCalendar)
-- **Secure admin panel** to add/edit/delete events
-- **Firebase Firestore** database for event storage
-- **Real-time updates** - events appear instantly on the public calendar
+Your website now has fully functional admin panels for managing:
+- **Event calendar** - Add/edit/delete events that appear on the calendar
+- **Sponsors** - Add/edit/delete sponsor logos and information
+- **Secure admin login** - Firebase Authentication protects admin access
+- **Real-time updates** - Changes appear instantly on the public website
 
 ---
 
@@ -70,6 +70,38 @@ firebase auth:import --project araiofsunshine admin-user.json
 2. Confirm the deletion
 3. The event is removed from the database and calendar
 
+### Managing Sponsors
+
+Navigate to the Sponsors admin panel using the navigation bar at the top.
+
+#### Add a New Sponsor
+
+1. Fill out the sponsor form:
+   - **Sponsor Name** (required): e.g., "Jefferson County Chamber of Commerce"
+   - **Logo URL** (required): Direct link to the sponsor's logo image
+     - As you type, a preview will appear below
+     - Tip: Use an image hosting service like Imgur or link to their website logo
+   - **Website** (optional): e.g., "https://jeffersoncountyfl.gov"
+   - **Email** (optional): Contact email for the sponsor
+   - **Phone** (optional): Contact phone number
+   - **Description** (optional): Brief description of the sponsor
+   - **Display Order** (required): Number to control display order (lower numbers appear first)
+2. Click **"Add Sponsor"**
+3. The sponsor appears in the list immediately!
+
+#### Edit a Sponsor
+
+1. In the "Current Sponsors" list, click the **pencil icon** (✏️) next to any sponsor
+2. The form will populate with the sponsor details
+3. Make your changes (logo preview updates in real-time)
+4. Click **"Update Sponsor"**
+
+#### Delete a Sponsor
+
+1. In the "Current Sponsors" list, click the **trash icon** (🗑️) next to any sponsor
+2. Confirm the deletion
+3. The sponsor is removed from the database
+
 ---
 
 ## 🌐 **STEP 3: Viewing Events (Public)**
@@ -113,8 +145,9 @@ firebase auth:import --project araiofsunshine admin-user.json
 
 - **admin-login.html** - Admin login page
 - **admin-events.html** - Admin panel for managing events
+- **admin-sponsors.html** - Admin panel for managing sponsors
 - **events.html** - Updated with interactive calendar
-- **firestore.rules** - Database security rules
+- **firestore.rules** - Database security rules (events + sponsors)
 - **firestore.indexes.json** - Database indexes
 
 ### Technologies Used
@@ -136,6 +169,18 @@ events (collection)
 │   └── description: string (optional)
 ├── event2 (document)
 └── ...
+
+sponsors (collection)
+├── sponsor1 (document)
+│   ├── name: string
+│   ├── logoUrl: string
+│   ├── website: string (optional)
+│   ├── email: string (optional)
+│   ├── phone: string (optional)
+│   ├── description: string (optional)
+│   └── order: number (display order)
+├── sponsor2 (document)
+└── ...
 ```
 
 ---
@@ -143,7 +188,10 @@ events (collection)
 ## 📱 **Quick Links**
 
 - **Public Calendar:** https://araiofsunshine.web.app/events
+- **Public Sponsors:** https://araiofsunshine.web.app/sponsors
 - **Admin Login:** https://araiofsunshine.web.app/admin-login
+- **Admin Events:** https://araiofsunshine.web.app/admin-events
+- **Admin Sponsors:** https://araiofsunshine.web.app/admin-sponsors
 - **Firebase Console:** https://console.firebase.google.com/project/araiofsunshine/overview
 - **Firestore Database:** https://console.firebase.google.com/project/araiofsunshine/firestore
 - **Authentication:** https://console.firebase.google.com/project/araiofsunshine/authentication/users
