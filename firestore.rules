@@ -10,5 +10,14 @@ service cloud.firestore {
       // Only authenticated admin users can create, update, or delete events
       allow create, update, delete: if request.auth != null;
     }
+    
+    // Sponsors collection
+    match /sponsors/{sponsorId} {
+      // Anyone can read sponsors (public display)
+      allow read: if true;
+      
+      // Only authenticated admin users can create, update, or delete sponsors
+      allow create, update, delete: if request.auth != null;
+    }
   }
 }
