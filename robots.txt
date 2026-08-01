@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin-login.html
+Disallow: /admin-events.html
+Disallow: /admin-sponsors.html
+
+Sitemap: https://araiofsunshine.org/sitemap.xml
