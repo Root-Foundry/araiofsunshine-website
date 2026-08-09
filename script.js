@@ -54,6 +54,31 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// Photo Carousel (Event Gallery)
+document.addEventListener('DOMContentLoaded', function() {
+    const track = document.querySelector('.carousel-track');
+    const prevBtn = document.querySelector('.carousel-btn-prev');
+    const nextBtn = document.querySelector('.carousel-btn-next');
+
+    if (track && prevBtn && nextBtn) {
+        const scrollByOneItem = function(direction) {
+            const item = track.querySelector('.carousel-item');
+            if (!item) return;
+
+            const gap = parseFloat(getComputedStyle(track).gap) || 0;
+            track.scrollBy({ left: direction * (item.offsetWidth + gap), behavior: 'smooth' });
+        };
+
+        prevBtn.addEventListener('click', function() {
+            scrollByOneItem(-1);
+        });
+
+        nextBtn.addEventListener('click', function() {
+            scrollByOneItem(1);
+        });
+    }
+});
+
 // Mobile Menu Toggle
 document.addEventListener('DOMContentLoaded', function() {
     const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');

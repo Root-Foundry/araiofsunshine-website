@@ -1081,6 +1081,110 @@ select.form-input {
 }
 
 /* ============================================
+   PHOTO CAROUSEL
+   ============================================ */
+
+.photo-carousel {
+    position: relative;
+    margin-top: 40px;
+}
+
+.carousel-track {
+    display: flex;
+    gap: var(--spacing-md);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    padding-bottom: 8px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.carousel-track::-webkit-scrollbar {
+    display: none;
+}
+
+.carousel-item {
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.carousel-item img {
+    width: 100%;
+    height: 280px;
+    object-fit: cover;
+    display: block;
+}
+
+@media (min-width: 576px) {
+    .carousel-item {
+        flex: 0 0 calc(50% - 12px);
+    }
+}
+
+@media (min-width: 992px) {
+    .carousel-item {
+        flex: 0 0 calc(33.333% - 16px);
+    }
+
+    .carousel-item img {
+        height: 320px;
+    }
+}
+
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--pure-white);
+    border: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    color: var(--warm-orange);
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.carousel-btn:hover {
+    background: var(--warm-orange);
+    color: var(--pure-white);
+}
+
+.carousel-btn-prev {
+    left: -8px;
+}
+
+.carousel-btn-next {
+    right: -8px;
+}
+
+@media (min-width: 992px) {
+    .carousel-btn-prev {
+        left: -22px;
+    }
+
+    .carousel-btn-next {
+        right: -22px;
+    }
+}
+
+@media (max-width: 576px) {
+    .carousel-btn {
+        display: none;
+    }
+}
+
+/* ============================================
    SPONSORS SECTION
    ============================================ */
 
