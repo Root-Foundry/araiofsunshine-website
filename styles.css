@@ -1093,6 +1093,7 @@ select.form-input {
     overflow: hidden;
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background-color: var(--light-gray);
 }
 
 .carousel-track {
@@ -1107,7 +1108,8 @@ select.form-input {
 .carousel-slide img {
     width: 100%;
     height: 280px;
-    object-fit: cover;
+    object-fit: contain;
+    background-color: var(--light-gray);
     display: block;
 }
 
