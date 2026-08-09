@@ -54,28 +54,72 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Photo Carousel (Event Gallery)
+// Photo Carousel (Event Gallery) - auto-rotating single-slide carousel
 document.addEventListener('DOMContentLoaded', function() {
+    const carousel = document.querySelector('.photo-carousel');
     const track = document.querySelector('.carousel-track');
     const prevBtn = document.querySelector('.carousel-btn-prev');
     const nextBtn = document.querySelector('.carousel-btn-next');
+    const dotsContainer = document.querySelector('.carousel-dots');
 
-    if (track && prevBtn && nextBtn) {
-        const scrollByOneItem = function(direction) {
-            const item = track.querySelector('.carousel-item');
-            if (!item) return;
+    if (carousel && track && prevBtn && nextBtn && dotsContainer) {
+        const slides = Array.from(track.querySelectorAll('.carousel-slide'));
+        let currentIndex = 0;
+        let autoplayTimer = null;
 
-            const gap = parseFloat(getComputedStyle(track).gap) || 0;
-            track.scrollBy({ left: direction * (item.offsetWidth + gap), behavior: 'smooth' });
-        };
+        // Build one dot per slide
+        slides.forEach(function(slide, index) {
+            const dot = document.createElement('button');
+            dot.className = 'carousel-dot';
+            dot.setAttribute('aria-label', 'Go to photo ' + (index + 1));
+            dot.addEventListener('click', function() {
+                goToSlide(index);
+                restartAutoplay();
+            });
+            dotsContainer.appendChild(dot);
+        });
+
+        const dots = Array.from(dotsContainer.querySelectorAll('.carousel-dot'));
+
+        function goToSlide(index) {
+            currentIndex = (index + slides.length) % slides.length;
+            track.style.transform = 'translateX(-' + (currentIndex * 100) + '%)';
+            dots.forEach(function(dot, i) {
+                dot.classList.toggle('active', i === currentIndex);
+            });
+        }
+
+        function startAutoplay() {
+            autoplayTimer = setInterval(function() {
+                goToSlide(currentIndex + 1);
+            }, 5000);
+        }
+
+        function restartAutoplay() {
+            clearInterval(autoplayTimer);
+            startAutoplay();
+        }
 
         prevBtn.addEventListener('click', function() {
-            scrollByOneItem(-1);
+            goToSlide(currentIndex - 1);
+            restartAutoplay();
         });
 
         nextBtn.addEventListener('click', function() {
-            scrollByOneItem(1);
+            goToSlide(currentIndex + 1);
+            restartAutoplay();
         });
+
+        carousel.addEventListener('mouseenter', function() {
+            clearInterval(autoplayTimer);
+        });
+
+        carousel.addEventListener('mouseleave', function() {
+            restartAutoplay();
+        });
+
+        goToSlide(0);
+        startAutoplay();
     }
 });
 
