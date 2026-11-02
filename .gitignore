@@ -16,3 +16,6 @@ desktop.ini
 # Temporary files
 *.tmp
 *.bak
+
+# Local emulator data
+.emulator-data/

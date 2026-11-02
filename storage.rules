@@ -1,0 +1,16 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Business logos uploaded by members from member.html.
+    match /business-logos/{uid}/{fileName} {
+      allow read: if true;
+      // SVG is intentionally not allowed (it can carry scripts).
+      allow create, update: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.size < 2 * 1024 * 1024
+        && request.resource.contentType.matches('image/(png|jpeg|webp|gif)');
+      allow delete: if request.auth != null && request.auth.uid == uid;
+    }
+  }
+}

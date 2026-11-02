@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Business Listings | A Rai of Sunshine Admin</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="members.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .admin-header {
+            background: var(--dark-text);
+            color: white;
+            padding: var(--spacing-md) 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .admin-header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-lg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .admin-header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .admin-nav {
+            display: flex;
+            gap: var(--spacing-md);
+            align-items: center;
+        }
+
+        .admin-nav a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: background 0.3s ease;
+            font-weight: 500;
+        }
+
+        .admin-nav a:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .admin-nav a.active {
+            background: var(--warm-orange);
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: var(--spacing-md);
+            align-items: center;
+        }
+
+        .admin-actions span {
+            color: #ddd;
+            font-size: 14px;
+        }
+
+        .logout-btn {
+            background: var(--warm-orange);
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-xl) var(--spacing-lg);
+        }
+
+        @media (max-width: 992px) {
+            .admin-nav { display: none; }
+        }
+
+        @media (max-width: 575px) {
+            .admin-header-content,
+            .admin-container { padding-left: 16px; padding-right: 16px; }
+            .admin-actions span { display: none; }
+        }
+
+        .admin-card {
+            background: white;
+            padding: var(--spacing-lg);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .admin-card h2 {
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .admin-card h2 .count {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--medium-gray);
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        .biz-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .biz-item {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            padding: 20px;
+            border: 2px solid var(--light-gray);
+            border-radius: 12px;
+        }
+
+        .biz-item {
+            flex-wrap: wrap;
+        }
+
+        .note-form {
+            flex-basis: 100%;
+            display: grid;
+            gap: 8px;
+            padding-top: 12px;
+            border-top: 1px dashed #e0e0e0;
+        }
+
+        .note-form label {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .note-form textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font: inherit;
+            resize: vertical;
+        }
+
+        .note-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .biz-item.spotlighted {
+            border-color: var(--sunshine-gold);
+            background: #fffdf0;
+        }
+
+        .biz-logo {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            background: var(--soft-cream);
+            border-radius: 8px;
+            padding: 8px;
+            flex-shrink: 0;
+        }
+
+        .biz-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .biz-body h3 {
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+
+        .biz-meta {
+            font-size: 14px;
+            color: var(--medium-gray);
+            display: grid;
+            gap: 4px;
+            margin: 8px 0;
+            word-break: break-word;
+        }
+
+        .biz-meta i {
+            width: 18px;
+            color: var(--sky-blue);
+        }
+
+        .category-select {
+            font: inherit;
+            font-size: 14px;
+            padding: 2px 6px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            background: white;
+            color: var(--dark-text);
+        }
+
+        .biz-description {
+            font-size: 14px;
+            margin: 8px 0;
+        }
+
+        .biz-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .biz-badges .status-badge {
+            font-size: 12px;
+            padding: 4px 10px;
+        }
+
+        .biz-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .admin-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border-radius: 8px;
+            border: 2px solid transparent;
+            font-weight: 600;
+            font-size: 14px;
+            font-family: inherit;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .admin-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .admin-btn.approve { background: var(--success-green); color: white; }
+        .admin-btn.reject { background: white; color: #c0392b; border-color: #f5c6cb; }
+        .admin-btn.star { background: white; color: var(--dark-text); border-color: #e0e0e0; }
+        .admin-btn.star.on { background: var(--sunshine-gold); border-color: var(--sunshine-gold); }
+        .admin-btn.save { background: var(--sky-blue); color: white; }
+
+        @media (max-width: 768px) {
+            .biz-item { flex-direction: column; }
+            .biz-actions { flex-direction: row; flex-wrap: wrap; width: 100%; }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 24px;
+            color: var(--medium-gray);
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        .toast.success { background: #27ae60; }
+        .toast.error { background: #c0392b; }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <div class="admin-header-content">
+            <h1><i class="fas fa-store"></i> Business Listings</h1>
+            <div class="admin-nav">
+                <a href="admin-events.html"><i class="fas fa-calendar-alt"></i> Events</a>
+                <a href="admin-sponsors.html"><i class="fas fa-handshake"></i> Sponsors</a>
+                <a href="admin-businesses.html" class="active"><i class="fas fa-store"></i> Businesses</a>
+                <a href="admin-members.html"><i class="fas fa-users"></i> Members</a>
+                <a href="admin-donations.html"><i class="fas fa-hand-holding-heart"></i> Donations</a>
+            </div>
+            <div class="admin-actions">
+                <span id="userEmail"></span>
+                <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="admin-container">
+        <div id="notAuthorized" class="admin-card hidden">
+            <h2><i class="fas fa-lock"></i> Admin access required</h2>
+            <p>This account is not an administrator. Please sign out and sign in with an admin account.</p>
+        </div>
+
+        <div id="adminContent" class="hidden">
+            <!-- PENDING -->
+            <div class="admin-card">
+                <h2><i class="fas fa-hourglass-half"></i> Waiting for Review <span class="count" id="pendingCount"></span></h2>
+                <div class="biz-list" id="pendingList"></div>
+            </div>
+
+            <!-- APPROVED -->
+            <div class="admin-card">
+                <h2><i class="fas fa-check-circle"></i> Approved Listings <span class="count" id="approvedCount"></span></h2>
+                <p style="color: var(--medium-gray); margin-bottom: var(--spacing-md);">
+                    Click <strong>★ Spotlight</strong> to feature a business at the top of the directory. Click again to remove it.
+                    Only businesses with current dues appear publicly.
+                </p>
+                <div class="biz-list" id="approvedList"></div>
+            </div>
+
+            <!-- CHANGES REQUESTED -->
+            <div class="admin-card">
+                <h2><i class="fas fa-edit"></i> Changes Requested <span class="count" id="rejectedCount"></span></h2>
+                <div class="biz-list" id="rejectedList"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, db, isAdminUser, escapeHtml, safeUrl, formatDate, toDate, isPaidUp, BUSINESS_CATEGORIES, formatAddress, formatHours, formatEstablished } from './member-common.js';
+        import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { collection, getDocs, doc, getDoc, updateDoc, setDoc, serverTimestamp, arrayUnion, arrayRemove } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        const $ = (id) => document.getElementById(id);
+
+        let currentUser = null;
+        let businesses = [];
+        let members = {};
+        let spotlightIds = [];
+
+        function toast(message, type = 'success') {
+            const el = document.createElement('div');
+            el.className = `toast ${type}`;
+            el.textContent = message;
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 3500);
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.href = 'admin-login.html';
+                return;
+            }
+            currentUser = user;
+            $('userEmail').textContent = user.email;
+            if (!(await isAdminUser(user))) {
+                $('notAuthorized').classList.remove('hidden');
+                return;
+            }
+            $('adminContent').classList.remove('hidden');
+            loadAll();
+        });
+
+        $('logoutBtn').addEventListener('click', async () => {
+            await signOut(auth);
+            window.location.href = 'admin-login.html';
+        });
+
+        async function loadAll() {
+            try {
+                const [bizSnap, memberSnap, spotlightSnap] = await Promise.all([
+                    getDocs(collection(db, 'businesses')),
+                    getDocs(collection(db, 'members')),
+                    getDoc(doc(db, 'settings', 'spotlight'))
+                ]);
+                businesses = bizSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
+                members = Object.fromEntries(memberSnap.docs.map((d) => [d.id, d.data()]));
+                spotlightIds = spotlightSnap.exists() ? (spotlightSnap.data().businessIds || []) : [];
+
+                renderBusinesses();
+            } catch (err) {
+                console.error(err);
+                toast('Failed to load data', 'error');
+            }
+        }
+
+        function duesBadge(member) {
+            if (isPaidUp(member)) return `<span class="status-badge good">Dues paid through ${escapeHtml(formatDate(member.paidThrough))}</span>`;
+            if (toDate(member?.paidThrough)) return `<span class="status-badge bad">Dues lapsed ${escapeHtml(formatDate(member.paidThrough))}</span>`;
+            return '<span class="status-badge neutral">No dues paid</span>';
+        }
+
+        function bizItem(b, actions) {
+            const member = members[b.id];
+            const website = safeUrl(b.website);
+            const spotlighted = spotlightIds.includes(b.id);
+            const el = document.createElement('div');
+            el.className = `biz-item${b.status === 'approved' && spotlighted ? ' spotlighted' : ''}`;
+            el.innerHTML = `
+                <img class="biz-logo" src="${escapeHtml(safeUrl(b.logoUrl))}" alt="${escapeHtml(b.name)} logo">
+                <div class="biz-body">
+                    <h3>${escapeHtml(b.name)}</h3>
+                    <div class="biz-badges">
+                        ${duesBadge(member)}
+                        ${b.status === 'approved' && spotlighted ? '<span class="status-badge warn"><i class="fas fa-star"></i> Spotlighted</span>' : ''}
+                    </div>
+                    <div class="biz-meta">
+                        <div><i class="fas fa-user"></i> ${escapeHtml(b.owner)} ${member ? `(member: ${escapeHtml(member.name || member.email)})` : ''}</div>
+                        <div><i class="fas fa-tag"></i>
+                            <label class="hidden" for="cat-${escapeHtml(b.id)}">Type of business</label>
+                            <select class="category-select" id="cat-${escapeHtml(b.id)}">
+                                ${b.category ? '' : '<option value="" selected>Not set</option>'}
+                                ${BUSINESS_CATEGORIES.map((c) => `<option value="${c.id}"${c.id === b.category ? ' selected' : ''}>${escapeHtml(c.label)}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div><i class="fas fa-envelope"></i> ${escapeHtml(b.email)}</div>
+                        ${b.phone ? `<div><i class="fas fa-phone"></i> ${escapeHtml(b.phone)}</div>` : ''}
+                        ${formatAddress(b, { includeHidden: true }) ? `<div><i class="fas fa-map-marker-alt"></i> ${escapeHtml(formatAddress(b, { includeHidden: true }))}${b.hideStreet ? ' <em>(street hidden in directory)</em>' : ''}</div>` : ''}
+                        ${website ? `<div><i class="fas fa-globe"></i> <a href="${escapeHtml(website)}" target="_blank" rel="noopener noreferrer">${escapeHtml(website)}</a></div>` : ''}
+                        ${formatEstablished(b) ? `<div><i class="fas fa-flag"></i> Est. ${escapeHtml(formatEstablished(b))}</div>` : ''}
+                        ${formatHours(b.hours).length || b.hoursNote ? `<div><i class="fas fa-business-time"></i> ${escapeHtml([formatHours(b.hours).join(' · '), b.hoursNote].filter(Boolean).join(' — '))}</div>` : ''}
+                        <div><i class="fas fa-clock"></i> Updated ${escapeHtml(formatDate(b.updatedAt || b.submittedAt))}</div>
+                    </div>
+                    ${b.description ? `<p class="biz-description">${escapeHtml(b.description)}</p>` : ''}
+                    ${b.reviewNote && b.status === 'rejected' ? `<p class="review-note">Note sent: ${escapeHtml(b.reviewNote)}</p>` : ''}
+                </div>
+                <div class="biz-actions"></div>
+            `;
+            const actionBox = el.querySelector('.biz-actions');
+            actions.forEach((a) => actionBox.appendChild(a));
+            if (noteOpenFor === b.id) el.appendChild(noteForm(b));
+
+            // Admins can correct the type of business without sending the listing back for review.
+            const select = el.querySelector('.category-select');
+            select.addEventListener('change', async () => {
+                if (!select.value) return;
+                select.disabled = true;
+                try {
+                    await updateDoc(doc(db, 'businesses', b.id), { category: select.value });
+                    b.category = select.value;
+                    toast(`${b.name} is now listed under ${select.options[select.selectedIndex].text}`);
+                } catch (err) {
+                    console.error(err);
+                    select.value = b.category || '';
+                    toast('Could not change the business type', 'error');
+                }
+                select.disabled = false;
+            });
+            return el;
+        }
+
+        function button(className, html, onClick) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = `admin-btn ${className}`;
+            btn.innerHTML = html;
+            btn.addEventListener('click', async () => {
+                btn.disabled = true;
+                try {
+                    await onClick();
+                } finally {
+                    btn.disabled = false;
+                }
+            });
+            return btn;
+        }
+
+        function renderList(listId, countId, items, emptyText, actionsFor) {
+            const list = $(listId);
+            list.innerHTML = '';
+            $(countId).textContent = `(${items.length})`;
+            if (!items.length) {
+                list.innerHTML = `<div class="empty-state">${escapeHtml(emptyText)}</div>`;
+                return;
+            }
+            items.forEach((b) => list.appendChild(bizItem(b, actionsFor(b))));
+        }
+
+        function byUpdated(a, b) {
+            return (toDate(a.updatedAt)?.getTime() || 0) - (toDate(b.updatedAt)?.getTime() || 0);
+        }
+
+        function renderBusinesses() {
+            const pending = businesses.filter((b) => b.status === 'pending').sort(byUpdated);
+            const approved = businesses.filter((b) => b.status === 'approved')
+                .sort((a, b) => (spotlightIds.includes(b.id) - spotlightIds.includes(a.id)) || a.name.localeCompare(b.name));
+            const rejected = businesses.filter((b) => b.status === 'rejected').sort(byUpdated);
+
+            renderList('pendingList', 'pendingCount', pending, 'Nothing waiting for review.', (b) => [
+                button('approve', '<i class="fas fa-check"></i> Approve', () => review(b, 'approved')),
+                button('reject', '<i class="fas fa-times"></i> Request Changes', () => openNote(b))
+            ]);
+
+            renderList('approvedList', 'approvedCount', approved, 'No approved businesses yet.', (b) => {
+                const on = spotlightIds.includes(b.id);
+                return [
+                    button(`star${on ? ' on' : ''}`, `<i class="fas fa-star"></i> ${on ? 'Spotlighted' : 'Spotlight'}`, () => toggleSpotlight(b)),
+                    button('reject', '<i class="fas fa-eye-slash"></i> Unpublish', () => openNote(b))
+                ];
+            });
+
+            renderList('rejectedList', 'rejectedCount', rejected, 'None.', (b) => [
+                button('approve', '<i class="fas fa-check"></i> Approve', () => review(b, 'approved'))
+            ]);
+        }
+
+        // Request Changes / Unpublish open a note box on the listing itself (no browser prompt).
+        let noteOpenFor = null;
+
+        function openNote(b) {
+            noteOpenFor = b.id;
+            renderBusinesses();
+            document.getElementById(`note-${b.id}`)?.focus();
+        }
+
+        function noteForm(b) {
+            const form = document.createElement('div');
+            form.className = 'note-form';
+            form.innerHTML = `
+                <label for="note-${escapeHtml(b.id)}">What should ${escapeHtml(b.name)} change? The member will see this note.</label>
+                <textarea id="note-${escapeHtml(b.id)}" maxlength="500" rows="3">${escapeHtml(b.reviewNote || '')}</textarea>
+                <div class="note-actions"></div>`;
+            const actions = form.querySelector('.note-actions');
+            actions.appendChild(button('reject', '<i class="fas fa-paper-plane"></i> Send &amp; Request Changes', async () => {
+                await review(b, 'rejected', form.querySelector('textarea').value);
+            }));
+            actions.appendChild(button('star', 'Cancel', async () => { noteOpenFor = null; renderBusinesses(); }));
+            return form;
+        }
+
+        async function review(b, status, note = '') {
+            const reviewNote = status === 'rejected' ? note.trim().slice(0, 500) : '';
+            if (noteOpenFor === b.id) noteOpenFor = null;
+            try {
+                await updateDoc(doc(db, 'businesses', b.id), {
+                    status,
+                    reviewNote,
+                    reviewedAt: serverTimestamp(),
+                    reviewedBy: currentUser.email
+                });
+                b.status = status;
+                b.reviewNote = reviewNote;
+                if (status !== 'approved' && spotlightIds.includes(b.id)) await toggleSpotlight(b, false);
+                renderBusinesses();
+                toast(status === 'approved' ? `${b.name} approved` : `Changes requested from ${b.name}`);
+            } catch (err) {
+                console.error(err);
+                toast('Could not update listing', 'error');
+            }
+        }
+
+        async function toggleSpotlight(b, notify = true) {
+            const on = spotlightIds.includes(b.id);
+            try {
+                await setDoc(doc(db, 'settings', 'spotlight'), {
+                    businessIds: on ? arrayRemove(b.id) : arrayUnion(b.id),
+                    updatedAt: serverTimestamp()
+                }, { merge: true });
+                spotlightIds = on ? spotlightIds.filter((id) => id !== b.id) : [...spotlightIds, b.id];
+                renderBusinesses();
+                if (notify) {
+                    toast(on ? `${b.name} removed from spotlight` : `${b.name} is now in the spotlight`);
+                }
+            } catch (err) {
+                console.error(err);
+                toast('Could not update spotlight', 'error');
+            }
+        }
+
+    </script>
+</body>
+</html>

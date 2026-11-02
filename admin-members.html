@@ -1,0 +1,1603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Members | A Rai of Sunshine Admin</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="members.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .admin-header {
+            background: var(--dark-text);
+            color: white;
+            padding: var(--spacing-md) 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .admin-header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-lg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .admin-header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .admin-nav {
+            display: flex;
+            gap: var(--spacing-md);
+            align-items: center;
+        }
+
+        .admin-nav a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: background 0.3s ease;
+            font-weight: 500;
+        }
+
+        .admin-nav a:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .admin-nav a.active {
+            background: var(--warm-orange);
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: var(--spacing-md);
+            align-items: center;
+        }
+
+        .admin-actions span {
+            color: #ddd;
+            font-size: 14px;
+        }
+
+        .logout-btn {
+            background: var(--warm-orange);
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-xl) var(--spacing-lg);
+        }
+
+        @media (max-width: 992px) {
+            .admin-nav { display: none; }
+        }
+
+        @media (max-width: 575px) {
+            .admin-header-content,
+            .admin-container { padding-left: 16px; padding-right: 16px; }
+            .admin-actions span { display: none; }
+        }
+
+        .admin-card {
+            background: white;
+            padding: var(--spacing-lg);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        @media (max-width: 575px) {
+            .admin-card { padding: 20px 16px; }
+        }
+
+        .admin-card h2 {
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .admin-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border-radius: 8px;
+            border: 2px solid transparent;
+            font-weight: 600;
+            font-size: 14px;
+            font-family: inherit;
+            cursor: pointer;
+            white-space: nowrap;
+            background: white;
+            color: var(--dark-text);
+            border-color: #e0e0e0;
+        }
+
+        .admin-btn:hover:not(:disabled) { border-color: var(--sky-blue); }
+        .admin-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .admin-btn.primary { background: var(--sky-blue); border-color: var(--sky-blue); color: white; }
+        .admin-btn.good { background: var(--success-green); border-color: var(--success-green); color: white; }
+        .admin-btn.danger { background: white; border-color: #f3c4c4; color: #c0392b; }
+        .admin-btn.danger.armed { background: #c0392b; border-color: #c0392b; color: white; }
+
+        .confirm-box {
+            background: #fdecea;
+            color: #7b1d1a;
+            border-radius: 8px;
+            padding: 12px 14px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* Summary */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .summary-tile {
+            background: white;
+            border-radius: 12px;
+            padding: 16px 18px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: 2px solid transparent;
+            text-align: left;
+            font-family: inherit;
+            cursor: pointer;
+            display: grid;
+            gap: 2px;
+        }
+
+        .summary-tile:hover { border-color: var(--sky-blue); }
+        .summary-tile[aria-pressed="true"] { border-color: var(--warm-orange); }
+
+        .summary-tile strong {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 28px;
+            line-height: 1.1;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .summary-tile span {
+            font-size: 14px;
+            color: var(--medium-gray);
+        }
+
+        .summary-tile.good strong { color: #1d7a45; }
+        .summary-tile.bad strong { color: #c0392b; }
+
+        /* Toolbar */
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .toolbar .directory-search { max-width: 360px; }
+        .toolbar-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+        /* Table */
+        .table-wrap { overflow-x: auto; }
+
+        .members-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .members-table th,
+        .members-table td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid var(--light-gray);
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+
+        .members-table th {
+            font-weight: 700;
+            color: var(--medium-gray);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .members-table td.num { font-variant-numeric: tabular-nums; }
+        .members-table tbody tr:hover { background: #fafbfc; }
+        .members-table .status-badge { font-size: 12px; padding: 4px 10px; }
+        .member-name { font-weight: 600; }
+        .empty-row { text-align: center; color: var(--medium-gray); padding: 32px !important; }
+
+        /* Export lists */
+        .export-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-md);
+        }
+
+        .export-card {
+            border: 2px solid var(--light-gray);
+            border-radius: 12px;
+            padding: 20px;
+            display: grid;
+            gap: 12px;
+            align-content: start;
+        }
+
+        .export-card h3 {
+            font-size: 18px;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .export-card h3 i { color: var(--warm-orange); }
+        .export-card .form-hint { margin: 0; }
+
+        .export-count {
+            margin: 0;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .export-count small {
+            font-family: 'Open Sans', sans-serif;
+            font-weight: 400;
+            font-size: 14px;
+            color: var(--medium-gray);
+        }
+
+        .export-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+        @media (max-width: 575px) {
+            .export-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Settings */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: var(--spacing-sm);
+            align-items: end;
+        }
+
+        @media (max-width: 768px) {
+            .settings-grid { grid-template-columns: 1fr; }
+        }
+
+        .settings-grid .form-group { margin-bottom: 0; }
+
+        /* Member dialog */
+        dialog.member-dialog {
+            margin: auto; /* styles.css zeroes all margins, which would pin the dialog top-left */
+            border: none;
+            border-radius: 14px;
+            padding: 0;
+            width: min(720px, calc(100vw - 32px));
+            max-height: calc(100vh - 48px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+
+        dialog.member-dialog::backdrop { background: rgba(20, 25, 35, 0.55); }
+
+        .dialog-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--light-gray);
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 1;
+        }
+
+        .dialog-head h2 { font-size: 22px; margin: 0 0 6px; }
+        .dialog-head p { margin: 0; color: var(--medium-gray); font-size: 14px; }
+
+        .dialog-close {
+            background: none;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            color: var(--medium-gray);
+            padding: 4px 8px;
+        }
+
+        .dialog-body {
+            padding: 20px 24px 28px;
+            display: grid;
+            gap: 24px;
+        }
+
+        .dialog-section {
+            display: grid;
+            gap: 12px;
+        }
+
+        .dialog-section h3 {
+            font-size: 16px;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dialog-section h3 i { color: var(--warm-orange); }
+
+        .fact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            background: var(--soft-cream);
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+
+        .fact-grid div { display: grid; gap: 2px; }
+        .fact-grid span { font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--medium-gray); font-weight: 700; }
+        .fact-grid strong { font-size: 15px; }
+
+        .dialog-body .form-group { margin-bottom: 0; }
+        .dialog-body .form-input { padding: 10px 12px; }
+        .dialog-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+
+        .tabs-inline { display: flex; gap: 6px; flex-wrap: wrap; }
+
+        .tabs-inline button {
+            border: 2px solid var(--light-gray);
+            background: white;
+            border-radius: 999px;
+            padding: 6px 14px;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .tabs-inline button[aria-pressed="true"] {
+            background: var(--dark-text);
+            border-color: var(--dark-text);
+            color: white;
+        }
+
+        .history-list { list-style: none; margin: 0; padding: 0; }
+
+        .history-list li {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 4px 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--light-gray);
+            font-size: 14px;
+        }
+
+        .history-list li small { grid-column: 1 / -1; color: var(--medium-gray); }
+        .history-list strong { font-variant-numeric: tabular-nums; }
+
+        .inline-msg { font-size: 14px; font-weight: 600; }
+        .inline-msg.success { color: #1d7a45; }
+        .inline-msg.error { color: #c0392b; }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 1000;
+            max-width: calc(100% - 32px);
+        }
+
+        .toast.success { background: #27ae60; }
+        .toast.error { background: #c0392b; }
+    </style>
+</head>
+<body>
+    <header class="admin-header">
+        <div class="admin-header-content">
+            <h1><i class="fas fa-users"></i> Members</h1>
+            <div class="admin-nav">
+                <a href="admin-events.html"><i class="fas fa-calendar-alt"></i> Events</a>
+                <a href="admin-sponsors.html"><i class="fas fa-handshake"></i> Sponsors</a>
+                <a href="admin-businesses.html"><i class="fas fa-store"></i> Businesses</a>
+                <a href="admin-members.html" class="active"><i class="fas fa-users"></i> Members</a>
+                <a href="admin-donations.html"><i class="fas fa-hand-holding-heart"></i> Donations</a>
+            </div>
+            <div class="admin-actions">
+                <span id="userEmail"></span>
+                <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="admin-container">
+        <div id="notAuthorized" class="admin-card hidden">
+            <h2><i class="fas fa-lock"></i> Admin access required</h2>
+            <p>This account is not an administrator. Please sign out and sign in with an admin account.</p>
+        </div>
+
+        <div id="adminContent" class="hidden">
+            <div class="summary-grid" id="summary" role="group" aria-label="Filter members by dues status"></div>
+
+            <div class="admin-card">
+                <div class="toolbar">
+                    <div class="directory-search">
+                        <i class="fas fa-search" aria-hidden="true"></i>
+                        <label for="memberSearch" class="hidden">Search members</label>
+                        <input type="search" id="memberSearch" class="form-input" placeholder="Search name, email, phone or business">
+                    </div>
+                    <div class="toolbar-actions">
+                        <button type="button" class="admin-btn primary" id="addMemberBtn"><i class="fas fa-user-plus"></i> Add member</button>
+                        <button type="button" class="admin-btn" id="copyEmailsBtn"><i class="fas fa-copy"></i> Copy emails</button>
+                        <button type="button" class="admin-btn" id="csvBtn"><i class="fas fa-file-download"></i> Download CSV</button>
+                    </div>
+                </div>
+                <p class="form-hint" id="listHint" style="margin: -8px 0 12px;"></p>
+                <div class="form-group hidden" id="emailsFallback" style="margin-bottom: 16px;">
+                    <label for="emailsText">Copy these email addresses (they're selected, press Ctrl+C or ⌘+C):</label>
+                    <textarea id="emailsText" class="form-input" rows="3" readonly></textarea>
+                </div>
+                <div class="table-wrap">
+                    <table class="members-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th><th>Email</th><th>Phone</th><th>Dues</th><th>Paid through</th><th>Autopay</th><th>Business</th><th><span class="hidden">Actions</span></th>
+                            </tr>
+                        </thead>
+                        <tbody id="membersBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="admin-card" id="exportLists">
+                <h2><i class="fas fa-file-export"></i> Export Lists</h2>
+                <div class="export-grid">
+                    <section class="export-card">
+                        <h3><i class="fas fa-exclamation-circle"></i> Unpaid dues</h3>
+                        <p class="export-count" id="unpaidCount"></p>
+                        <p class="form-hint">
+                            Members who are past due or whose autopay card failed (most overdue first), then members
+                            who have never paid. Includes phone numbers and an estimate of what's behind, for follow-up
+                            calls and reminders. Never-paid members show one period's dues to get started.
+                        </p>
+                        <div class="export-actions">
+                            <button type="button" class="admin-btn primary" data-list="unpaid" data-format="csv"><i class="fas fa-file-download"></i> Download CSV</button>
+                            <button type="button" class="admin-btn" data-list="unpaid" data-format="tsv"><i class="fas fa-table"></i> Copy for spreadsheet</button>
+                            <button type="button" class="admin-btn" data-list="unpaid" data-format="emails"><i class="fas fa-copy"></i> Copy emails</button>
+                        </div>
+                    </section>
+                    <section class="export-card">
+                        <h3><i class="fas fa-envelope-open-text"></i> Email list</h3>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label for="emailAudience">Who to include</label>
+                            <select id="emailAudience" class="form-input">
+                                <option value="all">All members</option>
+                                <option value="paid">Paid-up members only</option>
+                                <option value="unpaid">Unpaid members only</option>
+                            </select>
+                        </div>
+                        <p class="export-count" id="emailCount"></p>
+                        <p class="form-hint">
+                            Columns match what Mailchimp and Constant Contact import (Email Address, First Name, Last Name, Tags).
+                            Members who turned off email updates are left out.
+                        </p>
+                        <div class="export-actions">
+                            <button type="button" class="admin-btn primary" data-list="email" data-format="csv"><i class="fas fa-file-download"></i> Download CSV</button>
+                            <button type="button" class="admin-btn" data-list="email" data-format="tsv"><i class="fas fa-table"></i> Copy for spreadsheet</button>
+                            <button type="button" class="admin-btn" data-list="email" data-format="emails"><i class="fas fa-copy"></i> Copy emails</button>
+                        </div>
+                    </section>
+                </div>
+                <div class="form-group hidden" id="exportFallback" style="margin: 16px 0 0;">
+                    <label for="exportText">Your browser blocked copying. The list is selected below, press Ctrl+C (or ⌘+C) to copy it:</label>
+                    <textarea id="exportText" class="form-input" rows="6" readonly></textarea>
+                </div>
+                <p class="inline-msg hidden" id="exportMsg" role="status"></p>
+            </div>
+
+            <div class="admin-card" id="remindersCard">
+                <h2><i class="fas fa-bell"></i> Dues Reminders</h2>
+                <p class="form-hint" style="margin-bottom: 12px;">
+                    Every morning the site emails members who pay manually: a week before their dues run out, right after,
+                    and once more 30 days later. Each reminder is sent once. Members on autopay get Stripe's own renewal and
+                    failed-card emails instead. New business listings also email the admins.
+                </p>
+                <div class="export-actions" style="margin-bottom: 8px;">
+                    <button type="button" class="admin-btn primary" id="runRemindersBtn"><i class="fas fa-paper-plane"></i> Send today's reminders now</button>
+                </div>
+                <p class="inline-msg hidden" id="remindersMsg" role="status"></p>
+                <h3 style="font-size: 16px; margin: 20px 0 8px;">Recent emails</h3>
+                <div class="table-wrap">
+                    <table class="members-table">
+                        <thead><tr><th>Date</th><th>To</th><th>Subject</th><th>Status</th></tr></thead>
+                        <tbody id="outboxBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="admin-card">
+                <h2><i class="fas fa-cog"></i> Dues Settings</h2>
+                <form id="duesForm" class="settings-grid">
+                    <div class="form-group">
+                        <label for="duesAmount">Amount (USD)</label>
+                        <input type="number" id="duesAmount" class="form-input" min="1" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="duesInterval">Billed every</label>
+                        <select id="duesInterval" class="form-input">
+                            <option value="month">Month</option>
+                            <option value="week">Week</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="admin-btn primary" id="duesSaveBtn" style="height: 52px;"><i class="fas fa-save"></i> Save</button>
+                </form>
+                <p class="form-hint" id="duesHint" style="margin-top: 12px;">
+                    Changes apply to new payments and new autopay sign-ups. Members already on autopay keep their current
+                    amount and schedule until they cancel and sign up again.
+                </p>
+                <p class="inline-msg hidden" id="duesConfirm"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Member detail -->
+    <dialog class="member-dialog" id="memberDialog" aria-labelledby="dlgName">
+        <div class="dialog-head">
+            <div>
+                <h2 id="dlgName"></h2>
+                <p id="dlgSub"></p>
+            </div>
+            <button type="button" class="dialog-close" id="dlgClose" aria-label="Close">&times;</button>
+        </div>
+        <div class="dialog-body">
+            <section class="dialog-section">
+                <h3><i class="fas fa-receipt"></i> Dues</h3>
+                <div class="fact-grid" id="dlgFacts"></div>
+            </section>
+
+            <section class="dialog-section">
+                <h3><i class="fas fa-hand-holding-usd"></i> Update dues</h3>
+                <div class="tabs-inline" role="group" aria-label="Update type">
+                    <button type="button" data-mode="pay" aria-pressed="true">Record cash / check payment</button>
+                    <button type="button" data-mode="date" aria-pressed="false">Set paid-through date</button>
+                </div>
+
+                <form id="payForm" class="dialog-section" novalidate>
+                    <div class="dialog-row">
+                        <div class="form-group">
+                            <label for="payPeriods">Time paid for</label>
+                            <select id="payPeriods" class="form-input"></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="payAmount">Amount received ($)</label>
+                            <input type="number" id="payAmount" class="form-input" min="0" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label for="payMethod">Paid by</label>
+                            <select id="payMethod" class="form-input">
+                                <option value="cash">Cash</option>
+                                <option value="check">Check</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="payNote">Note (optional, the member can see it)</label>
+                        <input type="text" id="payNote" class="form-input" maxlength="300" placeholder="e.g. Check #1042, paid at October meeting">
+                    </div>
+                    <p class="form-hint" id="payHint"></p>
+                    <div><button type="submit" class="admin-btn good" id="paySubmit"><i class="fas fa-check"></i> Record payment</button></div>
+                    <p class="inline-msg hidden" id="payMsg"></p>
+                </form>
+
+                <form id="dateForm" class="dialog-section hidden" novalidate>
+                    <div class="dialog-row">
+                        <div class="form-group">
+                            <label for="dateValue">Paid through</label>
+                            <input type="date" id="dateValue" class="form-input">
+                        </div>
+                        <div class="form-group" style="grid-column: span 2;">
+                            <label for="dateNote">Reason (optional, the member can see it)</label>
+                            <input type="text" id="dateNote" class="form-input" maxlength="300" placeholder="e.g. Board member, dues waived for 2026">
+                        </div>
+                    </div>
+                    <p class="form-hint">Use this for waived dues or to fix a mistake. It replaces the current date, even if it's earlier.</p>
+                    <div><button type="submit" class="admin-btn primary" id="dateSubmit"><i class="fas fa-calendar-check"></i> Save date</button></div>
+                    <p class="inline-msg hidden" id="dateMsg"></p>
+                </form>
+            </section>
+
+            <section class="dialog-section">
+                <h3><i class="fas fa-address-card"></i> Contact details</h3>
+                <form id="contactForm" class="dialog-section" novalidate>
+                    <div class="dialog-row">
+                        <div class="form-group">
+                            <label for="cName">Name</label>
+                            <input type="text" id="cName" class="form-input" maxlength="100">
+                        </div>
+                        <div class="form-group">
+                            <label for="cPhone">Phone</label>
+                            <input type="tel" id="cPhone" class="form-input" maxlength="30">
+                        </div>
+                    </div>
+                    <p class="form-hint" id="cEmail"></p>
+                    <div><button type="submit" class="admin-btn" id="contactSubmit"><i class="fas fa-save"></i> Save contact details</button></div>
+                    <p class="inline-msg hidden" id="contactMsg"></p>
+                </form>
+            </section>
+
+            <section class="dialog-section">
+                <h3><i class="fas fa-user-shield"></i> Account</h3>
+                <form id="emailForm" class="dialog-row" style="align-items: end;" novalidate>
+                    <div class="form-group">
+                        <label for="newEmail">Change login email</label>
+                        <input type="email" id="newEmail" class="form-input" maxlength="200" placeholder="new@example.com">
+                    </div>
+                    <div><button type="submit" class="admin-btn" id="emailSubmit"><i class="fas fa-at"></i> Change email</button></div>
+                </form>
+                <label class="checkbox-label" style="font-size: 14px;">
+                    <input type="checkbox" id="emailInvite">
+                    <span>Email them a link to choose a password</span>
+                </label>
+                <p class="form-hint" id="emailHint">The member signs in with the new address from now on. Their Stripe receipts go there too.</p>
+                <p class="inline-msg hidden" id="emailMsg"></p>
+                <div class="confirm-box hidden" id="removeConfirm">
+                    <strong>Remove this member?</strong> This cancels any autopay in Stripe right away and deletes their login,
+                    business listing, logo and payment history on the website. Stripe keeps its own payment records.
+                    This can't be undone.
+                </div>
+                <div><button type="button" class="admin-btn danger" id="removeBtn"><i class="fas fa-user-times"></i> Remove member</button></div>
+                <p class="inline-msg hidden" id="removeMsg"></p>
+            </section>
+
+            <section class="dialog-section">
+                <h3><i class="fas fa-store"></i> Business listing</h3>
+                <p id="dlgBusiness"></p>
+                <div><button type="button" class="admin-btn" id="editListingBtn"><i class="fas fa-edit"></i> Add listing for this member</button></div>
+            </section>
+
+            <section class="dialog-section">
+                <h3><i class="fas fa-history"></i> Payment history</h3>
+                <ul class="history-list" id="dlgHistory"></ul>
+            </section>
+        </div>
+    </dialog>
+
+    <!-- Add a member (signed up in person) -->
+    <dialog class="member-dialog" id="addDialog" aria-labelledby="addTitle">
+        <div class="dialog-head">
+            <div>
+                <h2 id="addTitle">Add a member</h2>
+                <p>For people who join in person, for example paying dues in cash.</p>
+            </div>
+            <button type="button" class="dialog-close" id="addClose" aria-label="Close">&times;</button>
+        </div>
+        <form class="dialog-body" id="addForm" novalidate>
+            <div class="dialog-row">
+                <div class="form-group">
+                    <label for="addName">Name <span class="required">*</span></label>
+                    <input type="text" id="addName" class="form-input" maxlength="100">
+                </div>
+                <div class="form-group">
+                    <label for="addPhone">Phone</label>
+                    <input type="tel" id="addPhone" class="form-input" maxlength="30">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="addEmail">Email (optional)</label>
+                <input type="email" id="addEmail" class="form-input" maxlength="200" placeholder="Leave blank if they don't use email">
+                <span class="form-hint">With an email they get a website login. Without one they're still a member and can be listed in the directory; you manage their dues and listing here.</span>
+            </div>
+            <label class="checkbox-label hidden" id="addInviteRow" style="font-size: 14px;">
+                <input type="checkbox" id="addInvite" checked>
+                <span>Email them a link to choose a password</span>
+            </label>
+            <div class="dialog-row">
+                <div class="form-group">
+                    <label for="addType">I am a</label>
+                    <select id="addType" class="form-input"><option value="">Not answered</option></select>
+                </div>
+                <div class="form-group">
+                    <label for="addInterests">Areas of interest</label>
+                    <input type="text" id="addInterests" class="form-input" maxlength="500">
+                </div>
+            </div>
+            <div><button type="submit" class="admin-btn good" id="addSubmit"><i class="fas fa-user-plus"></i> Add member</button></div>
+            <p class="inline-msg hidden" id="addMsg"></p>
+        </form>
+    </dialog>
+
+    <!-- Add or edit a member's business listing -->
+    <dialog class="member-dialog" id="listingDialog" aria-labelledby="listingTitle">
+        <div class="dialog-head">
+            <div>
+                <h2 id="listingTitle">Business listing</h2>
+                <p id="listingSub">Saved as approved. It shows in the directory while the member's dues are current.</p>
+            </div>
+            <button type="button" class="dialog-close" id="listingClose" aria-label="Close">&times;</button>
+        </div>
+        <form class="dialog-body" id="listingForm" novalidate>
+            <div class="dialog-row">
+                <div class="form-group">
+                    <label for="lName">Business name <span class="required">*</span></label>
+                    <input type="text" id="lName" class="form-input" maxlength="100">
+                </div>
+                <div class="form-group">
+                    <label for="lOwner">Owner <span class="required">*</span></label>
+                    <input type="text" id="lOwner" class="form-input" maxlength="100">
+                </div>
+                <div class="form-group">
+                    <label for="lCategory">Type of business</label>
+                    <select id="lCategory" class="form-input"></select>
+                </div>
+            </div>
+            <div class="dialog-row">
+                <div class="form-group">
+                    <label for="lEmail">Business email</label>
+                    <input type="email" id="lEmail" class="form-input" maxlength="200">
+                </div>
+                <div class="form-group">
+                    <label for="lPhone">Business phone</label>
+                    <input type="tel" id="lPhone" class="form-input" maxlength="30">
+                </div>
+                <div class="form-group">
+                    <label for="lWebsite">Website</label>
+                    <input type="text" id="lWebsite" class="form-input" maxlength="300" placeholder="example.com">
+                </div>
+            </div>
+            <div class="dialog-row">
+                <div class="form-group" style="grid-column: span 2;">
+                    <label for="lStreet">Street</label>
+                    <input type="text" id="lStreet" class="form-input" maxlength="150">
+                </div>
+                <div class="form-group">
+                    <label for="lCity">City</label>
+                    <input type="text" id="lCity" class="form-input" maxlength="80">
+                </div>
+                <div class="form-group">
+                    <label for="lState">State</label>
+                    <input type="text" id="lState" class="form-input" maxlength="30">
+                </div>
+                <div class="form-group">
+                    <label for="lZip">ZIP</label>
+                    <input type="text" id="lZip" class="form-input" maxlength="10">
+                </div>
+            </div>
+            <label class="checkbox-label" style="font-size: 14px;">
+                <input type="checkbox" id="lHideStreet">
+                <span>Hide the street address (directory shows city and state only)</span>
+            </label>
+            <div class="form-group">
+                <label for="lDescription">About the business</label>
+                <textarea id="lDescription" class="form-input" rows="3" maxlength="1000"></textarea>
+            </div>
+            <div class="dialog-row">
+                <div class="form-group">
+                    <label for="lEstMonth">Established month</label>
+                    <select id="lEstMonth" class="form-input"><option value="">Month (optional)</option><option value="1">January</option><option value="2">February</option><option value="3">March</option><option value="4">April</option><option value="5">May</option><option value="6">June</option><option value="7">July</option><option value="8">August</option><option value="9">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option></select>
+                </div>
+                <div class="form-group">
+                    <label for="lEstYear">Established year</label>
+                    <input type="number" id="lEstYear" class="form-input" min="1800" step="1">
+                </div>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label for="lHoursNote">Hours</label>
+                    <input type="text" id="lHoursNote" class="form-input" maxlength="120" placeholder="e.g. Mon–Fri 9–5, Saturdays by appointment">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="lLogo">Logo <span id="lLogoReq" class="required">*</span></label>
+                <div class="logo-upload">
+                    <div class="logo-upload-preview" id="lLogoPreview"><i class="fas fa-image"></i></div>
+                    <div>
+                        <input type="file" id="lLogo" accept="image/png,image/jpeg,image/webp,image/gif">
+                        <span class="form-hint">PNG, JPG, WEBP or GIF, up to 2 MB.</span>
+                    </div>
+                </div>
+            </div>
+            <div><button type="submit" class="admin-btn good" id="listingSubmit"><i class="fas fa-check"></i> Save and approve listing</button></div>
+            <p class="inline-msg hidden" id="listingMsg"></p>
+        </form>
+    </dialog>
+
+    <script type="module">
+        import { auth, db, functions, getDuesSettings, isAdminUser, escapeHtml, formatDate, formatMoney, toDate, isPaidUp, getCategory, memberTypeLabel, fillMemberTypeSelect, BUSINESS_CATEGORIES } from './member-common.js';
+        import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { collection, getDocs, doc, getDoc, updateDoc, setDoc, query, orderBy, limit, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { httpsCallable } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js';
+
+        const $ = (id) => document.getElementById(id);
+        const show = (el, visible = true) => el.classList.toggle('hidden', !visible);
+        const adminUpdateDues = httpsCallable(functions, 'adminUpdateDues');
+
+        let members = [];
+        let businesses = {};
+        let dues = { amountCents: 2500, interval: 'month' };
+        let filter = 'all';
+        let openId = null;
+
+        function toast(message, type = 'success') {
+            const el = document.createElement('div');
+            el.className = `toast ${type}`;
+            el.setAttribute('role', 'status');
+            el.textContent = message;
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 3500);
+        }
+
+        function inlineMsg(el, text, type) {
+            el.textContent = text;
+            el.className = `inline-msg ${type}`;
+        }
+
+        // ---------- Auth ----------
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.href = 'admin-login.html';
+                return;
+            }
+            $('userEmail').textContent = user.email;
+            if (!(await isAdminUser(user))) {
+                show($('notAuthorized'));
+                return;
+            }
+            show($('adminContent'));
+            loadAll();
+            loadOutbox();
+        });
+
+        $('logoutBtn').addEventListener('click', async () => {
+            await signOut(auth);
+            window.location.href = 'admin-login.html';
+        });
+
+        // ---------- Data ----------
+        async function loadAll() {
+            try {
+                const [memberSnap, bizSnap, duesSettings] = await Promise.all([
+                    getDocs(collection(db, 'members')),
+                    getDocs(collection(db, 'businesses')),
+                    getDuesSettings()
+                ]);
+                members = memberSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
+                businesses = Object.fromEntries(bizSnap.docs.map((d) => [d.id, d.data()]));
+                dues = duesSettings;
+                $('duesAmount').value = (dues.amountCents / 100).toFixed(2);
+                $('duesInterval').value = dues.interval;
+                render();
+            } catch (err) {
+                console.error(err);
+                toast('Failed to load members', 'error');
+            }
+        }
+
+        async function refreshMember(id) {
+            const snap = await getDoc(doc(db, 'members', id));
+            const i = members.findIndex((m) => m.id === id);
+            if (snap.exists() && i >= 0) members[i] = { id, ...snap.data() };
+            render();
+            if (openId === id) fillDialog(id);
+        }
+
+        function statusOf(m) {
+            if (m.subscriptionStatus === 'past_due') return { key: 'due', label: 'Card failed', cls: 'bad' };
+            if (isPaidUp(m)) return { key: 'paid', label: 'Paid up', cls: 'good' };
+            if (toDate(m.paidThrough)) return { key: 'due', label: 'Past due', cls: 'bad' };
+            return { key: 'never', label: 'Never paid', cls: 'neutral' };
+        }
+
+        function bizStatus(id) {
+            const b = businesses[id];
+            if (!b) return { label: '—', cls: '' };
+            if (b.status === 'approved') return { label: 'Approved', cls: 'good' };
+            if (b.status === 'pending') return { label: 'Pending review', cls: 'warn' };
+            return { label: 'Changes requested', cls: 'bad' };
+        }
+
+        const FILTERS = [
+            { id: 'all', label: 'All members', test: () => true },
+            { id: 'paid', label: 'Paid up', cls: 'good', test: (m) => statusOf(m).key === 'paid' },
+            { id: 'due', label: 'Past due', cls: 'bad', test: (m) => statusOf(m).key === 'due' },
+            { id: 'never', label: 'Never paid', test: (m) => statusOf(m).key === 'never' },
+            { id: 'autopay', label: 'On autopay', test: (m) => !!m.autopay }
+        ];
+
+        function visibleMembers() {
+            const term = $('memberSearch').value.trim().toLowerCase();
+            const f = FILTERS.find((x) => x.id === filter);
+            return members
+                .filter(f.test)
+                .filter((m) => !term || [m.name, m.email, m.phone, businesses[m.id]?.name]
+                    .some((v) => (v || '').toLowerCase().includes(term)))
+                .sort((a, b) => (a.name || a.email || '').localeCompare(b.name || b.email || ''));
+        }
+
+        function render() {
+            renderExportCounts();
+            $('summary').innerHTML = FILTERS.map((f) => `
+                <button type="button" class="summary-tile ${f.cls || ''}" data-filter="${f.id}" aria-pressed="${filter === f.id}">
+                    <strong>${members.filter(f.test).length}</strong><span>${f.label}</span>
+                </button>`).join('');
+
+            const rows = visibleMembers();
+            $('listHint').textContent = `Showing ${rows.length} of ${members.length} members. "Copy emails" and "Download CSV" use this list.`;
+            const body = $('membersBody');
+            if (!rows.length) {
+                body.innerHTML = '<tr><td colspan="8" class="empty-row">No members match.</td></tr>';
+                return;
+            }
+            body.innerHTML = rows.map((m) => {
+                const s = statusOf(m);
+                const b = bizStatus(m.id);
+                const biz = businesses[m.id];
+                return `
+                    <tr>
+                        <td class="member-name">${escapeHtml(m.name || '(no name)')}</td>
+                        <td><a href="mailto:${escapeHtml(m.email)}">${escapeHtml(m.email)}</a></td>
+                        <td>${escapeHtml(m.phone || '')}</td>
+                        <td><span class="status-badge ${s.cls}">${s.label}</span></td>
+                        <td class="num">${escapeHtml(formatDate(m.paidThrough) || '—')}</td>
+                        <td>${m.autopay ? '<i class="fas fa-check" style="color: var(--success-green);" aria-label="On autopay"></i>' : ''}</td>
+                        <td>${biz ? `${escapeHtml(biz.name)} <span class="status-badge ${b.cls}">${b.label}</span>` : '—'}</td>
+                        <td><button type="button" class="admin-btn" data-open="${escapeHtml(m.id)}"><i class="fas fa-user-edit"></i> Manage</button></td>
+                    </tr>`;
+            }).join('');
+        }
+
+        $('summary').addEventListener('click', (e) => {
+            const tile = e.target.closest('[data-filter]');
+            if (!tile) return;
+            filter = tile.dataset.filter;
+            render();
+        });
+        $('memberSearch').addEventListener('input', render);
+        $('membersBody').addEventListener('click', (e) => {
+            const btn = e.target.closest('[data-open]');
+            if (btn) openMember(btn.dataset.open);
+        });
+
+        // ---------- Copy emails / CSV ----------
+        $('copyEmailsBtn').addEventListener('click', async () => {
+            const emails = visibleMembers().map((m) => m.email).filter(Boolean);
+            if (!emails.length) { toast('No members in this list', 'error'); return; }
+            const text = emails.join(', ');
+            try {
+                await navigator.clipboard.writeText(text);
+                toast(`Copied ${emails.length} email address${emails.length === 1 ? '' : 'es'}. Paste them into the BCC line.`);
+            } catch {
+                show($('emailsFallback'));
+                $('emailsText').value = text;
+                $('emailsText').focus();
+                $('emailsText').select();
+            }
+        });
+
+        $('csvBtn').addEventListener('click', () => {
+            const rows = visibleMembers();
+            const cell = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+            const lines = [['Name', 'Email', 'Phone', 'I am a', 'Interests', 'Dues status', 'Paid through', 'Autopay', 'Business', 'Listing status']]
+                .concat(rows.map((m) => [
+                    m.name, m.email, m.phone, memberTypeLabel(m.memberType), m.interests || '', statusOf(m).label, formatDate(m.paidThrough),
+                    m.autopay ? 'Yes' : 'No', businesses[m.id]?.name || '', businesses[m.id] ? bizStatus(m.id).label : ''
+                ]))
+                .map((r) => r.map(cell).join(','));
+            const blob = new Blob([lines.join('\r\n')], { type: 'text/csv' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `members-${filter}-${new Date().toISOString().slice(0, 10)}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+        });
+
+        // ---------- Export lists ----------
+        const DAY_MS = 86400000;
+        const periodDays = () => (dues.interval === 'week' ? 7 : 30);
+
+        function splitName(name) {
+            const parts = (name || '').trim().split(/\s+/);
+            return { first: parts[0] || '', last: parts.slice(1).join(' ') };
+        }
+
+        // How far behind a member is. Lapsed members are estimated from when their dues ran out. Never-paid
+        // members aren't counted as owing back dues (they may have joined before online dues existed); they show
+        // one period's dues, which is what it takes to get started.
+        function overdue(m) {
+            const lapsed = toDate(m.paidThrough);
+            if (!lapsed) return { never: true, days: null, periods: null, amountCents: dues.amountCents };
+            const days = Math.max(0, Math.floor((Date.now() - lapsed.getTime()) / DAY_MS));
+            const periods = Math.max(1, Math.ceil(days / periodDays()));
+            return { never: false, days, periods, amountCents: periods * dues.amountCents };
+        }
+
+        // Past due first (most overdue first), then never paid (longest-standing members first).
+        function unpaidMembers() {
+            return members
+                .filter((m) => ['due', 'never'].includes(statusOf(m).key))
+                .map((m) => ({ m, o: overdue(m) }))
+                .sort((a, b) => (a.o.never - b.o.never)
+                    || (b.o.days ?? 0) - (a.o.days ?? 0)
+                    || (toDate(a.m.createdAt)?.getTime() || 0) - (toDate(b.m.createdAt)?.getTime() || 0));
+        }
+
+        function emailMembers() {
+            const audience = $('emailAudience').value;
+            return members
+                .filter((m) => m.email && m.emailUpdates !== false)
+                .filter((m) => audience === 'all' || (audience === 'paid' ? statusOf(m).key === 'paid' : statusOf(m).key !== 'paid'))
+                .sort((a, b) => (a.name || a.email).localeCompare(b.name || b.email));
+        }
+
+        function buildList(list) {
+            if (list === 'unpaid') {
+                const rows = unpaidMembers();
+                return {
+                    name: 'unpaid-dues',
+                    emails: rows.map(({ m }) => m.email).filter(Boolean),
+                    table: [['Name', 'Email', 'Phone', 'Status', 'Paid through', 'Days overdue', `${dues.interval === 'week' ? 'Weeks' : 'Months'} behind`, 'Est. amount behind', 'Business']]
+                        .concat(rows.map(({ m, o }) => [
+                            m.name || '', m.email || '', m.phone || '', statusOf(m).label,
+                            formatDate(m.paidThrough) || 'Never paid', o.never ? '' : String(o.days), o.never ? '' : String(o.periods),
+                            formatMoney(o.amountCents), businesses[m.id]?.name || ''
+                        ]))
+                };
+            }
+            const rows = emailMembers();
+            return {
+                name: `email-list-${$('emailAudience').value}`,
+                emails: rows.map((m) => m.email),
+                table: [['Email Address', 'First Name', 'Last Name', 'Tags']]
+                    .concat(rows.map((m) => {
+                        const { first, last } = splitName(m.name);
+                        const tags = ['Member', statusOf(m).key === 'paid' ? 'Dues Paid' : 'Dues Unpaid', businesses[m.id]?.status === 'approved' ? 'Business Owner' : '']
+                            .filter(Boolean).join(', ');
+                        return [m.email, first, last, tags];
+                    }))
+            };
+        }
+
+        function renderExportCounts() {
+            const unpaid = unpaidMembers();
+            const behind = unpaid.reduce((sum, { o }) => sum + o.amountCents, 0);
+            $('unpaidCount').innerHTML = unpaid.length
+                ? `${unpaid.length} member${unpaid.length === 1 ? '' : 's'} <small>· about ${escapeHtml(formatMoney(behind))} behind in total</small>`
+                : 'Everyone is paid up.';
+            const list = emailMembers();
+            const optedOut = members.filter((m) => m.emailUpdates === false).length;
+            $('emailCount').innerHTML = `${list.length} address${list.length === 1 ? '' : 'es'}${optedOut ? ` <small>· ${optedOut} opted out of email updates</small>` : ''}`;
+            document.querySelectorAll('[data-list="unpaid"]').forEach((b) => { b.disabled = !unpaid.length; });
+            document.querySelectorAll('[data-list="email"]').forEach((b) => { b.disabled = !list.length; });
+        }
+        $('emailAudience').addEventListener('change', renderExportCounts);
+
+        async function copyOrShow(text, doneMessage) {
+            show($('exportFallback'), false);
+            try {
+                await navigator.clipboard.writeText(text);
+                inlineMsg($('exportMsg'), doneMessage, 'success');
+            } catch {
+                show($('exportFallback'));
+                $('exportText').value = text;
+                $('exportText').focus();
+                $('exportText').select();
+                $('exportMsg').classList.add('hidden');
+            }
+        }
+
+        function downloadFile(filename, text, type) {
+            const blob = new Blob([text], { type });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+        }
+
+        $('exportLists').addEventListener('click', async (e) => {
+            const btn = e.target.closest('[data-list]');
+            if (!btn) return;
+            const list = buildList(btn.dataset.list);
+            const count = list.table.length - 1;
+            const stamp = new Date().toISOString().slice(0, 10);
+            if (btn.dataset.format === 'csv') {
+                const cell = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+                // BOM so Excel opens accented names correctly.
+                downloadFile(`${list.name}-${stamp}.csv`, '\ufeff' + list.table.map((r) => r.map(cell).join(',')).join('\r\n'), 'text/csv');
+                inlineMsg($('exportMsg'), `Downloaded ${count} row${count === 1 ? '' : 's'}.`, 'success');
+            } else if (btn.dataset.format === 'tsv') {
+                const clean = (v) => String(v ?? '').replace(/[\t\r\n]+/g, ' ');
+                await copyOrShow(list.table.map((r) => r.map(clean).join('\t')).join('\n'),
+                    `Copied ${count} row${count === 1 ? '' : 's'}. Paste into Excel or Google Sheets.`);
+            } else {
+                await copyOrShow(list.emails.join(', '),
+                    `Copied ${list.emails.length} email address${list.emails.length === 1 ? '' : 'es'}. Paste them into the BCC line.`);
+            }
+        });
+
+        // ---------- Dues reminders ----------
+        const OUTBOX_STATUS = {
+            sent: '<span class="status-badge good">Sent</span>',
+            logged: '<span class="status-badge neutral" title="No email provider is connected yet, so this was recorded but not sent.">Logged only</span>',
+            failed: '<span class="status-badge bad">Failed</span>'
+        };
+
+        async function loadOutbox() {
+            try {
+                const snap = await getDocs(query(collection(db, 'outbox'), orderBy('createdAt', 'desc'), limit(25)));
+                $('outboxBody').innerHTML = snap.empty
+                    ? '<tr><td colspan="4" class="empty-row">No emails yet.</td></tr>'
+                    : snap.docs.map((d) => {
+                        const m = d.data();
+                        return `<tr>
+                            <td class="num">${escapeHtml(formatDate(m.createdAt))}</td>
+                            <td>${escapeHtml((m.to || []).join(', '))}</td>
+                            <td style="white-space: normal;">${escapeHtml(m.subject)}${m.error ? `<br><small style="color:#c0392b;">${escapeHtml(m.error)}</small>` : ''}</td>
+                            <td>${OUTBOX_STATUS[m.status] || escapeHtml(m.status)}</td>
+                        </tr>`;
+                    }).join('');
+            } catch (err) {
+                console.error(err);
+                $('outboxBody').innerHTML = '<tr><td colspan="4" class="empty-row">Could not load emails.</td></tr>';
+            }
+        }
+
+        $('runRemindersBtn').addEventListener('click', async () => {
+            const btn = $('runRemindersBtn');
+            btn.disabled = true;
+            try {
+                const { data } = await httpsCallable(functions, 'adminSendReminders')({});
+                const done = data.sent + data.logged;
+                inlineMsg($('remindersMsg'), done
+                    ? `${done} reminder${done === 1 ? '' : 's'} ${data.sent ? 'sent' : 'recorded (no email provider connected yet)'}${data.failed ? `, ${data.failed} failed` : ''}.`
+                    : 'No one needs a reminder today.', data.failed ? 'error' : 'success');
+                await Promise.all([loadOutbox(), loadAll()]);
+            } catch (err) {
+                console.error(err);
+                inlineMsg($('remindersMsg'), err.message || 'Could not run reminders.', 'error');
+            }
+            btn.disabled = false;
+        });
+
+        // ---------- Member dialog ----------
+        const dialog = $('memberDialog');
+        $('dlgClose').addEventListener('click', () => dialog.close());
+        dialog.addEventListener('close', () => { openId = null; });
+
+        function unit(n) {
+            return `${n} ${dues.interval === 'week' ? 'week' : 'month'}${n === 1 ? '' : 's'}`;
+        }
+
+        function openMember(id) {
+            openId = id;
+            ['payMsg', 'dateMsg', 'contactMsg', 'emailMsg', 'removeMsg', 'removeConfirm'].forEach((x) => $(x).classList.add('hidden'));
+            $('newEmail').value = '';
+            $('removeBtn').classList.remove('armed');
+            $('removeBtn').innerHTML = '<i class="fas fa-user-times"></i> Remove member';
+            $('payForm').reset();
+            $('dateForm').reset();
+            setMode('pay');
+
+            $('payPeriods').innerHTML = Array.from({ length: 12 }, (_, i) => i + 1)
+                .map((n) => `<option value="${n}">${unit(n)}</option>`).join('');
+            $('payAmount').value = (dues.amountCents / 100).toFixed(2);
+            $('payAmount').dataset.touched = '';
+
+            fillDialog(id);
+            if (!dialog.open) dialog.showModal();
+        }
+
+        async function fillDialog(id) {
+            const m = members.find((x) => x.id === id);
+            if (!m) return;
+            const s = statusOf(m);
+            $('dlgName').textContent = m.name || '(no name)';
+            $('dlgSub').textContent = `${m.email || 'No email (no website login)'}${m.phone ? ' · ' + m.phone : ''} · member since ${formatDate(m.createdAt) || 'unknown'}${m.addedBy ? ' · added by an admin' : ''}`;
+            $('emailHint').textContent = m.email
+                ? 'The member signs in with the new address from now on. Their Stripe receipts go there too.'
+                : 'Adding an email gives this member a website login, so they can pay online and update their listing.';
+            $('emailInvite').checked = !m.email;
+            $('editListingBtn').innerHTML = businesses[id]
+                ? '<i class="fas fa-edit"></i> Edit listing'
+                : '<i class="fas fa-plus"></i> Add listing for this member';
+            $('dlgFacts').innerHTML = `
+                <div><span>Status</span><strong><span class="status-badge ${s.cls}">${s.label}</span></strong></div>
+                <div><span>Paid through</span><strong>${escapeHtml(formatDate(m.paidThrough) || 'Never paid')}</strong></div>
+                <div><span>Autopay</span><strong>${m.autopay ? 'On' : (m.subscriptionStatus === 'past_due' ? 'Card failed' : 'Off')}</strong></div>
+                <div><span>Email updates</span><strong>${m.emailUpdates === false ? 'Opted out' : 'Yes'}</strong></div>
+                <div><span>I am a</span><strong>${escapeHtml(memberTypeLabel(m.memberType) || 'Not answered')}</strong></div>
+                ${m.interests ? `<div style="grid-column: 1 / -1;"><span>Interests</span><strong style="font-weight: 400;">${escapeHtml(m.interests)}</strong></div>` : ''}`;
+            $('cName').value = m.name || '';
+            $('cPhone').value = m.phone || '';
+            $('cEmail').textContent = m.email
+                ? `Email: ${m.email}. Members sign in with this address.`
+                : 'No email on file, so no website login. Add one under Account to give them a login.';
+
+            const current = toDate(m.paidThrough);
+            $('dateValue').value = (current || new Date()).toISOString().slice(0, 10);
+            updatePayHint();
+
+            const payBtn = $('paySubmit');
+            payBtn.disabled = !!m.autopay;
+            $('payHint').textContent = m.autopay
+                ? 'This member is on autopay. Recording a payment here would not stop their card from being charged.'
+                : '';
+
+            const b = businesses[id];
+            $('dlgBusiness').innerHTML = b
+                ? `<strong>${escapeHtml(b.name)}</strong> (${escapeHtml(getCategory(b.category).label)}) · <span class="status-badge ${bizStatus(id).cls}">${bizStatus(id).label}</span> · <a href="admin-businesses.html">Open business listings</a>`
+                : 'No business listing submitted.';
+
+            const list = $('dlgHistory');
+            list.innerHTML = '<li><span>Loading…</span></li>';
+            try {
+                const snap = await getDocs(query(collection(db, 'members', id, 'payments'), orderBy('createdAt', 'desc')));
+                if (openId !== id) return;
+                list.innerHTML = snap.empty ? '<li><span>No payments yet.</span></li>' : snap.docs.map((d) => {
+                    const p = d.data();
+                    const span = `${p.periods} ${p.interval === 'week' ? 'week' : 'month'}${p.periods === 1 ? '' : 's'}`;
+                    const what = {
+                        prepay: `Paid online for ${span}`,
+                        autopay: 'Autopay charge',
+                        manual: `Paid by ${p.method || 'cash'} for ${span}`,
+                        adjustment: 'Paid-through date set by admin'
+                    }[p.type] || 'Payment';
+                    const extra = [p.note, p.recordedBy ? `recorded by ${p.recordedBy}` : '', p.paidThroughAfter ? `paid through ${formatDate(p.paidThroughAfter)}` : '']
+                        .filter(Boolean).join(' · ');
+                    const flags = [
+                        p.refundStatus === 'full' ? `Refunded${p.timeReversed ? `, paid-through moved back to ${formatDate(p.paidThroughAfterRefund)}` : ''}` : '',
+                        p.refundStatus === 'partial' ? `Partly refunded (${formatMoney(p.refundedCents || 0)}); adjust the paid-through date if needed` : '',
+                        p.disputeStatus ? `Disputed by cardholder (${p.disputeStatus.replace(/_/g, ' ')})` : ''
+                    ].filter(Boolean).join(' · ');
+                    return `<li><span>${escapeHtml(formatDate(p.createdAt))} · ${escapeHtml(what)}</span><strong>${escapeHtml(formatMoney(p.amountCents || 0))}</strong>${extra || flags ? `<small>${escapeHtml([flags, extra].filter(Boolean).join(' · '))}</small>` : ''}</li>`;
+                }).join('');
+            } catch (err) {
+                console.error(err);
+                list.innerHTML = '<li><span>Could not load payment history.</span></li>';
+            }
+        }
+
+        function updatePayHint() {
+            const m = members.find((x) => x.id === openId);
+            if (!m || m.autopay) return;
+            const n = Number($('payPeriods').value) || 1;
+            const current = toDate(m.paidThrough);
+            const start = current && current.getTime() > Date.now() ? current : new Date();
+            const end = new Date(start.getTime());
+            if (dues.interval === 'week') end.setUTCDate(end.getUTCDate() + 7 * n);
+            else end.setUTCMonth(end.getUTCMonth() + n);
+            $('payHint').textContent = `This will mark them paid through ${formatDate(end)}.`;
+        }
+
+        function setMode(mode) {
+            document.querySelectorAll('.tabs-inline button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mode === mode)));
+            show($('payForm'), mode === 'pay');
+            show($('dateForm'), mode === 'date');
+        }
+        document.querySelectorAll('.tabs-inline button').forEach((b) => b.addEventListener('click', () => setMode(b.dataset.mode)));
+
+        $('payPeriods').addEventListener('change', () => {
+            if (!$('payAmount').dataset.touched) {
+                $('payAmount').value = ((dues.amountCents * Number($('payPeriods').value)) / 100).toFixed(2);
+            }
+            updatePayHint();
+        });
+        $('payAmount').addEventListener('input', () => { $('payAmount').dataset.touched = '1'; });
+
+        $('payForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = openId;
+            const amountCents = Math.round(parseFloat($('payAmount').value) * 100);
+            if (!Number.isInteger(amountCents) || amountCents < 0) {
+                inlineMsg($('payMsg'), 'Enter the amount received.', 'error');
+                return;
+            }
+            const btn = $('paySubmit');
+            btn.disabled = true;
+            try {
+                await adminUpdateDues({
+                    action: 'recordPayment', uid: id, periods: Number($('payPeriods').value),
+                    amountCents, method: $('payMethod').value, note: $('payNote').value
+                });
+                $('payNote').value = '';
+                await refreshMember(id);
+                inlineMsg($('payMsg'), 'Payment recorded.', 'success');
+                toast('Payment recorded');
+            } catch (err) {
+                console.error(err);
+                inlineMsg($('payMsg'), err.message || 'Could not record the payment.', 'error');
+            }
+            btn.disabled = false;
+        });
+
+        $('dateForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = openId;
+            if (!$('dateValue').value) {
+                inlineMsg($('dateMsg'), 'Choose a date.', 'error');
+                return;
+            }
+            const btn = $('dateSubmit');
+            btn.disabled = true;
+            try {
+                await adminUpdateDues({ action: 'setPaidThrough', uid: id, date: $('dateValue').value, note: $('dateNote').value });
+                $('dateNote').value = '';
+                await refreshMember(id);
+                inlineMsg($('dateMsg'), 'Paid-through date saved.', 'success');
+                toast('Paid-through date saved');
+            } catch (err) {
+                console.error(err);
+                inlineMsg($('dateMsg'), err.message || 'Could not save the date.', 'error');
+            }
+            btn.disabled = false;
+        });
+
+        // ---------- Add a member (in person / cash) ----------
+        const addDialog = $('addDialog');
+        fillMemberTypeSelect($('addType'));
+        $('addMemberBtn').addEventListener('click', () => {
+            $('addForm').reset();
+            $('addMsg').classList.add('hidden');
+            show($('addInviteRow'), false);
+            addDialog.showModal();
+            $('addName').focus();
+        });
+        $('addClose').addEventListener('click', () => addDialog.close());
+        $('addEmail').addEventListener('input', () => show($('addInviteRow'), !!$('addEmail').value.trim()));
+
+        $('addForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = $('addSubmit');
+            btn.disabled = true;
+            try {
+                const { data } = await httpsCallable(functions, 'adminCreateMember')({
+                    name: $('addName').value, email: $('addEmail').value, phone: $('addPhone').value,
+                    memberType: $('addType').value, interests: $('addInterests').value,
+                    sendInvite: $('addInvite').checked, returnUrl: location.origin + '/member'
+                });
+                addDialog.close();
+                await loadAll();
+                if (data.invite) loadOutbox();
+                toast(`${$('addName').value.trim()} was added${data.invite ? (data.invite === 'sent' ? ' and emailed a password link' : '') : ''}`);
+                openMember(data.uid); // next: record their cash payment, add their listing
+            } catch (err) {
+                console.error(err);
+                inlineMsg($('addMsg'), err.message || 'Could not add the member.', 'error');
+            }
+            btn.disabled = false;
+        });
+
+        // ---------- Add / edit a member's listing ----------
+        const listingDialog = $('listingDialog');
+        let listingLogo = null;
+        BUSINESS_CATEGORIES.forEach((c) => {
+            const opt = document.createElement('option');
+            opt.value = c.id;
+            opt.textContent = c.label;
+            $('lCategory').appendChild(opt);
+        });
+        $('lEstYear').max = new Date().getFullYear();
+
+        function setListingPreview(src) {
+            $('lLogoPreview').innerHTML = src ? `<img src="${escapeHtml(src)}" alt="Logo preview">` : '<i class="fas fa-image"></i>';
+        }
+
+        $('editListingBtn').addEventListener('click', () => {
+            const id = openId;
+            const m = members.find((x) => x.id === id) || {};
+            const b = businesses[id] || {};
+            $('listingForm').reset();
+            $('listingMsg').classList.add('hidden');
+            listingLogo = null;
+            $('listingTitle').textContent = businesses[id] ? `Edit listing: ${b.name}` : `Add a listing for ${m.name || 'this member'}`;
+            $('lName').value = b.name || '';
+            $('lOwner').value = b.owner || m.name || '';
+            $('lCategory').value = b.category || 'other';
+            $('lEmail').value = b.email || m.email || '';
+            $('lPhone').value = b.phone || m.phone || '';
+            $('lWebsite').value = b.website || '';
+            $('lStreet').value = b.addressStreet || b.address || '';
+            $('lCity').value = b.addressCity || '';
+            $('lState').value = b.addressState || '';
+            $('lZip').value = b.addressZip || '';
+            $('lHideStreet').checked = !!b.hideStreet;
+            $('lDescription').value = b.description || '';
+            $('lEstMonth').value = b.establishedMonth || '';
+            $('lEstYear').value = b.establishedYear || '';
+            $('lHoursNote').value = b.hoursNote || '';
+            setListingPreview(b.logoUrl);
+            show($('lLogoReq'), !b.logoUrl);
+            listingDialog.showModal();
+        });
+        $('listingClose').addEventListener('click', () => listingDialog.close());
+
+        $('lLogo').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            listingLogo = null;
+            if (!file) return;
+            if (!['image/png', 'image/jpeg', 'image/webp', 'image/gif'].includes(file.type) || file.size > 2 * 1024 * 1024) {
+                inlineMsg($('listingMsg'), 'Choose a PNG, JPG, WEBP or GIF image under 2 MB.', 'error');
+                e.target.value = '';
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = () => { listingLogo = { dataUrl: reader.result, contentType: file.type }; setListingPreview(reader.result); };
+            reader.readAsDataURL(file);
+        });
+
+        $('listingForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = openId;
+            const btn = $('listingSubmit');
+            btn.disabled = true;
+            try {
+                await httpsCallable(functions, 'adminSaveListing')({
+                    uid: id,
+                    logo: listingLogo,
+                    listing: {
+                        name: $('lName').value, owner: $('lOwner').value, category: $('lCategory').value,
+                        email: $('lEmail').value, phone: $('lPhone').value, website: $('lWebsite').value,
+                        addressStreet: $('lStreet').value, addressCity: $('lCity').value, addressState: $('lState').value,
+                        addressZip: $('lZip').value, hideStreet: $('lHideStreet').checked, description: $('lDescription').value,
+                        establishedMonth: $('lEstMonth').value ? Number($('lEstMonth').value) : null,
+                        establishedYear: $('lEstYear').value ? Number($('lEstYear').value) : null,
+                        hoursNote: $('lHoursNote').value
+                    }
+                });
+                listingDialog.close();
+                const snap = await getDoc(doc(db, 'businesses', id));
+                if (snap.exists()) businesses[id] = snap.data();
+                render();
+                fillDialog(id);
+                toast('Listing saved and approved');
+            } catch (err) {
+                console.error(err);
+                inlineMsg($('listingMsg'), err.message || 'Could not save the listing.', 'error');
+            }
+            btn.disabled = false;
+        });
+
+        // ---------- Account: change email / remove ----------
+        const manageMember = httpsCallable(functions, 'adminManageMember');
+
+        $('emailForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = openId;
+            const email = $('newEmail').value.trim();
+            if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+                inlineMsg($('emailMsg'), 'Enter a valid email address.', 'error');
+                return;
+            }
+            $('emailSubmit').disabled = true;
+            try {
+                const { data } = await manageMember({ action: 'changeEmail', uid: id, email, sendInvite: $('emailInvite').checked, returnUrl: location.origin + '/member' });
+                if (data?.invite) {
+                    toast(data.invite === 'sent' ? 'Password link emailed' : 'Password link recorded (no email provider connected yet)');
+                    loadOutbox();
+                }
+                await refreshMember(id);
+                $('newEmail').value = '';
+                inlineMsg($('emailMsg'), `Email changed to ${email.toLowerCase()}.`, 'success');
+            } catch (err) {
+                console.error(err);
+                inlineMsg($('emailMsg'), err.message || 'Could not change the email.', 'error');
+            }
+            $('emailSubmit').disabled = false;
+        });
+
+        $('removeBtn').addEventListener('click', async () => {
+            const btn = $('removeBtn');
+            // First click explains; second click removes.
+            if (!btn.classList.contains('armed')) {
+                btn.classList.add('armed');
+                btn.innerHTML = '<i class="fas fa-user-times"></i> Yes, remove this member';
+                show($('removeConfirm'));
+                return;
+            }
+            const id = openId;
+            const name = members.find((m) => m.id === id)?.name || 'Member';
+            btn.disabled = true;
+            try {
+                await manageMember({ action: 'remove', uid: id });
+                dialog.close();
+                members = members.filter((m) => m.id !== id);
+                delete businesses[id];
+                render();
+                toast(`${name} was removed`);
+            } catch (err) {
+                console.error(err);
+                inlineMsg($('removeMsg'), err.message || 'Could not remove this member.', 'error');
+            }
+            btn.disabled = false;
+        });
+
+        $('contactForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = openId;
+            const name = $('cName').value.trim();
+            if (!name) {
+                inlineMsg($('contactMsg'), 'Enter a name.', 'error');
+                return;
+            }
+            const btn = $('contactSubmit');
+            btn.disabled = true;
+            try {
+                await updateDoc(doc(db, 'members', id), { name, phone: $('cPhone').value.trim(), updatedAt: serverTimestamp() });
+                await refreshMember(id);
+                inlineMsg($('contactMsg'), 'Contact details saved.', 'success');
+            } catch (err) {
+                console.error(err);
+                inlineMsg($('contactMsg'), 'Could not save contact details.', 'error');
+            }
+            btn.disabled = false;
+        });
+
+        // ---------- Dues settings ----------
+        let pendingDues = null;
+        $('duesForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const amountCents = Math.round(parseFloat($('duesAmount').value) * 100);
+            const interval = $('duesInterval').value;
+            const confirmEl = $('duesConfirm');
+            if (!Number.isInteger(amountCents) || amountCents < 100) {
+                inlineMsg(confirmEl, 'Enter an amount of at least $1.00.', 'error');
+                return;
+            }
+            // Ask once, then save on the second click.
+            const key = `${amountCents}/${interval}`;
+            if (pendingDues !== key) {
+                pendingDues = key;
+                inlineMsg(confirmEl, `Click Save again to set dues to ${formatMoney(amountCents)} per ${interval}.`, 'error');
+                $('duesSaveBtn').innerHTML = '<i class="fas fa-check"></i> Confirm';
+                return;
+            }
+            pendingDues = null;
+            $('duesSaveBtn').innerHTML = '<i class="fas fa-save"></i> Save';
+            try {
+                await setDoc(doc(db, 'settings', 'dues'), { amountCents, interval, updatedAt: serverTimestamp() });
+                dues = { amountCents, interval };
+                inlineMsg(confirmEl, `Dues are now ${formatMoney(amountCents)} per ${interval}.`, 'success');
+            } catch (err) {
+                console.error(err);
+                inlineMsg(confirmEl, 'Could not save dues settings.', 'error');
+            }
+        });
+    </script>
+</body>
+</html>

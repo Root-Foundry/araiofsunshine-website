@@ -82,10 +82,14 @@
                     <a href="services.html" class="nav-link">Services</a>
                     <a href="join.html" class="nav-link">Get Involved</a>
                     <a href="resources.html" class="nav-link">Resources</a>
+                    <a href="directory.html" class="nav-link">Directory</a>
                     <a href="contact.html" class="nav-link">Contact</a>
                 </nav>
 
-                <a href="donate.html" class="btn-donate">DONATE NOW</a>
+                <div class="header-actions">
+                    <a href="member.html" class="btn-login" aria-label="Log in or sign up"><i class="fas fa-user-circle" aria-hidden="true"></i><span class="btn-login-text">Log In / Sign Up</span></a>
+                    <a href="donate.html" class="btn-donate">DONATE NOW</a>
+                </div>
 
                 <!-- Mobile Menu Button -->
                 <button class="mobile-menu-toggle" aria-label="Toggle menu">
@@ -99,6 +103,8 @@
                 <a href="services.html" class="nav-link-mobile">Services</a>
                 <a href="join.html" class="nav-link-mobile">Get Involved</a>
                 <a href="resources.html" class="nav-link-mobile">Resources</a>
+                <a href="directory.html" class="nav-link-mobile">Directory</a>
+                <a href="member.html" class="nav-link-mobile" data-account-link>Log In / Sign Up</a>
                 <a href="contact.html" class="nav-link-mobile">Contact</a>
                 <a href="donate.html" class="nav-link-mobile btn-mobile-donate">Donate</a>
             </nav>
@@ -142,7 +148,7 @@
                 <!-- Board Member 1 -->
                 <div class="team-member" style="text-align: center;">
                     <div class="team-member-photo" style="width: 200px; height: 200px; margin: 0 auto 20px; border-radius: 50%; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); background-color: var(--soft-cream); display: flex; align-items: center; justify-content: center;">
-                        <img src="pictures/image00000011.png" alt="Board Member" style="width: 100%; height: auto;">
+                        <img src="pictures/IMG_20261102_180542.jpg" alt="Board Member" style="width: 100%; height: auto;">
                         
                     </div>
                     <p style="color: var(--warm-orange); font-weight: 600; margin-bottom: 12px;">Sunnie McCant-Washington</p>
@@ -444,6 +450,8 @@
                     <h3 class="footer-title">Get Involved</h3>
                     <ul class="footer-links">
                         <li><a href="join.html" class="footer-link">Become a Member</a></li>
+                        <li><a href="member.html" class="footer-link">Member Portal</a></li>
+                        <li><a href="directory.html" class="footer-link">Business Directory</a></li>
                         <li><a href="donate.html" class="footer-link">Donate</a></li>
                         <li><a href="grant.html" class="footer-link">Community Grant</a></li>
                         <li><a href="sponsors.html" class="footer-link">Our Sponsors</a></li>
@@ -467,6 +475,7 @@
 
             <div class="footer-bottom">
                  <p>&copy; <span class="current-year">2026</span> A Rai of Sunshine of North Florida Inc. All rights reserved.</p>
+                <p class="footer-legal"><a href="privacy.html" class="footer-link">Privacy Policy</a> · <a href="terms.html" class="footer-link">Terms of Use</a> · <a href="refunds.html" class="footer-link">Refund &amp; Cancellation Policy</a></p>
                 <p class="footer-credit">
                     Website made & managed by <a href="https://root-foundry.com" class="footer-link">Root Foundry LLC</a>
                 </p>
@@ -478,21 +487,9 @@
     
     <!-- Firebase SDK for Upcoming Events -->
     <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { app } from './firebase-config.js';
         import { getFirestore, collection, getDocs, query, orderBy, limit, where } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyD260jUFHNr0Tt_MLC3-ogJn4tJTPYZwSU",
-            authDomain: "araiofsunshine.firebaseapp.com",
-            projectId: "araiofsunshine",
-            storageBucket: "araiofsunshine.firebasestorage.app",
-            messagingSenderId: "741022041696",
-            appId: "1:741022041696:web:336a94177b337cf8e5a505"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
         // Load upcoming events
@@ -577,7 +574,10 @@
         }
 
         // Load events when page loads
-        document.addEventListener('DOMContentLoaded', loadUpcomingEvents);
+        // Module scripts can run after DOMContentLoaded (the shared Firebase setup may await), so run now if it already fired.
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', loadUpcomingEvents);
+        else loadUpcomingEvents();
     </script>
+    <script type="module" src="account-status.js"></script>
 </body>
 </html>

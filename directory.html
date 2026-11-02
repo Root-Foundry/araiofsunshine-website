@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Find and support local businesses owned by members of A Rai of Sunshine of North Florida Inc.">
+    <title>Member Business Directory | A Rai of Sunshine of North Florida Inc.</title>
+    <link rel="canonical" href="https://araiofsunshine.org/directory.html">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://araiofsunshine.org/directory.html">
+    <meta property="og:title" content="Member Business Directory | A Rai of Sunshine of North Florida Inc.">
+    <meta property="og:description" content="Find and support local businesses owned by members of A Rai of Sunshine of North Florida Inc.">
+    <meta property="og:image" content="https://araiofsunshine.org/cropped-logo.png">
+    <meta property="og:site_name" content="A Rai of Sunshine of North Florida Inc.">
+
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="members.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+  window._rootfoundry = {
+    dashboardUrl: 'https://root-foundry.com/client/dashboard?clientId=client_e74d2e0fbe35303ca382319e',
+    siteId: 'f4532f88661d56d9c4db2f3a',
+    userId: 'jSQnZBWuaMcR5Vr1WFRyuFE9uZp2'
+  };
+</script>
+<script src="https://root-foundry.com/tracking/tracker.js"></script>
+</head>
+<body>
+
+    <!-- HEADER / NAVIGATION -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+               <div class="logo">
+                    <a href="index.html" class="logo-link">
+                        <img src="cropped-logo.png" alt="A Rai of Sunshine logo" height="60">
+                    </a>
+                </div>
+
+                <nav class="nav-desktop">
+                    <a href="about.html" class="nav-link">About</a>
+                    <a href="services.html" class="nav-link">Services</a>
+                    <a href="join.html" class="nav-link">Get Involved</a>
+                    <a href="resources.html" class="nav-link">Resources</a>
+                    <a href="directory.html" class="nav-link nav-link-active">Directory</a>
+                    <a href="contact.html" class="nav-link">Contact</a>
+                </nav>
+
+                <div class="header-actions">
+                    <a href="member.html" class="btn-login" aria-label="Log in or sign up"><i class="fas fa-user-circle" aria-hidden="true"></i><span class="btn-login-text">Log In / Sign Up</span></a>
+                    <a href="donate.html" class="btn-donate">DONATE NOW</a>
+                </div>
+
+                <button class="mobile-menu-toggle" aria-label="Toggle menu" aria-expanded="false">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+
+            <nav class="nav-mobile">
+                <a href="about.html" class="nav-link-mobile">About</a>
+                <a href="services.html" class="nav-link-mobile">Services</a>
+                <a href="join.html" class="nav-link-mobile">Get Involved</a>
+                <a href="resources.html" class="nav-link-mobile">Resources</a>
+                <a href="directory.html" class="nav-link-mobile">Directory</a>
+                <a href="member.html" class="nav-link-mobile" data-account-link>Log In / Sign Up</a>
+                <a href="contact.html" class="nav-link-mobile">Contact</a>
+                <a href="donate.html" class="nav-link-mobile btn-mobile-donate">Donate</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- PAGE HEADER -->
+    <section class="page-header">
+        <div class="container">
+            <h1 class="page-title">Member Business Directory</h1>
+            <p class="page-subtitle">Shop local and support the businesses in our community</p>
+        </div>
+    </section>
+
+    <!-- SPOTLIGHT -->
+    <section class="section section-light hidden" id="spotlightSection">
+        <div class="container">
+            <h2 class="section-title text-center">Member Spotlight</h2>
+            <div class="spotlight-list" id="spotlightList"></div>
+        </div>
+    </section>
+
+    <!-- DIRECTORY -->
+    <section class="section">
+        <div class="container">
+            <div class="directory-toolbar">
+                <div class="directory-search">
+                    <i class="fas fa-search" aria-hidden="true"></i>
+                    <label for="directorySearch" class="hidden">Search businesses</label>
+                    <input type="search" id="directorySearch" class="form-input" placeholder="Search by name, owner or service…">
+                </div>
+                <span class="directory-count" id="directoryCount"></span>
+            </div>
+
+            <div class="category-filter" id="categoryFilter" role="group" aria-label="Filter by type of business"></div>
+
+            <div class="sponsor-detail-grid" id="directoryGrid"></div>
+            <div class="directory-empty" id="directoryEmpty">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Loading businesses…</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2 class="cta-title">Own a Business?</h2>
+                <p class="cta-text">Members in good standing can list their business here for free.</p>
+                <div class="cta-buttons">
+                    <a href="member.html" class="btn-primary">List Your Business</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3 class="footer-title">About Us</h3>
+                    <p class="footer-text">
+                        Supporting families and empowering individuals with disabilities in
+                        Jefferson County and beyond.
+                    </p>
+                    <div class="social-icons">
+                        <a href="https://www.facebook.com/ARaiOfSunshine" class="social-icon" aria-label="Facebook">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h3 class="footer-title">Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="about.html" class="footer-link">Our Story</a></li>
+                        <li><a href="services.html" class="footer-link">Services</a></li>
+                        <li><a href="resources.html" class="footer-link">Resources</a></li>
+                        <li><a href="events.html" class="footer-link">Events</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3 class="footer-title">Get Involved</h3>
+                    <ul class="footer-links">
+                        <li><a href="join.html" class="footer-link">Become a Member</a></li>
+                        <li><a href="directory.html" class="footer-link">Business Directory</a></li>
+                        <li><a href="member.html" class="footer-link">Member Portal</a></li>
+                        <li><a href="donate.html" class="footer-link">Donate</a></li>
+                        <li><a href="contact.html" class="footer-link">Volunteer</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3 class="footer-title">Contact</h3>
+                    <ul class="footer-contact">
+                        <li>
+                            <i class="fas fa-map-marker-alt"></i>
+                            805 N. Jefferson Street unit 805, Monticello, FL, United States
+                        </li>
+                        <li>
+                            <i class="fas fa-envelope"></i>
+                            <a href="mailto:araiofsunshineofnorthflorida@gmail.com" class="footer-link">araiofsunshineofnorthflorida@gmail.com</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; <span class="current-year">2026</span> A Rai of Sunshine of North Florida Inc. All rights reserved.</p>
+                <p class="footer-legal"><a href="privacy.html" class="footer-link">Privacy Policy</a> · <a href="terms.html" class="footer-link">Terms of Use</a> · <a href="refunds.html" class="footer-link">Refund &amp; Cancellation Policy</a></p>
+                <p class="footer-credit">
+                    Website made & managed by <a href="https://root-foundry.com" class="footer-link">Root Foundry LLC</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script type="module">
+        import { db, escapeHtml, safeUrl, toDate, BUSINESS_CATEGORIES, getCategory, formatHours, todayHours, formatEstablished, formatMonthYear } from './member-common.js';
+        import { collection, getDocs, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        const grid = document.getElementById('directoryGrid');
+        const empty = document.getElementById('directoryEmpty');
+        const count = document.getElementById('directoryCount');
+        const search = document.getElementById('directorySearch');
+        const filterBar = document.getElementById('categoryFilter');
+
+        let businesses = [];
+        // Deep link: directory.html#food opens with that type selected.
+        let activeCategory = location.hash.slice(1);
+
+        function factsLine(b) {
+            const est = formatEstablished(b);
+            const since = formatMonthYear(b.memberSince);
+            if (!est && !since) return '';
+            return `<p class="listing-facts">
+                ${est ? `<span><i class="fas fa-flag" aria-hidden="true"></i> Est. ${escapeHtml(est)}</span>` : ''}
+                ${since ? `<span><i class="fas fa-sun" aria-hidden="true"></i> Member since ${escapeHtml(since)}</span>` : ''}
+            </p>`;
+        }
+
+        function hoursBlock(b) {
+            const lines = formatHours(b.hours);
+            if (!lines.length && !b.hoursNote) return '';
+            const today = todayHours(b.hours);
+            return `<details class="hours-details">
+                <summary><i class="fas fa-clock" aria-hidden="true"></i> Hours${today ? ` <span class="today">· Today: ${escapeHtml(today)}</span>` : ''}</summary>
+                ${lines.length ? `<ul>${lines.map((l) => `<li>${escapeHtml(l)}</li>`).join('')}</ul>` : ''}
+                ${b.hoursNote ? `<p class="hours-note">${escapeHtml(b.hoursNote)}</p>` : ''}
+            </details>`;
+        }
+
+        function categoryTag(b) {
+            const c = getCategory(b.category);
+            return `<span class="category-tag"><i class="fas ${c.icon}" aria-hidden="true"></i> ${escapeHtml(c.label)}</span>`;
+        }
+
+        function renderFilters() {
+            const counts = {};
+            businesses.forEach((b) => { const id = getCategory(b.category).id; counts[id] = (counts[id] || 0) + 1; });
+            const used = BUSINESS_CATEGORIES.filter((c) => counts[c.id]);
+            if (!used.some((c) => c.id === activeCategory)) activeCategory = '';
+
+            // Filters only help once there's more than one type to choose from.
+            filterBar.classList.toggle('hidden', used.length < 2);
+            const chip = (id, label, n, icon) => `
+                <button type="button" class="category-chip" data-category="${id}" aria-pressed="${activeCategory === id}">
+                    ${icon ? `<i class="fas ${icon}" aria-hidden="true"></i>` : ''}${escapeHtml(label)} <span class="chip-count">${n}</span>
+                </button>`;
+            filterBar.innerHTML = chip('', 'All', businesses.length) + used.map((c) => chip(c.id, c.label, counts[c.id], c.icon)).join('');
+        }
+
+        filterBar.addEventListener('click', (e) => {
+            const btn = e.target.closest('.category-chip');
+            if (!btn) return;
+            activeCategory = btn.dataset.category;
+            history.replaceState(null, '', activeCategory ? `#${activeCategory}` : location.pathname);
+            filterBar.querySelectorAll('.category-chip').forEach((c) => c.setAttribute('aria-pressed', String(c === btn)));
+            renderGrid();
+        });
+
+        function contactLines(b) {
+            const lines = [];
+            const website = safeUrl(b.website);
+            if (b.phone) {
+                const tel = b.phone.replace(/[^\d+]/g, '');
+                lines.push(`<a href="tel:${escapeHtml(tel)}"><i class="fas fa-phone"></i> ${escapeHtml(b.phone)}</a>`);
+            }
+            if (b.email) {
+                lines.push(`<a href="mailto:${escapeHtml(b.email)}"><i class="fas fa-envelope"></i> ${escapeHtml(b.email)}</a>`);
+            }
+            if (website) {
+                const display = website.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '');
+                lines.push(`<a href="${escapeHtml(website)}" target="_blank" rel="noopener noreferrer nofollow"><i class="fas fa-globe"></i> ${escapeHtml(display)}</a>`);
+            }
+            if (b.address) {
+                const maps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(b.address)}`;
+                lines.push(`<a href="${escapeHtml(maps)}" target="_blank" rel="noopener noreferrer"><i class="fas fa-map-marker-alt"></i> ${escapeHtml(b.address)}</a>`);
+            }
+            return lines;
+        }
+
+        function logoImg(b) {
+            const src = safeUrl(b.logoUrl);
+            return src ? `<img src="${escapeHtml(src)}" alt="${escapeHtml(b.name)} logo" loading="lazy">` : '';
+        }
+
+        function renderCard(b) {
+            const card = document.createElement('article');
+            card.className = 'sponsor-detail-card directory-card';
+            card.innerHTML = `
+                <div class="sponsor-detail-logo">${logoImg(b)}</div>
+                ${categoryTag(b)}
+                <h3 class="sponsor-detail-name">${escapeHtml(b.name)}</h3>
+                ${b.owner ? `<p class="directory-owner">Owned by ${escapeHtml(b.owner)}</p>` : ''}
+                ${factsLine(b)}
+                ${b.description ? `<p class="sponsor-detail-description">${escapeHtml(b.description)}</p>` : ''}
+                ${hoursBlock(b)}
+                <div class="sponsor-detail-contact">
+                    ${contactLines(b).map((l) => `<p>${l}</p>`).join('')}
+                </div>
+            `;
+            return card;
+        }
+
+        function renderSpotlight(b) {
+            const card = document.createElement('article');
+            card.className = 'spotlight-card';
+            card.innerHTML = `
+                <div class="spotlight-logo">${logoImg(b)}</div>
+                <div>
+                    <span class="spotlight-label"><i class="fas fa-star"></i> Featured Member</span>
+                    ${categoryTag(b)}
+                    <h3>${escapeHtml(b.name)}</h3>
+                    ${b.owner ? `<p class="directory-owner" style="margin: 0;">Owned by ${escapeHtml(b.owner)}</p>` : ''}
+                    ${factsLine(b)}
+                    ${b.description ? `<p class="spotlight-description">${escapeHtml(b.description)}</p>` : ''}
+                    ${hoursBlock(b)}
+                    <div class="spotlight-contact">${contactLines(b).join('')}</div>
+                </div>
+            `;
+            return card;
+        }
+
+        function renderGrid() {
+            const term = search.value.trim().toLowerCase();
+            const matches = businesses.filter((b) =>
+                (!activeCategory || getCategory(b.category).id === activeCategory) &&
+                (!term || [b.name, b.owner, b.description, b.address, getCategory(b.category).label]
+                    .some((f) => (f || '').toLowerCase().includes(term)))
+            );
+
+            grid.innerHTML = '';
+            matches.forEach((b) => grid.appendChild(renderCard(b)));
+
+            count.textContent = `${matches.length} business${matches.length === 1 ? '' : 'es'}`;
+            if (matches.length) {
+                empty.classList.add('hidden');
+            } else {
+                empty.classList.remove('hidden');
+                empty.innerHTML = businesses.length
+                    ? `<i class="fas fa-search"></i><p>No businesses match${activeCategory ? ` in ${escapeHtml(getCategory(activeCategory).label)}` : ''}. Try a different search or type.</p>`
+                    : '<i class="fas fa-store"></i><p>No businesses are listed yet. Check back soon!</p>';
+            }
+        }
+
+        async function load() {
+            try {
+                const [dirSnap, spotlightSnap] = await Promise.all([
+                    getDocs(collection(db, 'directory')),
+                    getDoc(doc(db, 'settings', 'spotlight'))
+                ]);
+                const now = Date.now();
+                businesses = dirSnap.docs
+                    .map((d) => ({ id: d.id, ...d.data() }))
+                    // Listings are also expired server-side; this hides any between cleanup runs.
+                    .filter((b) => (toDate(b.listedUntil)?.getTime() || 0) > now)
+                    .sort((a, b) => a.name.localeCompare(b.name));
+
+                const spotlightIds = spotlightSnap.exists() ? (spotlightSnap.data().businessIds || []) : [];
+                const featured = spotlightIds.map((id) => businesses.find((b) => b.id === id)).filter(Boolean);
+                if (featured.length) {
+                    const list = document.getElementById('spotlightList');
+                    featured.forEach((b) => list.appendChild(renderSpotlight(b)));
+                    document.getElementById('spotlightSection').classList.remove('hidden');
+                }
+
+                renderFilters();
+                renderGrid();
+            } catch (err) {
+                console.error('Error loading directory:', err);
+                empty.innerHTML = '<i class="fas fa-exclamation-triangle"></i><p>We could not load the directory right now. Please try again later.</p>';
+            }
+        }
+
+        search.addEventListener('input', renderGrid);
+        // Back/forward or an edited #type link changes the filter without a reload.
+        window.addEventListener('hashchange', () => {
+            activeCategory = location.hash.slice(1);
+            renderFilters();
+            renderGrid();
+        });
+        load();
+    </script>
+    <script type="module" src="account-status.js"></script>
+</body>
+</html>

@@ -58,10 +58,14 @@
                     <a href="services.html" class="nav-link">Services</a>
                     <a href="join.html" class="nav-link nav-link-active">Get Involved</a>
                     <a href="resources.html" class="nav-link">Resources</a>
+                    <a href="directory.html" class="nav-link">Directory</a>
                     <a href="contact.html" class="nav-link">Contact</a>
                 </nav>
 
-                <a href="donate.html" class="btn-donate">DONATE NOW</a>
+                <div class="header-actions">
+                    <a href="member.html" class="btn-login" aria-label="Log in or sign up"><i class="fas fa-user-circle" aria-hidden="true"></i><span class="btn-login-text">Log In / Sign Up</span></a>
+                    <a href="donate.html" class="btn-donate">DONATE NOW</a>
+                </div>
 
                 <button class="mobile-menu-toggle" aria-label="Toggle menu" aria-expanded="false">
                     <i class="fas fa-bars"></i>
@@ -73,6 +77,8 @@
                 <a href="services.html" class="nav-link-mobile">Services</a>
                 <a href="join.html" class="nav-link-mobile">Get Involved</a>
                 <a href="resources.html" class="nav-link-mobile">Resources</a>
+                <a href="directory.html" class="nav-link-mobile">Directory</a>
+                <a href="member.html" class="nav-link-mobile" data-account-link>Log In / Sign Up</a>
                 <a href="contact.html" class="nav-link-mobile">Contact</a>
                 <a href="donate.html" class="nav-link-mobile btn-mobile-donate">Donate</a>
             </nav>
@@ -103,10 +109,10 @@
                     </div>
                     <h3 class="service-card-title">Become a Member</h3>
                     <p class="service-card-description">
-                        Join our community of families, caregivers, and supporters. Membership is free 
-                        and gives you access to our monthly meetings, resources, and support network.
+                        Join our community of families, caregivers, and supporters. Members get access to our
+                        monthly meetings, resources, support network, and a free listing in our business directory.
                     </p>
-                    <a href="#membership-form" class="service-link">Join Now <i class="fas fa-arrow-right"></i></a>
+                    <a href="member.html" class="service-link">Join Now <i class="fas fa-arrow-right"></i></a>
                 </div>
 
                 <!-- Volunteer -->
@@ -195,123 +201,42 @@
         </div>
     </section>
 
-    <!-- MEMBERSHIP FORM -->
+    <!-- MEMBERSHIP SIGN-UP -->
     <section class="section" id="membership-form">
         <div class="container-narrow">
-            <h2 class="section-title text-center">Membership Application</h2>
+            <h2 class="section-title text-center">Become a Member</h2>
             <p class="text-center" style="margin-bottom: 40px;">
-                Fill out the form below to become a member. Membership is completely free!
+                Create your member account to pay dues online. Choose autopay, or pay manually for as many
+                months as you like in advance.
             </p>
 
-            <form class="contact-form" id="membershipForm">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="firstName">First Name <span class="required">*</span></label>
-                        <input 
-                            type="text" 
-                            id="firstName" 
-                            name="firstName" 
-                            class="form-input" 
-                            required
-                        >
+            <div class="two-column-grid">
+                <div class="feature-box">
+                    <div class="feature-icon" style="text-align: left;">
+                        <i class="fas fa-receipt"></i>
                     </div>
+                    <h3 class="feature-title">Membership Dues</h3>
+                    <p class="feature-description">
+                        <span id="joinDuesRate">$25 per month</span>. Pay securely by card with autopay, or pay ahead manually. Cancel autopay any time.
+                    </p>
+                </div>
 
-                    <div class="form-group">
-                        <label for="lastName">Last Name <span class="required">*</span></label>
-                        <input 
-                            type="text" 
-                            id="lastName" 
-                            name="lastName" 
-                            class="form-input" 
-                            required
-                        >
+                <div class="feature-box">
+                    <div class="feature-icon" style="text-align: left;">
+                        <i class="fas fa-store"></i>
                     </div>
+                    <h3 class="feature-title">List Your Business</h3>
+                    <p class="feature-description">
+                        Members with current dues can add their business, logo and contact details to our
+                        <a href="directory.html">member business directory</a>.
+                    </p>
                 </div>
+            </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="email">Email Address <span class="required">*</span></label>
-                        <input 
-                            type="email" 
-                            id="email" 
-                            name="email" 
-                            class="form-input" 
-                            required
-                        >
-                    </div>
-
-                    <div class="form-group">
-                        <label for="phone">Phone Number</label>
-                        <input 
-                            type="tel" 
-                            id="phone" 
-                            name="phone" 
-                            class="form-input"
-                        >
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="city">City <span class="required">*</span></label>
-                    <input 
-                        type="text" 
-                        id="city" 
-                        name="city" 
-                        class="form-input" 
-                        required
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="memberType">I am a: <span class="required">*</span></label>
-                    <select 
-                        id="memberType" 
-                        name="memberType" 
-                        class="form-input" 
-                        required
-                    >
-                        <option value="">Please select...</option>
-                        <option value="parent">Parent/Guardian</option>
-                        <option value="family">Family Member</option>
-                        <option value="caregiver">Caregiver</option>
-                        <option value="individual">Individual with Disability</option>
-                        <option value="professional">Professional/Service Provider</option>
-                        <option value="supporter">Community Supporter</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="interests">Areas of Interest (optional)</label>
-                    <textarea 
-                        id="interests" 
-                        name="interests" 
-                        class="form-input" 
-                        rows="4"
-                        placeholder="Tell us what you're interested in: family support, entrepreneurship, volunteering, etc."
-                    ></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label class="checkbox-label">
-                        <input type="checkbox" name="newsletter" checked>
-                        <span>Yes, I'd like to receive email updates and newsletters</span>
-                    </label>
-                </div>
-
-                <div class="form-group">
-                    <label class="checkbox-label">
-                        <input type="checkbox" name="privacy" required>
-                        <span>I agree to the privacy policy <span class="required">*</span></span>
-                    </label>
-                </div>
-
-                <button type="submit" class="btn-primary" style="width: 100%;">
-                    <i class="fas fa-user-plus"></i> Join A Rai of Sunshine
-                </button>
-
-                <div id="membershipMessage" class="form-message" style="display: none;"></div>
-            </form>
+            <div style="text-align: center; margin-top: 40px;">
+                <a href="member.html" class="btn-primary"><i class="fas fa-user-plus"></i> Create Your Member Account</a>
+                <p style="margin-top: 16px;">Already a member? <a href="member.html">Sign in to the member portal</a>.</p>
+            </div>
         </div>
     </section>
 
@@ -387,6 +312,8 @@
                     <h3 class="footer-title">Get Involved</h3>
                     <ul class="footer-links">
                         <li><a href="join.html" class="footer-link">Become a Member</a></li>
+                        <li><a href="member.html" class="footer-link">Member Portal</a></li>
+                        <li><a href="directory.html" class="footer-link">Business Directory</a></li>
                         <li><a href="donate.html" class="footer-link">Donate</a></li>
                         <li><a href="contact.html" class="footer-link">Volunteer</a></li>
                     </ul>
@@ -409,6 +336,7 @@
 
             <div class="footer-bottom">
                 <p>&copy; <span class="current-year">2026</span> A Rai of Sunshine of North Florida Inc. All rights reserved.</p>
+                <p class="footer-legal"><a href="privacy.html" class="footer-link">Privacy Policy</a> · <a href="terms.html" class="footer-link">Terms of Use</a> · <a href="refunds.html" class="footer-link">Refund &amp; Cancellation Policy</a></p>
                 <p class="footer-credit">
                     Website made & managed by <a href="https://root-foundry.com" class="footer-link">Root Foundry LLC</a>
                 </p>
@@ -417,31 +345,17 @@
     </footer>
 
     <script src="script.js"></script>
-    <script>
-        // Membership form handling
-        const membershipForm = document.getElementById('membershipForm');
-        if (membershipForm) {
-            membershipForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                const submitButton = this.querySelector('button[type="submit"]');
-                const messageDiv = document.getElementById('membershipMessage');
-                
-                submitButton.disabled = true;
-                const originalHTML = submitButton.innerHTML;
-                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-                
-                setTimeout(() => {
-                    messageDiv.textContent = 'Welcome to A Rai of Sunshine! Check your email for confirmation and next steps.';
-                    messageDiv.className = 'form-message success';
-                    messageDiv.style.display = 'block';
-                    membershipForm.reset();
-                    submitButton.disabled = false;
-                    submitButton.innerHTML = originalHTML;
-                    messageDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                }, 1500);
-            });
-        }
+    <script type="module">
+        // Show the current dues amount from the admin's Dues Settings (falls back to the text above).
+        import { app } from './firebase-config.js';
+        import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        getDoc(doc(getFirestore(app), 'settings', 'dues')).then((snap) => {
+            const d = snap.exists() ? snap.data() : null;
+            if (!d || !Number.isInteger(d.amountCents)) return;
+            const amount = (d.amountCents / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: d.amountCents % 100 ? 2 : 0 });
+            document.getElementById('joinDuesRate').textContent = `${amount} per ${d.interval === 'week' ? 'week' : 'month'}`;
+        }).catch(() => {});
     </script>
+    <script type="module" src="account-status.js"></script>
 </body>
 </html>

@@ -7,7 +7,10 @@
       "**/node_modules/**",
       "**/*.md",
       ".git/**",
-      ".github/**"
+      ".github/**",
+      "functions/**",
+      "storage.rules",
+      "tools/**"
     ],
     "cleanUrls": true,
     "trailingSlash": false
@@ -17,5 +20,41 @@
     "location": "us-east4",
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "*.local"
+      ]
+    }
+  ],
+  "storage": {
+    "rules": "storage.rules"
+  },
+  "emulators": {
+    "auth": {
+      "port": 9099
+    },
+    "firestore": {
+      "port": 8080
+    },
+    "functions": {
+      "port": 5001
+    },
+    "storage": {
+      "port": 9199
+    },
+    "hosting": {
+      "port": 5000
+    },
+    "ui": {
+      "enabled": true,
+      "port": 4000
+    },
+    "singleProjectMode": true
   }
 }

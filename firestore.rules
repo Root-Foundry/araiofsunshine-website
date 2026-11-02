@@ -2,22 +2,172 @@ rules_version='2'
 
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isSelf(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    // Admins are listed in the `admins` collection (doc id = Firebase Auth uid).
+    // Members can now create accounts, so "signed in" alone no longer means admin.
+    function isAdmin() {
+      return signedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    function optionalString(data, field, maxLen) {
+      return !(field in data) || (data[field] is string && data[field].size() <= maxLen);
+    }
+
+    // "I am a…" ids from MEMBER_TYPES in member-common.js ('' = not answered, for older accounts).
+    function validMemberProfile(data) {
+      return (!('memberType' in data) || data.memberType in ['', 'parent', 'family', 'caregiver', 'individual', 'professional', 'supporter', 'other'])
+        && optionalString(data, 'interests', 500);
+    }
+
     // Events collection
     match /events/{eventId} {
       // Anyone can read events (public calendar)
       allow read: if true;
-      
-      // Only authenticated admin users can create, update, or delete events
-      allow create, update, delete: if request.auth != null;
+      allow create, update, delete: if isAdmin();
     }
-    
+
     // Sponsors collection
     match /sponsors/{sponsorId} {
       // Anyone can read sponsors (public display)
       allow read: if true;
-      
-      // Only authenticated admin users can create, update, or delete sponsors
-      allow create, update, delete: if request.auth != null;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Admin list — managed from the Firebase console only.
+    match /admins/{uid} {
+      allow read: if isSelf(uid) || isAdmin();
+      allow write: if false;
+    }
+
+    // Member profiles. Dues fields (paidThrough, autopay, stripeCustomerId, ...) are written
+    // only by Cloud Functions, so members can touch just their contact details.
+    match /members/{uid} {
+      allow read: if isSelf(uid) || isAdmin();
+      allow create: if isSelf(uid)
+        && request.resource.data.keys().hasOnly(['name', 'email', 'phone', 'emailUpdates', 'memberType', 'interests', 'createdAt', 'updatedAt'])
+        && validMemberProfile(request.resource.data)
+        && (!('emailUpdates' in request.resource.data) || request.resource.data.emailUpdates is bool)
+        && request.resource.data.name is string && request.resource.data.name.size() <= 100
+        && request.resource.data.email == request.auth.token.email
+        && optionalString(request.resource.data, 'phone', 30);
+      // Members edit their own contact details and email preference; admins can correct name/phone
+      // from admin-members.html but can't opt someone in to email. Dues fields only change through Cloud Functions.
+      allow update: if ((isSelf(uid)
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'phone', 'emailUpdates', 'memberType', 'interests', 'updatedAt'])
+            && validMemberProfile(request.resource.data))
+          || (isAdmin()
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'phone', 'updatedAt'])))
+        && request.resource.data.name is string && request.resource.data.name.size() <= 100
+        && optionalString(request.resource.data, 'phone', 30)
+        && (!('emailUpdates' in request.resource.data) || request.resource.data.emailUpdates is bool);
+      allow delete: if false;
+
+      match /payments/{paymentId} {
+        allow read: if isSelf(uid) || isAdmin();
+        allow write: if false;
+      }
+    }
+
+    // Business listing submissions (doc id = member uid). Any member edit goes back to "pending"
+    // for review; only an admin can approve or reject.
+    // Business type ids from BUSINESS_CATEGORIES in member-common.js.
+    function validCategory(data) {
+      return !('category' in data) || (data.category is string && data.category.matches('^[a-z]{1,30}$'));
+    }
+
+    function validBusiness(data) {
+      return data.keys().hasOnly(['name', 'owner', 'category', 'email', 'phone', 'address', 'website', 'description',
+                                  'addressStreet', 'addressCity', 'addressState', 'addressZip', 'hideStreet',
+                                  'hours', 'hoursNote', 'establishedMonth', 'establishedYear',
+                                  'logoUrl', 'logoPath', 'status', 'submittedAt', 'updatedAt',
+                                  'reviewNote', 'reviewedAt', 'reviewedBy'])
+        && data.name is string && data.name.size() > 0 && data.name.size() <= 100
+        && data.owner is string && data.owner.size() > 0 && data.owner.size() <= 100
+        && data.email is string && data.email.matches('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$') && data.email.size() <= 200
+        && validCategory(data)
+        && optionalString(data, 'phone', 30)
+        && optionalString(data, 'address', 200)
+        && optionalString(data, 'addressStreet', 150)
+        && optionalString(data, 'addressCity', 80)
+        && optionalString(data, 'addressState', 30)
+        && optionalString(data, 'addressZip', 10)
+        && (!('hideStreet' in data) || data.hideStreet is bool)
+        && (!('hours' in data) || (data.hours is map && data.hours.keys().hasOnly(['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'])))
+        && optionalString(data, 'hoursNote', 120)
+        && (!('establishedYear' in data) || data.establishedYear == null
+            || (data.establishedYear is int && data.establishedYear >= 1800 && data.establishedYear <= 2100))
+        && (!('establishedMonth' in data) || data.establishedMonth == null
+            || (data.establishedMonth is int && data.establishedMonth >= 1 && data.establishedMonth <= 12))
+        && optionalString(data, 'description', 1000)
+        && (!('website' in data) || data.website == '' || (data.website is string && data.website.size() <= 300 && data.website.matches('^https?://.+')))
+        // Logo must be a download link for this member's own folder in this site's bucket (the local Storage
+        // emulator's link to the same place is accepted for local testing).
+        && data.logoUrl is string
+        && data.logoUrl.matches('^(https://firebasestorage\\.googleapis\\.com|http://(127\\.0\\.0\\.1|localhost):9199)/v0/b/araiofsunshine\\.firebasestorage\\.app/o/business-logos%2F' + request.auth.uid + '%2F.+')
+        && data.logoPath is string && data.logoPath.matches('^business-logos/' + request.auth.uid + '/.+');
+    }
+
+    match /businesses/{uid} {
+      allow read: if isSelf(uid) || isAdmin();
+
+      allow create: if isSelf(uid)
+        && validBusiness(request.resource.data)
+        && request.resource.data.status == 'pending'
+        && !request.resource.data.keys().hasAny(['reviewNote', 'reviewedAt', 'reviewedBy']);
+
+      allow update: if (isSelf(uid)
+          && validBusiness(request.resource.data)
+          && request.resource.data.status == 'pending'
+          && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['reviewNote', 'reviewedAt', 'reviewedBy']))
+        || (isAdmin()
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'reviewNote', 'reviewedAt', 'reviewedBy', 'category'])
+          && request.resource.data.status in ['pending', 'approved', 'rejected']
+          && validCategory(request.resource.data));
+
+      allow delete: if isSelf(uid) || isAdmin();
+    }
+
+    // Public directory — maintained by Cloud Functions (approved AND dues current).
+    match /directory/{uid} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Donations and monthly donors: recorded by the Stripe webhook, visible to admins only.
+    match /donations/{donationId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    match /donationSubscriptions/{subscriptionId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    // Members removed by an admin (who, when, by whom): admins only.
+    match /removedMembers/{uid} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    // Every email the site sent or logged (dues reminders, admin notices): admins only.
+    match /outbox/{emailId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    // Site settings: settings/dues, settings/spotlight and settings/donations.
+    match /settings/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
     }
   }
 }

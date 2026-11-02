@@ -56,10 +56,14 @@
                     <a href="services.html" class="nav-link">Services</a>
                     <a href="join.html" class="nav-link">Get Involved</a>
                     <a href="resources.html" class="nav-link">Resources</a>
+                    <a href="directory.html" class="nav-link">Directory</a>
                     <a href="contact.html" class="nav-link">Contact</a>
                 </nav>
 
-                <a href="donate.html" class="btn-donate">DONATE NOW</a>
+                <div class="header-actions">
+                    <a href="member.html" class="btn-login" aria-label="Log in or sign up"><i class="fas fa-user-circle" aria-hidden="true"></i><span class="btn-login-text">Log In / Sign Up</span></a>
+                    <a href="donate.html" class="btn-donate">DONATE NOW</a>
+                </div>
 
                 <button class="mobile-menu-toggle" aria-label="Toggle menu" aria-expanded="false">
                     <i class="fas fa-bars"></i>
@@ -71,6 +75,8 @@
                 <a href="services.html" class="nav-link-mobile">Services</a>
                 <a href="join.html" class="nav-link-mobile">Get Involved</a>
                 <a href="resources.html" class="nav-link-mobile">Resources</a>
+                <a href="directory.html" class="nav-link-mobile">Directory</a>
+                <a href="member.html" class="nav-link-mobile" data-account-link>Log In / Sign Up</a>
                 <a href="contact.html" class="nav-link-mobile">Contact</a>
                 <a href="donate.html" class="nav-link-mobile btn-mobile-donate">Donate</a>
             </nav>
@@ -97,6 +103,70 @@
         </div>
     </section>
 
+    <!-- GIVE ONLINE -->
+    <section class="section" id="give">
+        <div class="container-narrow">
+            <h2 class="section-title text-center">Give Online</h2>
+            <p class="text-center" style="margin-bottom: 32px;">
+                Secure payment by card or bank through Stripe. You'll receive an emailed receipt for your records.
+            </p>
+
+            <div id="giveMessage" class="form-message hidden" role="status"></div>
+
+            <form class="contact-form donate-form" id="donateForm" novalidate>
+                <div class="give-frequency" role="radiogroup" aria-label="How often would you like to give?">
+                    <button type="button" role="radio" aria-checked="true" data-frequency="once">One-time</button>
+                    <button type="button" role="radio" aria-checked="false" data-frequency="monthly"><i class="fas fa-heart" aria-hidden="true"></i> Monthly</button>
+                </div>
+
+                <div class="give-amounts" role="radiogroup" aria-label="Donation amount">
+                    <button type="button" role="radio" aria-checked="false" data-amount="25"><strong>$25</strong><span>Supporter</span></button>
+                    <button type="button" role="radio" aria-checked="true" data-amount="50"><strong>$50</strong><span>Contributor</span></button>
+                    <button type="button" role="radio" aria-checked="false" data-amount="100"><strong>$100</strong><span>Champion</span></button>
+                    <button type="button" role="radio" aria-checked="false" data-amount="250"><strong>$250</strong><span>Sponsor</span></button>
+                </div>
+
+                <div class="form-group">
+                    <label for="customAmount">Or enter another amount</label>
+                    <div class="amount-input">
+                        <span aria-hidden="true">$</span>
+                        <input type="number" id="customAmount" class="form-input" min="5" max="10000" step="1" inputmode="decimal" placeholder="Other amount">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="donorName">Your name (optional)</label>
+                        <input type="text" id="donorName" class="form-input" maxlength="100" autocomplete="name">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="donationNote">In honor or memory of (optional)</label>
+                        <input type="text" id="donationNote" class="form-input" maxlength="200" placeholder="e.g. In memory of Grandma Rose">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="giveAnonymous">
+                        <span>Keep my gift anonymous. We won't name you in any public thank-yous.</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-primary give-submit" id="giveBtn">
+                    <i class="fas fa-lock" aria-hidden="true"></i> <span id="giveBtnText">Donate $50</span>
+                </button>
+                <p class="form-hint give-hint">
+                    Minimum $5. See our <a href="refunds.html" style="display: inline;">refund policy</a>. <span id="monthlyHint" class="hidden">Monthly gifts are charged on the same day each month and can be changed or cancelled any time.</span>
+                    <a href="#" id="manageGiftLink" class="hidden" target="_blank" rel="noopener">Manage or cancel your monthly gift</a>
+                </p>
+            </form>
+
+            <p class="text-center give-alt">
+                Prefer Cash App? <a href="http://cash.app/$Araiofsunshine2008" target="_blank" rel="noopener">Give via Cash App</a>
+            </p>
+        </div>
+    </section>
+
     <!-- DONATION OPTIONS -->
     <section class="section section-light">
         <div class="container">
@@ -112,8 +182,11 @@
                     <p class="service-card-description">
                         Make a single donation to support our current programs and services.
                     </p>
-                    <a href="http://cash.app/$Araiofsunshine2008" target="_blank" rel="noopener" class="btn-primary" style="margin-top: 20px; width: 100%;">
-                        Donate via Cash App
+                    <a href="#give" class="btn-primary" data-frequency="once" style="margin-top: 20px; width: 100%;">
+                        Give Online
+                    </a>
+                    <a href="http://cash.app/$Araiofsunshine2008" target="_blank" rel="noopener" class="service-link" style="margin-top: 12px; display: inline-block;">
+                        or give via Cash App
                     </a>
                 </div>
 
@@ -126,7 +199,7 @@
                     <p class="service-card-description">
                         Become a sustaining supporter with a monthly recurring donation.
                     </p>
-                    <a href="contact.html" class="btn-primary" style="margin-top: 20px; width: 100%;">
+                    <a href="#give" class="btn-primary" data-frequency="monthly" style="margin-top: 20px; width: 100%;">
                         Set Up Monthly Gift
                     </a>
                 </div>
@@ -190,7 +263,7 @@
 
             <div style="text-align: center; margin-top: 40px;">
                 <p class="body-large">Every amount makes a difference, no matter the size.</p>
-                <a href="http://cash.app/$Araiofsunshine2008" target="_blank" rel="noopener" class="btn-primary" style="margin-top: 20px; display: inline-block;">
+                <a href="#give" class="btn-primary" style="margin-top: 20px; display: inline-block;">
                     <i class="fas fa-heart"></i> Donate Now
                 </a>
             </div>
@@ -259,7 +332,7 @@
                 <h2 class="cta-title">Thank You for Your Support!</h2>
                 <p class="cta-text">Together, we're building a more inclusive and supportive community</p>
                 <div class="cta-buttons">
-                    <a href="http://cash.app/$Araiofsunshine2008" target="_blank" rel="noopener" class="btn-primary">DONATE NOW</a>
+                    <a href="#give" class="btn-primary">DONATE NOW</a>
                     <a href="contact.html" class="btn-secondary btn-secondary-light">HAVE QUESTIONS?</a>
                 </div>
             </div>
@@ -297,6 +370,8 @@
                     <h3 class="footer-title">Get Involved</h3>
                     <ul class="footer-links">
                         <li><a href="join.html" class="footer-link">Become a Member</a></li>
+                        <li><a href="member.html" class="footer-link">Member Portal</a></li>
+                        <li><a href="directory.html" class="footer-link">Business Directory</a></li>
                         <li><a href="donate.html" class="footer-link">Donate</a></li>
                         <li><a href="contact.html" class="footer-link">Volunteer</a></li>
                     </ul>
@@ -319,6 +394,7 @@
 
             <div class="footer-bottom">
                  <p>&copy; <span class="current-year">2026</span> A Rai of Sunshine of North Florida Inc. All rights reserved.</p>
+                <p class="footer-legal"><a href="privacy.html" class="footer-link">Privacy Policy</a> · <a href="terms.html" class="footer-link">Terms of Use</a> · <a href="refunds.html" class="footer-link">Refund &amp; Cancellation Policy</a></p>
                 <p class="footer-credit">
                     Website made & managed by <a href="https://root-foundry.com" class="footer-link">Root Foundry LLC</a>
                 </p>
@@ -327,5 +403,101 @@
     </footer>
 
     <script src="script.js"></script>
+    <script type="module">
+        import { app } from './firebase-config.js';
+        import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js';
+        import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        const $ = (id) => document.getElementById(id);
+        const MIN = 5;
+        const MAX = 10000;
+        const state = { frequency: 'once', amount: 50 };
+        const money = (n) => n.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: Number.isInteger(n) ? 0 : 2 });
+
+        function render() {
+            document.querySelectorAll('.give-frequency [data-frequency]').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.frequency === state.frequency)));
+            document.querySelectorAll('.give-amounts [data-amount]').forEach((b) => b.setAttribute('aria-checked', String(Number(b.dataset.amount) === state.amount && !$('customAmount').value)));
+            const valid = state.amount >= MIN && state.amount <= MAX;
+            $('giveBtnText').textContent = valid
+                ? `Donate ${money(state.amount)}${state.frequency === 'monthly' ? ' monthly' : ''}`
+                : `Enter an amount from $${MIN} to $${MAX.toLocaleString('en-US')}`;
+            $('giveBtn').disabled = !valid;
+            $('monthlyHint').classList.toggle('hidden', state.frequency !== 'monthly');
+        }
+
+        function setFrequency(f) {
+            state.frequency = f === 'monthly' ? 'monthly' : 'once';
+            render();
+        }
+
+        document.querySelectorAll('.give-frequency [data-frequency]').forEach((b) => b.addEventListener('click', () => setFrequency(b.dataset.frequency)));
+        document.querySelectorAll('.give-amounts [data-amount]').forEach((b) => b.addEventListener('click', () => {
+            $('customAmount').value = '';
+            state.amount = Number(b.dataset.amount);
+            render();
+        }));
+        $('customAmount').addEventListener('input', (e) => {
+            const v = parseFloat(e.target.value);
+            state.amount = Number.isFinite(v) ? Math.round(v * 100) / 100 : 0;
+            render();
+        });
+
+        // "Give Online" / "Set Up Monthly Gift" buttons elsewhere on the page preselect the frequency.
+        document.querySelectorAll('a[href="#give"][data-frequency]').forEach((a) => a.addEventListener('click', () => setFrequency(a.dataset.frequency)));
+
+        function showMessage(text, type) {
+            const el = $('giveMessage');
+            el.textContent = text;
+            el.className = `form-message ${type}`;
+        }
+
+        // Returning from Stripe Checkout.
+        const result = new URLSearchParams(location.search).get('donation');
+        if (result) {
+            history.replaceState(null, '', location.pathname + '#give');
+            if (result === 'success') {
+                showMessage('Thank you for your gift! A receipt is on its way to your email.', 'success');
+            } else {
+                showMessage('Your donation was cancelled. You have not been charged.', 'error');
+            }
+        }
+
+        $('donateForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = $('giveBtn');
+            btn.disabled = true;
+            $('giveBtnText').textContent = 'Opening secure checkout…';
+            try {
+                const { data } = await httpsCallable(getFunctions(app, 'us-east4'), 'createDonationCheckout')({
+                    amountCents: Math.round(state.amount * 100),
+                    frequency: state.frequency,
+                    donorName: $('donorName').value,
+                    note: $('donationNote').value,
+                    anonymous: $('giveAnonymous').checked,
+                    returnUrl: location.origin + location.pathname
+                });
+                location.href = data.url;
+            } catch (err) {
+                console.error(err);
+                const readable = err?.message && !['functions/internal', 'functions/unknown', 'functions/unavailable'].includes(err.code);
+                showMessage(readable ? err.message
+                    : 'We could not start checkout. Please try again in a few minutes, or give via Cash App.', 'error');
+                $('giveMessage').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                render();
+            }
+        });
+
+        // Link for monthly donors to manage their gift (Stripe's customer portal login), set in the admin area.
+        getDoc(doc(getFirestore(app), 'settings', 'donations')).then((snap) => {
+            const url = snap.exists() ? snap.data().portalLoginUrl : '';
+            if (typeof url === 'string' && url.startsWith('https://billing.stripe.com/')) {
+                $('manageGiftLink').href = url;
+                $('manageGiftLink').classList.remove('hidden');
+            }
+        }).catch(() => {});
+
+        render();
+    </script>
+    <script type="module" src="account-status.js"></script>
 </body>
 </html>

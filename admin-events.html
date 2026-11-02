@@ -308,6 +308,9 @@
             <div class="admin-nav">
                 <a href="admin-events.html" class="active"><i class="fas fa-calendar-alt"></i> Events</a>
                 <a href="admin-sponsors.html"><i class="fas fa-handshake"></i> Sponsors</a>
+                <a href="admin-businesses.html"><i class="fas fa-store"></i> Businesses</a>
+                <a href="admin-members.html"><i class="fas fa-users"></i> Members</a>
+                <a href="admin-donations.html"><i class="fas fa-hand-holding-heart"></i> Donations</a>
             </div>
             <div class="admin-actions">
                 <span id="userEmail"></span>
@@ -385,30 +388,26 @@
 
     <!-- Firebase SDK -->
     <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { app } from './firebase-config.js';
         import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
         import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyD260jUFHNr0Tt_MLC3-ogJn4tJTPYZwSU",
-            authDomain: "araiofsunshine.firebaseapp.com",
-            projectId: "araiofsunshine",
-            storageBucket: "araiofsunshine.firebasestorage.app",
-            messagingSenderId: "741022041696",
-            appId: "1:741022041696:web:336a94177b337cf8e5a505"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
         let currentEditId = null;
+        let pendingDeleteId = null;
 
         // Check authentication
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(auth, async (user) => {
             if (user) {
+                // Members also have accounts now; only users listed in `admins` may use this page.
+                const adminDoc = await getDoc(doc(db, 'admins', user.uid)).catch(() => null);
+                if (!adminDoc || !adminDoc.exists()) {
+                    await signOut(auth);
+                    window.location.href = 'admin-login.html';
+                    return;
+                }
                 document.getElementById('userEmail').textContent = user.email;
                 loadEvents();
             } else {
@@ -568,7 +567,13 @@
 
         // Delete event
         async function deleteEvent(eventId) {
-            if (!confirm('Are you sure you want to delete this event?')) return;
+            // Second click confirms (browser confirm dialogs are blocked in some embedded views).
+            if (pendingDeleteId !== eventId) {
+                pendingDeleteId = eventId;
+                showError('Click the delete button again to delete this event.');
+                return;
+            }
+            pendingDeleteId = null;
             
             try {
                 await deleteDoc(doc(db, 'events', eventId));

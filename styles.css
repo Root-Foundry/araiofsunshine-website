@@ -43,6 +43,7 @@ body {
     --dark-text: #333333;
     --medium-gray: #666666;
     --light-gray: #F5F5F5;
+    --dark-gray: #333333; /* used by the admin pages and homepage event cards */
     --success-green: #2ECC71;
     
     /* Spacing */
@@ -214,8 +215,8 @@ a:hover {
     font-weight: 700;
 }
 
-/* Desktop Navigation */
-@media (min-width: 768px) {
+/* Desktop Navigation (tablets keep the menu button so six links + Donate fit) */
+@media (min-width: 992px) {
     .nav-desktop {
         display: flex;
     }
@@ -226,6 +227,13 @@ a:hover {
     
     .nav-mobile {
         display: none !important;
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+    .nav-link {
+        padding: 12px 12px;
+        font-size: 15px;
     }
 }
 
@@ -302,6 +310,68 @@ a:hover {
     transform: scale(1.05);
     box-shadow: 0 4px 16px rgba(255, 215, 0, 0.6);
     color: var(--dark-text);
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Member login: full label on wide screens, icon only on small desktops, in the mobile menu below 992px */
+.btn-login {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    color: var(--sky-blue);
+    border: 2px solid var(--sky-blue);
+    padding: 10px 20px;
+    font-size: 15px;
+    font-weight: 700;
+    border-radius: 25px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+}
+
+.btn-login:hover {
+    background-color: var(--sky-blue);
+    color: white;
+}
+
+.btn-login i {
+    font-size: 18px;
+}
+
+.btn-login.signed-in {
+    background-color: var(--sky-blue);
+    color: white;
+}
+
+.btn-login.signed-in:hover {
+    background-color: #3A7BC8;
+    border-color: #3A7BC8;
+}
+
+@media (min-width: 992px) {
+    .btn-login {
+        display: inline-flex;
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+    .btn-login {
+        padding: 10px 12px;
+    }
+
+    .btn-login-text {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+    }
 }
 
 /* ============================================
@@ -1410,4 +1480,272 @@ select.form-input {
     .contact-form {
         padding: 24px;
     }
+}
+
+/* ============================================
+   ADMIN HEADER (shared by all admin pages)
+   ============================================ */
+
+.admin-header .admin-nav {
+    gap: 4px;
+}
+
+.admin-header .admin-nav a {
+    white-space: nowrap;
+    padding: 8px 14px;
+}
+
+.admin-header .logout-btn {
+    white-space: nowrap;
+}
+
+.admin-header h1 {
+    white-space: nowrap;
+}
+
+/* Small desktops: tighten the menu so four links, the email and Logout fit on one row. */
+@media (min-width: 993px) and (max-width: 1199px) {
+    .admin-header .admin-nav {
+        gap: 4px;
+    }
+
+    .admin-header .admin-nav a {
+        padding: 8px 10px;
+    }
+
+    .admin-header .admin-actions span {
+        display: none;
+    }
+}
+
+/* On tablets and phones, keep the admin menu visible on its own row instead of hiding it. */
+@media (max-width: 992px) {
+    .admin-header .admin-header-content {
+        flex-wrap: wrap;
+        row-gap: 12px;
+    }
+
+    .admin-header .admin-nav {
+        display: flex;
+        order: 3;
+        width: 100%;
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+
+    .admin-header .admin-nav a {
+        padding: 6px 12px;
+        font-size: 14px;
+        white-space: nowrap;
+    }
+}
+
+/* Admin pages on phones: smaller padding so cards fit the screen. */
+@media (max-width: 575px) {
+    body .admin-header .admin-header-content,
+    body .admin-container {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    body .admin-container .admin-card {
+        padding: 20px 16px;
+    }
+
+    body .admin-container .admin-grid > * {
+        min-width: 0;
+    }
+}
+
+/* ============================================
+   DONATION FORM (donate.html)
+   ============================================ */
+
+#give .hidden {
+    display: none !important;
+}
+
+.donate-form {
+    display: grid;
+    gap: var(--spacing-md);
+}
+
+.donate-form .form-group {
+    margin-bottom: 0;
+}
+
+.give-frequency {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: var(--light-gray);
+    border-radius: 999px;
+    padding: 4px;
+}
+
+.give-frequency button {
+    border: none;
+    background: transparent;
+    border-radius: 999px;
+    padding: 12px;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--medium-gray);
+    cursor: pointer;
+}
+
+.give-frequency button[aria-checked="true"] {
+    background: white;
+    color: var(--dark-text);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.give-frequency button i {
+    color: var(--warm-orange);
+}
+
+.give-amounts {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+@media (min-width: 576px) {
+    .give-amounts {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.give-amounts button {
+    border: 2px solid var(--light-gray);
+    background: white;
+    border-radius: 12px;
+    padding: 14px 8px;
+    font-family: inherit;
+    cursor: pointer;
+    display: grid;
+    gap: 2px;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.give-amounts button strong {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 24px;
+    color: var(--dark-text);
+}
+
+.give-amounts button span {
+    font-size: 13px;
+    color: var(--medium-gray);
+}
+
+.give-amounts button:hover {
+    border-color: var(--sky-blue);
+}
+
+.give-amounts button[aria-checked="true"] {
+    border-color: var(--warm-orange);
+    background: var(--soft-cream);
+}
+
+.amount-input {
+    position: relative;
+}
+
+.amount-input span {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-weight: 700;
+    color: var(--medium-gray);
+}
+
+.amount-input .form-input {
+    padding-left: 34px;
+}
+
+.give-submit {
+    width: 100%;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 18px;
+}
+
+.give-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.give-hint {
+    display: block;
+    margin: -8px 0 0;
+    font-size: 14px;
+    color: var(--medium-gray);
+    text-align: center;
+}
+
+.give-hint a {
+    display: block;
+    margin-top: 6px;
+    color: var(--sky-blue);
+}
+
+.give-alt {
+    margin-top: var(--spacing-md);
+    color: var(--medium-gray);
+}
+
+#giveMessage {
+    margin: 0 0 var(--spacing-md);
+}
+
+/* ============================================
+   POLICY PAGES (privacy.html, terms.html, refunds.html)
+   ============================================ */
+
+.policy-content h2 {
+    font-size: var(--heading-4);
+    margin: var(--spacing-lg) 0 var(--spacing-sm);
+}
+
+.policy-content p,
+.policy-content li {
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--dark-text);
+}
+
+.policy-content ul {
+    padding-left: 22px;
+    margin-bottom: var(--spacing-sm);
+}
+
+.policy-content li {
+    margin-bottom: 8px;
+}
+
+.policy-content a {
+    color: var(--sky-blue);
+}
+
+.policy-lead {
+    font-size: var(--body-large);
+}
+
+.policy-draft-note {
+    background: #FFF3CD;
+    color: #6B5200;
+    border: 2px dashed #E0B400;
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: var(--spacing-lg);
+    font-size: 15px;
+}
+
+.footer-legal {
+    margin: 0 0 8px;
+    font-size: 14px;
 }

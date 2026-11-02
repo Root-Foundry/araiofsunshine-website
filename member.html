@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Member portal for A Rai of Sunshine of North Florida Inc. Pay membership dues and list your business in our member directory.">
+    <title>Member Portal | A Rai of Sunshine of North Florida Inc.</title>
+    <link rel="canonical" href="https://araiofsunshine.org/member.html">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="members.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+  window._rootfoundry = {
+    dashboardUrl: 'https://root-foundry.com/client/dashboard?clientId=client_e74d2e0fbe35303ca382319e',
+    siteId: 'f4532f88661d56d9c4db2f3a',
+    userId: 'jSQnZBWuaMcR5Vr1WFRyuFE9uZp2'
+  };
+</script>
+<script src="https://root-foundry.com/tracking/tracker.js"></script>
+</head>
+<body>
+
+    <!-- HEADER / NAVIGATION -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+               <div class="logo">
+                    <a href="index.html" class="logo-link">
+                        <img src="cropped-logo.png" alt="A Rai of Sunshine logo" height="60">
+                    </a>
+                </div>
+
+                <nav class="nav-desktop">
+                    <a href="about.html" class="nav-link">About</a>
+                    <a href="services.html" class="nav-link">Services</a>
+                    <a href="join.html" class="nav-link">Get Involved</a>
+                    <a href="resources.html" class="nav-link">Resources</a>
+                    <a href="directory.html" class="nav-link">Directory</a>
+                    <a href="contact.html" class="nav-link">Contact</a>
+                </nav>
+
+                <div class="header-actions">
+                    <a href="member.html" class="btn-login" aria-label="Log in or sign up"><i class="fas fa-user-circle" aria-hidden="true"></i><span class="btn-login-text">Log In / Sign Up</span></a>
+                    <a href="donate.html" class="btn-donate">DONATE NOW</a>
+                </div>
+
+                <button class="mobile-menu-toggle" aria-label="Toggle menu" aria-expanded="false">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+
+            <nav class="nav-mobile">
+                <a href="about.html" class="nav-link-mobile">About</a>
+                <a href="services.html" class="nav-link-mobile">Services</a>
+                <a href="join.html" class="nav-link-mobile">Get Involved</a>
+                <a href="resources.html" class="nav-link-mobile">Resources</a>
+                <a href="directory.html" class="nav-link-mobile">Directory</a>
+                <a href="member.html" class="nav-link-mobile" data-account-link>Log In / Sign Up</a>
+                <a href="contact.html" class="nav-link-mobile">Contact</a>
+                <a href="donate.html" class="nav-link-mobile btn-mobile-donate">Donate</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- PAGE HEADER -->
+    <section class="page-header">
+        <div class="container">
+            <h1 class="page-title">Member Portal</h1>
+            <p class="page-subtitle">Pay your dues and share your business with our community</p>
+        </div>
+    </section>
+
+    <section class="section section-light">
+        <div class="container-narrow">
+
+            <div id="pageMessage" class="form-message hidden" role="status"></div>
+
+            <!-- SIGNED OUT: sign in / create account -->
+            <div id="authView" class="member-card hidden">
+                <div class="auth-tabs" role="tablist">
+                    <button type="button" class="auth-tab active" data-tab="signin" role="tab">Sign In</button>
+                    <button type="button" class="auth-tab" data-tab="signup" role="tab">Create Account</button>
+                </div>
+
+                <form id="signinForm">
+                    <div class="form-group">
+                        <label for="signinEmail">Email Address</label>
+                        <input type="email" id="signinEmail" class="form-input" autocomplete="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signinPassword">Password</label>
+                        <input type="password" id="signinPassword" class="form-input" autocomplete="current-password" required>
+                    </div>
+                    <button type="submit" class="btn-primary" style="width: 100%; border: none; cursor: pointer;">
+                        <i class="fas fa-sign-in-alt"></i> Sign In
+                    </button>
+                    <p style="margin-top: 16px; text-align: center;">
+                        <button type="button" class="link-button" id="forgotPasswordBtn">Forgot your password?</button>
+                    </p>
+                </form>
+
+                <form id="signupForm" class="hidden">
+                    <div class="form-group">
+                        <label for="signupName">Full Name <span class="required">*</span></label>
+                        <input type="text" id="signupName" class="form-input" autocomplete="name" maxlength="100" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label for="signupEmail">Email Address <span class="required">*</span></label>
+                            <input type="email" id="signupEmail" class="form-input" autocomplete="email" required>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label for="signupPhone">Phone Number</label>
+                            <input type="tel" id="signupPhone" class="form-input" autocomplete="tel" maxlength="30">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupMemberType">I am a: <span class="required">*</span></label>
+                        <select id="signupMemberType" class="form-input" required>
+                                <option value="">Please select…</option>
+                            </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupInterests">Areas of interest (optional)</label>
+                        <textarea id="signupInterests" class="form-input" rows="3" maxlength="500" placeholder="Family support, entrepreneurship, volunteering…"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupPassword">Password <span class="required">*</span></label>
+                        <input type="password" id="signupPassword" class="form-input" autocomplete="new-password" minlength="8" required>
+                        <span class="form-hint">At least 8 characters.</span>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="signupEmailUpdates" checked>
+                            <span>Email me news, events and updates from A Rai of Sunshine. You can change this any time.</span>
+                        </label>
+                    </div>
+                    <button type="submit" class="btn-primary" style="width: 100%; border: none; cursor: pointer;">
+                        <i class="fas fa-user-plus"></i> Create Account
+                    </button>
+                    <p class="form-hint" style="text-align: center; margin-top: 12px;">
+                        By creating an account you agree to our <a href="terms.html">Terms of Use</a> and
+                        <a href="privacy.html">Privacy Policy</a>.
+                    </p>
+                </form>
+            </div>
+
+            <!-- SIGNED IN: portal -->
+            <div id="portalView" class="hidden">
+                <div class="portal-welcome">
+                    <h2>Welcome, <span id="memberName"></span></h2>
+                    <button type="button" class="btn-secondary" id="signOutBtn" style="cursor: pointer;">
+                        <i class="fas fa-sign-out-alt"></i> Sign Out
+                    </button>
+                </div>
+
+                <div class="portal-tabs" role="tablist" aria-label="Member portal sections">
+                    <button type="button" class="portal-tab" role="tab" id="tab-dues" data-tab="dues" aria-controls="dues" aria-selected="true">
+                        <i class="fas fa-receipt" aria-hidden="true"></i> Dues <span class="tab-alert hidden" id="duesAlert" aria-label="Needs attention"></span>
+                    </button>
+                    <button type="button" class="portal-tab" role="tab" id="tab-business" data-tab="business" aria-controls="business" aria-selected="false">
+                        <i class="fas fa-store" aria-hidden="true"></i> Business Listing <span class="tab-alert hidden" id="bizAlert" aria-label="Needs attention"></span>
+                    </button>
+                    <button type="button" class="portal-tab" role="tab" id="tab-badge" data-tab="badge" aria-controls="badge" aria-selected="false">
+                        <i class="fas fa-certificate" aria-hidden="true"></i> Member Badge
+                    </button>
+                    <button type="button" class="portal-tab" role="tab" id="tab-account" data-tab="account" aria-controls="account" aria-selected="false">
+                        <i class="fas fa-user-cog" aria-hidden="true"></i> Account
+                    </button>
+                </div>
+
+                <!-- DUES -->
+                <div class="member-card portal-panel" id="dues" role="tabpanel" aria-labelledby="tab-dues">
+                    <h2><i class="fas fa-receipt"></i> Membership Dues</h2>
+                    <p class="card-intro">
+                        Dues are <strong id="duesRate">$25.00 per month</strong>. Paid-up members can be listed in our
+                        <a href="directory.html">business directory</a>.
+                    </p>
+
+                    <div class="dues-status">
+                        <span id="duesBadge" class="status-badge neutral">Loading…</span>
+                        <p id="duesDetail"></p>
+                    </div>
+
+                    <div class="dues-options">
+                        <div class="dues-option">
+                            <h3><i class="fas fa-sync-alt"></i> Autopay</h3>
+                            <p id="autopayText">Automatically pay each month with a card. Cancel any time.</p>
+                            <button type="button" class="btn-primary" id="autopayBtn" disabled>Turn On Autopay</button>
+                            <button type="button" class="btn-secondary hidden" id="manageBillingBtn">Manage Autopay &amp; Card</button>
+                        </div>
+                        <div class="dues-option">
+                            <h3><i class="fas fa-calendar-check"></i> Pay Manually / In Advance</h3>
+                            <p id="prepayText">Pay for one or more months at a time. Paying ahead adds to any time you've already paid for.</p>
+                            <div class="prepay-row">
+                                <label for="prepayPeriods" class="hidden">Number of periods</label>
+                                <select id="prepayPeriods" class="form-input"></select>
+                            </div>
+                            <button type="button" class="btn-primary" id="prepayBtn" disabled>Pay Now</button>
+                        </div>
+                    </div>
+
+                    <details class="payment-history hidden" id="paymentHistory">
+                        <summary>Payment history</summary>
+                        <ul id="paymentList"></ul>
+                    </details>
+                </div>
+
+                <!-- BUSINESS LISTING -->
+                <div class="member-card portal-panel hidden" id="business" role="tabpanel" aria-labelledby="tab-business">
+                    <h2><i class="fas fa-store"></i> Your Business Listing</h2>
+                    <p class="card-intro">
+                        Share your business with the community. Listings are reviewed by our team, then appear in the
+                        <a href="directory.html">directory</a> while your dues are current.
+                    </p>
+
+                    <div class="dues-status">
+                        <span id="bizBadge" class="status-badge neutral">Not submitted</span>
+                        <p id="bizDetail">Fill out the form below to submit your business for review.</p>
+                    </div>
+                    <div id="reviewNote" class="review-note hidden"></div>
+
+                    <form id="businessForm" novalidate>
+                        <div class="form-row">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="bizName">Business Name <span class="required">*</span></label>
+                                <input type="text" id="bizName" class="form-input" maxlength="100" required>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="bizOwner">Owner <span class="required">*</span></label>
+                                <input type="text" id="bizOwner" class="form-input" maxlength="100" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="bizCategory">Type of Business <span class="required">*</span></label>
+                            <select id="bizCategory" class="form-input" required>
+                                <option value="">Choose the closest match…</option>
+                            </select>
+                            <span class="form-hint">People can filter the directory by this.</span>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="bizEmail">Business Email <span class="required">*</span></label>
+                                <input type="email" id="bizEmail" class="form-input" maxlength="200" required>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="bizPhone">Business Phone</label>
+                                <input type="tel" id="bizPhone" class="form-input" maxlength="30">
+                            </div>
+                        </div>
+                        <fieldset class="address-fieldset">
+                            <legend>Business Address</legend>
+                            <div class="form-group">
+                                <label for="bizStreet">Street</label>
+                                <input type="text" id="bizStreet" class="form-input" maxlength="150" autocomplete="address-line1" placeholder="805 N. Jefferson Street">
+                            </div>
+                            <div class="address-row">
+                                <div class="form-group">
+                                    <label for="bizCity">City</label>
+                                    <input type="text" id="bizCity" class="form-input" maxlength="80" autocomplete="address-level2" placeholder="Monticello">
+                                </div>
+                                <div class="form-group">
+                                    <label for="bizState">State</label>
+                                    <input type="text" id="bizState" class="form-input" maxlength="30" autocomplete="address-level1" placeholder="FL">
+                                </div>
+                                <div class="form-group">
+                                    <label for="bizZip">ZIP</label>
+                                    <input type="text" id="bizZip" class="form-input" maxlength="10" autocomplete="postal-code" inputmode="numeric" placeholder="32344">
+                                </div>
+                            </div>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="bizHideStreet">
+                                <span>Hide my street address. The directory shows only the city and state (good for home-based businesses).</span>
+                            </label>
+                            <p class="form-hint" id="addressPreview"></p>
+                        </fieldset>
+                        <div class="form-group">
+                            <label for="bizWebsite">Website</label>
+                            <input type="url" id="bizWebsite" class="form-input" maxlength="300" placeholder="https://example.com">
+                        </div>
+                        <div class="form-group">
+                            <span class="field-label" id="establishedLabel">Established</span>
+                            <div class="established-row" role="group" aria-labelledby="establishedLabel">
+                                <label for="bizEstMonth" class="hidden">Month established</label>
+                                <select id="bizEstMonth" class="form-input">
+                                    <option value="">Month (optional)</option>
+                                </select>
+                                <label for="bizEstYear" class="hidden">Year established</label>
+                                <input type="number" id="bizEstYear" class="form-input" min="1800" step="1" placeholder="Year" inputmode="numeric">
+                            </div>
+                            <span class="form-hint">Shown as "Est. March 2015". Leave the year blank to skip it.</span>
+                        </div>
+                        <fieldset class="address-fieldset hours-fieldset">
+                            <legend>Business Hours</legend>
+                            <p class="form-hint" style="margin: 0 0 12px;">Leave a day blank to leave it off your listing.</p>
+                            <div class="hours-grid" id="hoursGrid"></div>
+                            <button type="button" class="link-button" id="copyWeekdays">Copy Monday's hours to Tuesday–Friday</button>
+                            <div class="form-group" style="margin: 16px 0 0;">
+                                <label for="bizHoursNote">Hours note (optional)</label>
+                                <input type="text" id="bizHoursNote" class="form-input" maxlength="120" placeholder="e.g. Weekends by appointment">
+                            </div>
+                        </fieldset>
+                        <div class="form-group">
+                            <label for="bizDescription">About the Business</label>
+                            <textarea id="bizDescription" class="form-input" maxlength="1000" rows="4" placeholder="What does your business do?"></textarea>
+                            <span class="form-hint"><span id="descCount">0</span>/1000 characters</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="bizLogo">Logo <span class="required">*</span></label>
+                            <div class="logo-upload">
+                                <div class="logo-upload-preview" id="logoPreview"><i class="fas fa-image"></i></div>
+                                <div>
+                                    <input type="file" id="bizLogo" accept="image/png,image/jpeg,image/webp,image/gif">
+                                    <span class="form-hint">PNG, JPG, WEBP or GIF, up to 2 MB.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="review-note hidden" id="resubmitWarn" role="alert">
+                            <strong>Your listing is live.</strong> Saving changes sends it back for review, and it will be hidden
+                            from the directory until it's approved again. Click the button again to continue.
+                        </div>
+                        <button type="submit" class="btn-primary" id="bizSubmitBtn" style="width: 100%; border: none; cursor: pointer;">
+                            <i class="fas fa-paper-plane"></i> Submit for Review
+                        </button>
+                        <div id="bizMessage" class="form-message hidden" role="status"></div>
+                    </form>
+                </div>
+
+                <!-- MEMBER BADGE -->
+                <div class="member-card portal-panel hidden" id="badge" role="tabpanel" aria-labelledby="tab-badge">
+                    <h2><i class="fas fa-certificate"></i> Member Badge</h2>
+                    <p class="card-intro">
+                        Show customers you're a proud member. Download these images for your website, social media or storefront.
+                    </p>
+
+                    <div class="dues-status hidden" id="badgeLocked">
+                        <span class="status-badge warn"><i class="fas fa-lock"></i> Not available yet</span>
+                        <p id="badgeLockedText"></p>
+                    </div>
+
+                    <div class="badge-downloads hidden" id="badgeReady">
+                        <figure class="badge-option">
+                            <img id="badgeSquareImg" alt="Square member badge for social media">
+                            <figcaption>
+                                <strong>Social media</strong>
+                                <span>Square, 1080 × 1080. Instagram, Facebook and more.</span>
+                                <button type="button" class="btn-primary" id="badgeSquareBtn"><i class="fas fa-download"></i> Download</button>
+                            </figcaption>
+                        </figure>
+                        <figure class="badge-option">
+                            <img id="badgeWideImg" alt="Wide member badge for websites">
+                            <figcaption>
+                                <strong>Website</strong>
+                                <span>Wide, 1200 × 400. Add it to your site's footer or About page.</span>
+                                <button type="button" class="btn-primary" id="badgeWideBtn"><i class="fas fa-download"></i> Download</button>
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <p class="form-hint hidden" id="badgeLinkHint">
+                        Tip: link the badge to <strong>araiofsunshine.org/directory</strong> so customers can find your listing.
+                    </p>
+                </div>
+
+                <!-- ACCOUNT SETTINGS -->
+                <div class="member-card portal-panel hidden" id="account" role="tabpanel" aria-labelledby="tab-account">
+                    <h2><i class="fas fa-user-cog"></i> Account Settings</h2>
+                    <p class="card-intro">Update your contact details or change your password.</p>
+
+                    <form id="profileForm" novalidate>
+                        <div class="form-row">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="profileName">Full Name <span class="required">*</span></label>
+                                <input type="text" id="profileName" class="form-input" maxlength="100" autocomplete="name" required>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="profilePhone">Phone Number</label>
+                                <input type="tel" id="profilePhone" class="form-input" maxlength="30" autocomplete="tel">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="profileEmail">Email Address</label>
+                            <input type="email" id="profileEmail" class="form-input" readonly>
+                            <span class="form-hint">To change the email on your account, please contact us.</span>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="profileMemberType">I am a:</label>
+                                <select id="profileMemberType" class="form-input">
+                                <option value="">Please select…</option>
+                            </select>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="profileInterests">Areas of interest</label>
+                                <textarea id="profileInterests" class="form-input" rows="2" maxlength="500"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="profileEmailUpdates">
+                                <span>Email me news, events and updates. (We'll still email you about your dues and account.)</span>
+                            </label>
+                        </div>
+                        <button type="submit" class="btn-primary" id="profileSaveBtn" style="border: none; cursor: pointer;">
+                            <i class="fas fa-save"></i> Save Details
+                        </button>
+                        <div id="profileMessage" class="form-message hidden" role="status"></div>
+                    </form>
+
+                    <hr style="border: 0; border-top: 2px solid var(--light-gray); margin: var(--spacing-lg) 0;">
+
+                    <form id="passwordForm" novalidate>
+                        <h3 style="font-size: 18px; margin-bottom: var(--spacing-sm);">Change Password</h3>
+                        <div class="form-group">
+                            <label for="currentPassword">Current Password</label>
+                            <input type="password" id="currentPassword" class="form-input" autocomplete="current-password" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="newPassword">New Password</label>
+                                <input type="password" id="newPassword" class="form-input" autocomplete="new-password" minlength="8" required>
+                                <span class="form-hint">At least 8 characters.</span>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="confirmPassword">Confirm New Password</label>
+                                <input type="password" id="confirmPassword" class="form-input" autocomplete="new-password" minlength="8" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-secondary" id="passwordSaveBtn" style="cursor: pointer;">
+                            <i class="fas fa-key"></i> Update Password
+                        </button>
+                        <div id="passwordMessage" class="form-message hidden" role="status"></div>
+                    </form>
+                </div>
+            </div>
+
+            <p id="loadingView" class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading…</p>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3 class="footer-title">About Us</h3>
+                    <p class="footer-text">
+                        Supporting families and empowering individuals with disabilities in
+                        Jefferson County and beyond.
+                    </p>
+                    <div class="social-icons">
+                        <a href="https://www.facebook.com/ARaiOfSunshine" class="social-icon" aria-label="Facebook">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h3 class="footer-title">Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="about.html" class="footer-link">Our Story</a></li>
+                        <li><a href="services.html" class="footer-link">Services</a></li>
+                        <li><a href="resources.html" class="footer-link">Resources</a></li>
+                        <li><a href="events.html" class="footer-link">Events</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3 class="footer-title">Get Involved</h3>
+                    <ul class="footer-links">
+                        <li><a href="join.html" class="footer-link">Become a Member</a></li>
+                        <li><a href="member.html" class="footer-link">Member Portal</a></li>
+                        <li><a href="directory.html" class="footer-link">Business Directory</a></li>
+                        <li><a href="donate.html" class="footer-link">Donate</a></li>
+                        <li><a href="contact.html" class="footer-link">Volunteer</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3 class="footer-title">Contact</h3>
+                    <ul class="footer-contact">
+                        <li>
+                            <i class="fas fa-map-marker-alt"></i>
+                            805 N. Jefferson Street unit 805, Monticello, FL, United States
+                        </li>
+                        <li>
+                            <i class="fas fa-envelope"></i>
+                            <a href="mailto:araiofsunshineofnorthflorida@gmail.com" class="footer-link">araiofsunshineofnorthflorida@gmail.com</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; <span class="current-year">2026</span> A Rai of Sunshine of North Florida Inc. All rights reserved.</p>
+                <p class="footer-legal"><a href="privacy.html" class="footer-link">Privacy Policy</a> · <a href="terms.html" class="footer-link">Terms of Use</a> · <a href="refunds.html" class="footer-link">Refund &amp; Cancellation Policy</a></p>
+                <p class="footer-credit">
+                    Website made & managed by <a href="https://root-foundry.com" class="footer-link">Root Foundry LLC</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script type="module">
+        import { auth, db, storage, functions, getDuesSettings, escapeHtml, formatMoney, formatDate, toDate, isPaidUp, BUSINESS_CATEGORIES, formatAddress, DAYS, MONTHS, formatMonthYear, fillMemberTypeSelect } from './member-common.js';
+        fillMemberTypeSelect(document.getElementById('signupMemberType'));
+        fillMemberTypeSelect(document.getElementById('profileMemberType'));
+        import { onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, signOut, updateProfile, EmailAuthProvider, reauthenticateWithCredential, updatePassword } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { doc, getDoc, setDoc, onSnapshot, collection, query, orderBy, limit, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { ref, uploadBytes, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
+        import { httpsCallable } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js';
+
+        const MAX_LOGO_BYTES = 2 * 1024 * 1024;
+        const LOGO_TYPES = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp', 'image/gif': 'gif' };
+
+        const $ = (id) => document.getElementById(id);
+        const show = (el, visible = true) => el.classList.toggle('hidden', !visible);
+
+        let dues = await getDuesSettings();
+        let member = null;
+        let business = null;
+        let businessFormFilled = false;
+        let accountFormFilled = false;
+        let resubmitArmed = false;
+        let signingUp = false;
+        let unsubscribers = [];
+
+        function periodLabel(n = 1) {
+            const unit = dues.interval === 'week' ? 'week' : 'month';
+            return `${n} ${unit}${n === 1 ? '' : 's'}`;
+        }
+
+        function showMessage(el, text, type) {
+            el.textContent = text;
+            el.className = `form-message ${type}`;
+            show(el, true);
+        }
+
+        function friendlyAuthError(err) {
+            switch (err.code) {
+                case 'auth/email-already-in-use': return 'An account with that email already exists. Try signing in instead.';
+                case 'auth/invalid-email': return 'Please enter a valid email address.';
+                case 'auth/weak-password': return 'Please choose a stronger password (at least 8 characters).';
+                case 'auth/invalid-credential':
+                case 'auth/wrong-password':
+                case 'auth/user-not-found': return 'Incorrect email or password.';
+                case 'auth/too-many-requests': return 'Too many attempts. Please wait a few minutes and try again.';
+                default: return 'Something went wrong. Please try again.';
+            }
+        }
+
+        // ---------- Returning from Stripe Checkout ----------
+        const checkoutResult = new URLSearchParams(location.search).get('checkout');
+        let openDuesAfterCheckout = !!checkoutResult;
+        if (checkoutResult) {
+            history.replaceState(null, '', location.pathname);
+            if (checkoutResult === 'success') {
+                showMessage($('pageMessage'), 'Thank you! Your payment was received. Your dues status will update in a moment.', 'success');
+            } else {
+                showMessage($('pageMessage'), 'Payment was cancelled. You have not been charged.', 'error');
+            }
+        }
+
+        // ---------- Auth view ----------
+        document.querySelectorAll('.auth-tab').forEach((tab) => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.auth-tab').forEach((t) => t.classList.toggle('active', t === tab));
+                show($('signinForm'), tab.dataset.tab === 'signin');
+                show($('signupForm'), tab.dataset.tab === 'signup');
+                show($('pageMessage'), false);
+            });
+        });
+
+        $('signinForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.submitter;
+            btn.disabled = true;
+            try {
+                await signInWithEmailAndPassword(auth, $('signinEmail').value.trim(), $('signinPassword').value);
+                show($('pageMessage'), false);
+            } catch (err) {
+                showMessage($('pageMessage'), friendlyAuthError(err), 'error');
+            }
+            btn.disabled = false;
+        });
+
+        $('forgotPasswordBtn').addEventListener('click', async () => {
+            const email = $('signinEmail').value.trim();
+            if (!email) {
+                showMessage($('pageMessage'), 'Enter your email address above, then click "Forgot your password?" again.', 'error');
+                return;
+            }
+            try {
+                await sendPasswordResetEmail(auth, email);
+            } catch (err) {
+                // Don't reveal whether the account exists.
+                console.warn(err);
+            }
+            showMessage($('pageMessage'), `If an account exists for ${email}, a password reset link is on its way.`, 'success');
+        });
+
+        $('signupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.submitter;
+            btn.disabled = true;
+            signingUp = true;
+            const name = $('signupName').value.trim();
+            try {
+                const { user } = await createUserWithEmailAndPassword(auth, $('signupEmail').value.trim(), $('signupPassword').value);
+                await updateProfile(user, { displayName: name });
+                await setDoc(doc(db, 'members', user.uid), {
+                    name,
+                    email: user.email,
+                    phone: $('signupPhone').value.trim(),
+                    emailUpdates: $('signupEmailUpdates').checked,
+                    memberType: $('signupMemberType').value,
+                    interests: $('signupInterests').value.trim(),
+                    createdAt: serverTimestamp(),
+                    updatedAt: serverTimestamp()
+                });
+                show($('pageMessage'), false);
+            } catch (err) {
+                console.error(err);
+                showMessage($('pageMessage'), friendlyAuthError(err), 'error');
+            }
+            signingUp = false;
+            btn.disabled = false;
+            if (auth.currentUser) startPortal(auth.currentUser);
+        });
+
+        $('signOutBtn').addEventListener('click', () => signOut(auth));
+
+        // ---------- Portal ----------
+        onAuthStateChanged(auth, (user) => {
+            unsubscribers.forEach((u) => u());
+            unsubscribers = [];
+            show($('loadingView'), false);
+            show($('authView'), !user);
+            show($('portalView'), !!user);
+            if (user && !signingUp) startPortal(user);
+        });
+
+        async function startPortal(user) {
+            unsubscribers.forEach((u) => u());
+            unsubscribers = [];
+            member = null;
+            business = null;
+            businessFormFilled = false;
+            accountFormFilled = false;
+            $('memberName').textContent = user.displayName || user.email;
+            // Open the tab named in the link (#dues, #business, #account); returning from checkout opens Dues once.
+            selectTab(openDuesAfterCheckout ? 'dues' : location.hash.slice(1));
+            openDuesAfterCheckout = false;
+
+            const memberRef = doc(db, 'members', user.uid);
+            // Accounts created before the profile was saved (or elsewhere) get a profile now.
+            if (!(await getDoc(memberRef)).exists()) {
+                await setDoc(memberRef, {
+                    name: user.displayName || '',
+                    email: user.email,
+                    phone: '',
+                    createdAt: serverTimestamp(),
+                    updatedAt: serverTimestamp()
+                }).catch(console.error);
+            }
+
+            unsubscribers.push(onSnapshot(memberRef, (snap) => {
+                member = snap.data() || {};
+                if (member.name) $('memberName').textContent = member.name;
+                if (!accountFormFilled) fillAccountForm(user);
+                renderDues();
+                renderBusinessStatus();
+                renderBadge();
+            }));
+
+            unsubscribers.push(onSnapshot(
+                query(collection(db, 'members', user.uid, 'payments'), orderBy('createdAt', 'desc'), limit(24)),
+                renderPayments
+            ));
+
+            unsubscribers.push(onSnapshot(doc(db, 'businesses', user.uid), (snap) => {
+                business = snap.exists() ? snap.data() : null;
+                if (!businessFormFilled) fillBusinessForm(user);
+                renderBusinessStatus();
+                renderBadge();
+            }));
+        }
+
+        // ---------- Dues ----------
+        function renderDues() {
+            if (!member) return;
+            show($('duesAlert'), !isPaidUp(member) || member.subscriptionStatus === 'past_due');
+            const rate = `${formatMoney(dues.amountCents)} per ${dues.interval === 'week' ? 'week' : 'month'}`;
+            $('duesRate').textContent = rate;
+
+            const paidThrough = toDate(member.paidThrough);
+            const badge = $('duesBadge');
+            if (member.subscriptionStatus === 'past_due') {
+                badge.className = 'status-badge bad';
+                badge.innerHTML = '<i class="fas fa-exclamation-circle"></i> Autopay payment failed';
+                $('duesDetail').textContent = 'Please update your card using "Manage Autopay & Card".';
+            } else if (isPaidUp(member)) {
+                badge.className = 'status-badge good';
+                badge.innerHTML = '<i class="fas fa-check-circle"></i> Paid up';
+                $('duesDetail').textContent = `Your dues are paid through ${formatDate(paidThrough)}.`;
+            } else if (paidThrough) {
+                badge.className = 'status-badge bad';
+                badge.innerHTML = '<i class="fas fa-exclamation-circle"></i> Past due';
+                $('duesDetail').textContent = `Your dues ran out on ${formatDate(paidThrough)}.`;
+            } else {
+                badge.className = 'status-badge neutral';
+                badge.textContent = 'No dues paid yet';
+                $('duesDetail').textContent = 'Choose autopay or pay manually below.';
+            }
+
+            // Autopay and manual payments are mutually exclusive to avoid double charges.
+            const autopay = !!member.autopay;
+            show($('autopayBtn'), !autopay);
+            $('autopayBtn').disabled = false; // both pay buttons start disabled until dues have loaded
+            show($('manageBillingBtn'), !!member.stripeCustomerId);
+            $('autopayText').textContent = autopay
+                ? `Autopay is on — ${rate}. Update your card or cancel any time.`
+                : (isPaidUp(member)
+                    ? `Automatically pay ${rate}. Billing starts when your prepaid time runs out.`
+                    : `Automatically pay ${rate} with a card. Cancel any time.`);
+
+            const select = $('prepayPeriods');
+            const selected = select.value || '1';
+            select.innerHTML = '';
+            for (let n = 1; n <= 12; n++) {
+                const opt = document.createElement('option');
+                opt.value = n;
+                opt.textContent = `${periodLabel(n)} — ${formatMoney(dues.amountCents * n)}`;
+                select.appendChild(opt);
+            }
+            select.value = selected;
+            select.disabled = autopay;
+            $('prepayBtn').disabled = autopay;
+            $('prepayText').textContent = autopay
+                ? 'Manual payments are turned off while autopay is on.'
+                : `Pay for one or more ${dues.interval === 'week' ? 'weeks' : 'months'} at a time. Paying ahead adds to any time you've already paid for.`;
+        }
+
+        function renderPayments(snap) {
+            const list = $('paymentList');
+            list.innerHTML = '';
+            snap.forEach((d) => {
+                const p = d.data();
+                const span = `${p.periods} ${p.interval === 'week' ? 'week' : 'month'}${p.periods === 1 ? '' : 's'}`;
+                const what = {
+                    prepay: `Paid ${span}`,
+                    manual: `Paid ${span} in person (${p.method || 'cash'})`,
+                    adjustment: `Dues updated by our team to ${formatDate(p.paidThroughAfter)}`
+                }[p.type] || 'Autopay';
+                const li = document.createElement('li');
+                const refund = p.refundStatus === 'full' ? ' (refunded)'
+                    : (p.refundStatus === 'partial' ? ` (${formatMoney(p.refundedCents || 0)} refunded)` : '');
+                li.innerHTML = `<span>${escapeHtml(formatDate(p.createdAt))} · ${escapeHtml(what + refund)}</span><strong>${escapeHtml(formatMoney(p.amountCents || 0))}</strong>`;
+                list.appendChild(li);
+            });
+            show($('paymentHistory'), !snap.empty);
+        }
+
+        // Our functions send readable messages for things the member can fix (e.g. "Autopay is already on").
+        // Anything else (Stripe down, misconfiguration) arrives as a bare "internal" error, so explain it plainly.
+        function paymentErrorMessage(err, what) {
+            const readable = err?.message && !['functions/internal', 'functions/unknown', 'functions/unavailable'].includes(err.code);
+            return readable
+                ? err.message
+                : `${what} Please try again in a few minutes. If it keeps happening, contact us at araiofsunshineofnorthflorida@gmail.com.`;
+        }
+
+        async function goToCheckout(btn, payload) {
+            const original = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Opening secure checkout…';
+            try {
+                const { data } = await httpsCallable(functions, 'createDuesCheckout')({
+                    ...payload,
+                    returnUrl: location.origin + location.pathname
+                });
+                location.href = data.url;
+            } catch (err) {
+                console.error(err);
+                showMessage($('pageMessage'), paymentErrorMessage(err, 'We could not start checkout.'), 'error');
+                $('pageMessage').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                btn.disabled = false;
+                btn.innerHTML = original;
+            }
+        }
+
+        $('autopayBtn').addEventListener('click', (e) => goToCheckout(e.currentTarget, { type: 'autopay' }));
+        $('prepayBtn').addEventListener('click', (e) => goToCheckout(e.currentTarget, { type: 'prepay', periods: Number($('prepayPeriods').value) }));
+
+        $('manageBillingBtn').addEventListener('click', async (e) => {
+            const btn = e.currentTarget;
+            btn.disabled = true;
+            try {
+                const { data } = await httpsCallable(functions, 'createBillingPortal')({ returnUrl: location.origin + location.pathname });
+                location.href = data.url;
+            } catch (err) {
+                console.error(err);
+                showMessage($('pageMessage'), paymentErrorMessage(err, 'We could not open your billing page.'), 'error');
+                btn.disabled = false;
+            }
+        });
+
+        // ---------- Account settings ----------
+        function fillAccountForm(user) {
+            accountFormFilled = true;
+            $('profileName').value = member?.name || user.displayName || '';
+            $('profilePhone').value = member?.phone || '';
+            $('profileEmail').value = user.email || '';
+            $('profileEmailUpdates').checked = member?.emailUpdates !== false; // older accounts default to yes
+            $('profileMemberType').value = member?.memberType || '';
+            $('profileInterests').value = member?.interests || '';
+        }
+
+        $('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const user = auth.currentUser;
+            if (!user) return;
+            const msg = $('profileMessage');
+            const btn = $('profileSaveBtn');
+            const name = $('profileName').value.trim();
+            const phone = $('profilePhone').value.trim();
+            if (!name) {
+                showMessage(msg, 'Please enter your name.', 'error');
+                return;
+            }
+            btn.disabled = true;
+            try {
+                await setDoc(doc(db, 'members', user.uid), {
+                    name, phone, emailUpdates: $('profileEmailUpdates').checked,
+                    memberType: $('profileMemberType').value, interests: $('profileInterests').value.trim(),
+                    updatedAt: serverTimestamp()
+                }, { merge: true });
+                await updateProfile(user, { displayName: name });
+                showMessage(msg, 'Your details were saved.', 'success');
+            } catch (err) {
+                console.error(err);
+                showMessage(msg, 'We could not save your details. Please try again.', 'error');
+            }
+            btn.disabled = false;
+        });
+
+        $('passwordForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const user = auth.currentUser;
+            if (!user) return;
+            const msg = $('passwordMessage');
+            const btn = $('passwordSaveBtn');
+            const current = $('currentPassword').value;
+            const next = $('newPassword').value;
+            if (!current) {
+                showMessage(msg, 'Please enter your current password.', 'error');
+                return;
+            }
+            if (next.length < 8) {
+                showMessage(msg, 'Your new password needs at least 8 characters.', 'error');
+                return;
+            }
+            if (next !== $('confirmPassword').value) {
+                showMessage(msg, 'The new passwords do not match.', 'error');
+                return;
+            }
+            btn.disabled = true;
+            try {
+                // Firebase requires a recent sign-in before a password change.
+                await reauthenticateWithCredential(user, EmailAuthProvider.credential(user.email, current));
+                await updatePassword(user, next);
+                $('passwordForm').reset();
+                showMessage(msg, 'Your password was changed.', 'success');
+            } catch (err) {
+                console.error(err);
+                const wrong = ['auth/invalid-credential', 'auth/wrong-password'].includes(err.code);
+                showMessage(msg, wrong ? 'Your current password is incorrect.' : friendlyAuthError(err), 'error');
+            }
+            btn.disabled = false;
+        });
+
+        // ---------- Tabs ----------
+        const TABS = ['dues', 'business', 'badge', 'account'];
+
+        function selectTab(name, { focus = false } = {}) {
+            if (!TABS.includes(name)) name = 'dues';
+            TABS.forEach((t) => {
+                const on = t === name;
+                $(`tab-${t}`).setAttribute('aria-selected', String(on));
+                $(`tab-${t}`).tabIndex = on ? 0 : -1;
+                show($(t), on);
+            });
+            if (focus) $(`tab-${name}`).focus();
+            history.replaceState(null, '', `${location.pathname}#${name}`);
+        }
+
+        document.querySelectorAll('.portal-tab').forEach((tab) => {
+            tab.addEventListener('click', () => selectTab(tab.dataset.tab));
+            tab.addEventListener('keydown', (e) => {
+                const i = TABS.indexOf(tab.dataset.tab);
+                if (e.key === 'ArrowRight') selectTab(TABS[(i + 1) % TABS.length], { focus: true });
+                else if (e.key === 'ArrowLeft') selectTab(TABS[(i + TABS.length - 1) % TABS.length], { focus: true });
+            });
+        });
+
+        window.addEventListener('hashchange', () => {
+            if (!$('portalView').classList.contains('hidden')) selectTab(location.hash.slice(1));
+        });
+
+        // ---------- Address ----------
+        function addressFromForm() {
+            return {
+                addressStreet: $('bizStreet').value, addressCity: $('bizCity').value,
+                addressState: $('bizState').value, addressZip: $('bizZip').value,
+                hideStreet: $('bizHideStreet').checked
+            };
+        }
+
+        function updateAddressPreview() {
+            const shown = formatAddress(addressFromForm());
+            $('addressPreview').textContent = shown
+                ? `The directory will show: ${shown}`
+                : 'No address will show in the directory.';
+        }
+
+        ['bizStreet', 'bizCity', 'bizState', 'bizZip'].forEach((id) => $(id).addEventListener('input', updateAddressPreview));
+        $('bizHideStreet').addEventListener('change', updateAddressPreview);
+
+        // ---------- Hours + established ----------
+        $('hoursGrid').innerHTML = DAYS.map((d) => `
+            <div class="hours-row" data-day="${d.id}">
+                <span class="hours-day">${d.label}</span>
+                <label class="hours-closed"><input type="checkbox" id="hours-${d.id}-closed"> Closed</label>
+                <label for="hours-${d.id}-open" class="hidden">${d.label} opens</label>
+                <input type="time" id="hours-${d.id}-open" class="form-input" step="900">
+                <span class="hours-to" aria-hidden="true">to</span>
+                <label for="hours-${d.id}-close" class="hidden">${d.label} closes</label>
+                <input type="time" id="hours-${d.id}-close" class="form-input" step="900">
+            </div>`).join('');
+
+        function syncClosed(dayId) {
+            const closed = $(`hours-${dayId}-closed`).checked;
+            $(`hours-${dayId}-open`).disabled = closed;
+            $(`hours-${dayId}-close`).disabled = closed;
+        }
+        DAYS.forEach((d) => $(`hours-${d.id}-closed`).addEventListener('change', () => syncClosed(d.id)));
+
+        $('copyWeekdays').addEventListener('click', () => {
+            ['tue', 'wed', 'thu', 'fri'].forEach((id) => {
+                $(`hours-${id}-closed`).checked = $('hours-mon-closed').checked;
+                $(`hours-${id}-open`).value = $('hours-mon-open').value;
+                $(`hours-${id}-close`).value = $('hours-mon-close').value;
+                syncClosed(id);
+            });
+        });
+
+        MONTHS.forEach((m, i) => {
+            const opt = document.createElement('option');
+            opt.value = i + 1;
+            opt.textContent = m;
+            $('bizEstMonth').appendChild(opt);
+        });
+        $('bizEstYear').max = new Date().getFullYear();
+
+        function fillHours(hours) {
+            DAYS.forEach((d) => {
+                const h = (hours || {})[d.id] || {};
+                $(`hours-${d.id}-closed`).checked = !!h.closed;
+                $(`hours-${d.id}-open`).value = h.closed ? '' : (h.open || '');
+                $(`hours-${d.id}-close`).value = h.closed ? '' : (h.close || '');
+                syncClosed(d.id);
+            });
+        }
+
+        // Returns { hours } or { error }.
+        function readHours() {
+            const hours = {};
+            for (const d of DAYS) {
+                if ($(`hours-${d.id}-closed`).checked) {
+                    hours[d.id] = { closed: true };
+                    continue;
+                }
+                const open = $(`hours-${d.id}-open`).value;
+                const close = $(`hours-${d.id}-close`).value;
+                if (!open && !close) continue;
+                if (!open || !close) return { error: `Please add both an opening and closing time for ${d.label}, or leave both blank.` };
+                if (open === close) return { error: `${d.label}: the opening and closing times are the same.` };
+                hours[d.id] = { open, close };
+            }
+            return { hours };
+        }
+
+        // ---------- Member badge ----------
+        const BADGE_SITE = 'araiofsunshine.org';
+        let badgeKey = '';
+        const badgeUrls = {};
+
+        function loadImage(src, crossOrigin) {
+            return new Promise((resolve) => {
+                if (!src) return resolve(null);
+                const img = new Image();
+                if (crossOrigin) img.crossOrigin = 'anonymous';
+                img.onload = () => resolve(img);
+                img.onerror = () => resolve(null);
+                img.src = src;
+            });
+        }
+
+        function roundRect(ctx, x, y, w, h, r) {
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.arcTo(x + w, y, x + w, y + h, r);
+            ctx.arcTo(x + w, y + h, x, y + h, r);
+            ctx.arcTo(x, y + h, x, y, r);
+            ctx.arcTo(x, y, x + w, y, r);
+            ctx.closePath();
+        }
+
+        function drawContained(ctx, img, x, y, w, h) {
+            const scale = Math.min(w / img.width, h / img.height);
+            const dw = img.width * scale;
+            const dh = img.height * scale;
+            ctx.drawImage(img, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
+        }
+
+        // Shrinks the font until the text fits in maxLines lines of maxWidth.
+        function fitText(ctx, text, { maxWidth, maxLines, size, minSize, weight = 800, family = 'Montserrat, Arial, sans-serif' }) {
+            for (let px = size; px >= minSize; px -= 2) {
+                ctx.font = `${weight} ${px}px ${family}`;
+                const lines = [];
+                let line = '';
+                for (const word of text.split(/\s+/)) {
+                    const test = line ? `${line} ${word}` : word;
+                    if (ctx.measureText(test).width <= maxWidth) line = test;
+                    else { if (line) lines.push(line); line = word; }
+                }
+                if (line) lines.push(line);
+                if (lines.length <= maxLines && lines.every((l) => ctx.measureText(l).width <= maxWidth)) return { lines, size: px };
+            }
+            ctx.font = `${weight} ${minSize}px ${family}`;
+            return { lines: [text], size: minSize };
+        }
+
+        function drawSquareBadge({ name, since, orgLogo, bizLogo }) {
+            const c = document.createElement('canvas');
+            c.width = c.height = 1080;
+            const ctx = c.getContext('2d');
+
+            const bg = ctx.createLinearGradient(0, 0, 1080, 1080);
+            bg.addColorStop(0, '#4A90E2');
+            bg.addColorStop(1, '#FF8C42');
+            ctx.fillStyle = bg;
+            ctx.fillRect(0, 0, 1080, 1080);
+            ctx.fillStyle = 'rgba(255, 215, 0, 0.35)';
+            ctx.beginPath();
+            ctx.arc(980, 100, 260, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.save();
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.18)';
+            ctx.shadowBlur = 40;
+            ctx.shadowOffsetY = 12;
+            ctx.fillStyle = '#FFFFFF';
+            roundRect(ctx, 80, 80, 920, 920, 56);
+            ctx.fill();
+            ctx.restore();
+
+            ctx.textAlign = 'center';
+            let y = 130;
+            if (orgLogo) { drawContained(ctx, orgLogo, 390, y, 300, 200); y += 260; } else { y += 80; }
+
+            ctx.fillStyle = '#FF8C42';
+            ctx.font = '800 46px Montserrat, Arial, sans-serif';
+            ctx.letterSpacing = '8px';
+            ctx.fillText('PROUD MEMBER', 540, y);
+            ctx.letterSpacing = '0px';
+            y += 50;
+            ctx.fillStyle = '#666666';
+            ctx.font = '600 30px "Open Sans", Arial, sans-serif';
+            ctx.fillText('of A Rai of Sunshine of North Florida', 540, y);
+            y += 45;
+
+            ctx.fillStyle = '#FFD700';
+            roundRect(ctx, 460, y, 160, 8, 4);
+            ctx.fill();
+            y += 40;
+
+            if (bizLogo) { drawContained(ctx, bizLogo, 450, y, 180, 140); y += 150; } else { y += 30; }
+
+            ctx.fillStyle = '#333333';
+            const fit = fitText(ctx, name, { maxWidth: 780, maxLines: 2, size: 76, minSize: 40 });
+            const lineH = fit.size * 1.15;
+            fit.lines.forEach((l, i) => ctx.fillText(l, 540, y + fit.size + i * lineH));
+            y += fit.size + (fit.lines.length - 1) * lineH + 60;
+
+            if (since) {
+                ctx.fillStyle = '#4A90E2';
+                ctx.font = '700 36px "Open Sans", Arial, sans-serif';
+                ctx.fillText(`Member since ${since}`, 540, Math.min(y, 905));
+            }
+            ctx.fillStyle = '#999999';
+            ctx.font = '600 28px "Open Sans", Arial, sans-serif';
+            ctx.fillText(BADGE_SITE, 540, 960);
+            return c.toDataURL('image/png');
+        }
+
+        function drawWideBadge({ name, since, orgLogo }) {
+            const c = document.createElement('canvas');
+            c.width = 1200;
+            c.height = 400;
+            const ctx = c.getContext('2d');
+
+            // Transparent outside the rounded card so it sits on any website background.
+            ctx.fillStyle = '#FFFFFF';
+            roundRect(ctx, 6, 6, 1188, 388, 40);
+            ctx.fill();
+            ctx.lineWidth = 8;
+            ctx.strokeStyle = '#FFD700';
+            ctx.stroke();
+
+            // White circle with a gold ring (the org logo has a white background).
+            ctx.fillStyle = '#FFFFFF';
+            ctx.beginPath();
+            ctx.arc(200, 200, 150, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.lineWidth = 6;
+            ctx.strokeStyle = '#FFE9A8';
+            ctx.stroke();
+            if (orgLogo) drawContained(ctx, orgLogo, 90, 110, 220, 180);
+
+            ctx.textAlign = 'left';
+            ctx.fillStyle = '#FF8C42';
+            ctx.font = '800 36px Montserrat, Arial, sans-serif';
+            ctx.letterSpacing = '6px';
+            ctx.fillText('PROUD MEMBER', 400, 110);
+            ctx.letterSpacing = '0px';
+
+            ctx.fillStyle = '#333333';
+            const fit = fitText(ctx, name, { maxWidth: 740, maxLines: 2, size: 62, minSize: 34 });
+            const lineH = fit.size * 1.12;
+            fit.lines.forEach((l, i) => ctx.fillText(l, 400, 120 + fit.size + i * lineH));
+            const afterName = 120 + fit.size + (fit.lines.length - 1) * lineH;
+
+            ctx.fillStyle = '#666666';
+            ctx.font = '600 28px "Open Sans", Arial, sans-serif';
+            ctx.fillText('A Rai of Sunshine of North Florida', 400, afterName + 58);
+            ctx.fillStyle = '#4A90E2';
+            ctx.font = '700 28px "Open Sans", Arial, sans-serif';
+            ctx.fillText([since ? `Member since ${since}` : '', BADGE_SITE].filter(Boolean).join('  ·  '), 400, afterName + 100);
+            return c.toDataURL('image/png');
+        }
+
+        async function renderBadge() {
+            if (!member) return;
+            const approved = business?.status === 'approved';
+            const ready = isPaidUp(member) && approved;
+            show($('badgeLocked'), !ready);
+            show($('badgeReady'), ready);
+            show($('badgeLinkHint'), ready);
+            if (!ready) {
+                $('badgeLockedText').textContent = !approved
+                    ? 'Your badge unlocks once your business listing is approved and your dues are current.'
+                    : 'Your badge unlocks when your dues are current. You can pay on the Dues tab.';
+                return;
+            }
+
+            const since = formatMonthYear(member.createdAt);
+            const key = [business.name, since, business.logoUrl].join('|');
+            if (key === badgeKey) return;
+            badgeKey = key;
+
+            await Promise.all([
+                document.fonts.load('800 40px Montserrat'),
+                document.fonts.load('600 30px "Open Sans"'),
+                document.fonts.load('700 30px "Open Sans"')
+            ]).catch(() => {});
+            // The member's own logo appears only if the storage bucket allows cross-origin reads (see MEMBERSHIP-SETUP.md).
+            const [orgLogo, bizLogo] = await Promise.all([loadImage('cropped-logo.png'), loadImage(business.logoUrl, true)]);
+            const opts = { name: business.name, since, orgLogo, bizLogo };
+            try {
+                badgeUrls.square = drawSquareBadge(opts);
+            } catch {
+                badgeUrls.square = drawSquareBadge({ ...opts, bizLogo: null }); // a blocked logo taints the canvas
+            }
+            badgeUrls.wide = drawWideBadge(opts);
+            $('badgeSquareImg').src = badgeUrls.square;
+            $('badgeWideImg').src = badgeUrls.wide;
+        }
+
+        function downloadBadge(kind) {
+            if (!badgeUrls[kind]) return;
+            const slug = (business?.name || 'member').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+            const a = document.createElement('a');
+            a.href = badgeUrls[kind];
+            a.download = `${slug}-rai-of-sunshine-member-${kind}.png`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        }
+        $('badgeSquareBtn').addEventListener('click', () => downloadBadge('square'));
+        $('badgeWideBtn').addEventListener('click', () => downloadBadge('wide'));
+
+        // ---------- Business listing ----------
+        BUSINESS_CATEGORIES.forEach((c) => {
+            const opt = document.createElement('option');
+            opt.value = c.id;
+            opt.textContent = c.label;
+            $('bizCategory').appendChild(opt);
+        });
+
+        function fillBusinessForm(user) {
+            businessFormFilled = true;
+            resubmitArmed = false;
+            show($('resubmitWarn'), false);
+            const b = business || {};
+            // For a brand-new listing, don't wipe anything the member typed before this ran.
+            const put = (id, value) => { if (business || !$(id).value) $(id).value = value; };
+            put('bizName', b.name || '');
+            put('bizCategory', b.category || '');
+            put('bizOwner', b.owner || member?.name || user.displayName || '');
+            put('bizEmail', b.email || user.email || '');
+            put('bizPhone', b.phone || '');
+            // Older listings kept the whole address in one field; start it off in Street.
+            const legacy = !b.addressStreet && !b.addressCity && !b.addressState && !b.addressZip;
+            put('bizStreet', legacy ? (b.address || '') : (b.addressStreet || ''));
+            put('bizCity', b.addressCity || '');
+            put('bizState', b.addressState || '');
+            put('bizZip', b.addressZip || '');
+            if (business) $('bizHideStreet').checked = !!b.hideStreet;
+            updateAddressPreview();
+            put('bizEstMonth', b.establishedMonth || '');
+            put('bizEstYear', b.establishedYear || '');
+            put('bizHoursNote', b.hoursNote || '');
+            if (business) fillHours(b.hours);
+            put('bizWebsite', b.website || '');
+            put('bizDescription', b.description || '');
+            $('descCount').textContent = $('bizDescription').value.length;
+            if (b.logoUrl) setLogoPreview(b.logoUrl);
+        }
+
+        function renderBusinessStatus() {
+            const badge = $('bizBadge');
+            const detail = $('bizDetail');
+            const note = $('reviewNote');
+            show(note, false);
+            show($('bizAlert'), business?.status === 'rejected');
+
+            if (!business) {
+                badge.className = 'status-badge neutral';
+                badge.textContent = 'Not submitted';
+                detail.textContent = 'Fill out the form below to submit your business for review.';
+                $('bizSubmitBtn').innerHTML = '<i class="fas fa-paper-plane"></i> Submit for Review';
+                return;
+            }
+
+            $('bizSubmitBtn').innerHTML = '<i class="fas fa-save"></i> Save Changes &amp; Resubmit';
+            if (business.status === 'pending') {
+                badge.className = 'status-badge warn';
+                badge.innerHTML = '<i class="fas fa-hourglass-half"></i> Pending review';
+                detail.textContent = 'Thanks! Our team will review your listing soon.';
+            } else if (business.status === 'approved') {
+                if (isPaidUp(member)) {
+                    badge.className = 'status-badge good';
+                    badge.innerHTML = '<i class="fas fa-check-circle"></i> Listed';
+                    detail.innerHTML = 'Your business is live in the <a href="directory.html">directory</a>.';
+                } else {
+                    badge.className = 'status-badge warn';
+                    badge.innerHTML = '<i class="fas fa-eye-slash"></i> Approved — hidden';
+                    detail.textContent = 'Your listing is approved and will appear in the directory once your dues are paid.';
+                }
+            } else {
+                badge.className = 'status-badge bad';
+                badge.innerHTML = '<i class="fas fa-edit"></i> Changes requested';
+                detail.textContent = 'Please update your listing and resubmit.';
+            }
+
+            if (business.reviewNote && business.status !== 'approved') {
+                note.innerHTML = `<strong>Note from our team:</strong> ${escapeHtml(business.reviewNote)}`;
+                show(note, true);
+            }
+        }
+
+        function setLogoPreview(src) {
+            const box = $('logoPreview');
+            box.innerHTML = '';
+            const img = document.createElement('img');
+            img.src = src;
+            img.alt = 'Logo preview';
+            box.appendChild(img);
+        }
+
+        $('bizDescription').addEventListener('input', (e) => {
+            $('descCount').textContent = e.target.value.length;
+        });
+
+        $('bizLogo').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            if (!LOGO_TYPES[file.type]) {
+                showMessage($('bizMessage'), 'Please choose a PNG, JPG, WEBP or GIF image.', 'error');
+                e.target.value = '';
+                return;
+            }
+            if (file.size > MAX_LOGO_BYTES) {
+                showMessage($('bizMessage'), 'That image is larger than 2 MB. Please choose a smaller file.', 'error');
+                e.target.value = '';
+                return;
+            }
+            show($('bizMessage'), false);
+            setLogoPreview(URL.createObjectURL(file));
+        });
+
+        function normalizeWebsite(value) {
+            const v = value.trim();
+            if (!v) return '';
+            return /^https?:\/\//i.test(v) ? v : `https://${v}`;
+        }
+
+        $('businessForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const user = auth.currentUser;
+            if (!user) return;
+            const msg = $('bizMessage');
+            const btn = $('bizSubmitBtn');
+
+            const data = {
+                name: $('bizName').value.trim(),
+                owner: $('bizOwner').value.trim(),
+                category: $('bizCategory').value,
+                email: $('bizEmail').value.trim(),
+                phone: $('bizPhone').value.trim(),
+                address: '',
+                addressStreet: $('bizStreet').value.trim(),
+                addressCity: $('bizCity').value.trim(),
+                addressState: $('bizState').value.trim(),
+                addressZip: $('bizZip').value.trim(),
+                hideStreet: $('bizHideStreet').checked,
+                hoursNote: $('bizHoursNote').value.trim(),
+                establishedMonth: $('bizEstMonth').value ? Number($('bizEstMonth').value) : null,
+                establishedYear: $('bizEstYear').value ? Number($('bizEstYear').value) : null,
+                website: normalizeWebsite($('bizWebsite').value),
+                description: $('bizDescription').value.trim()
+            };
+            const file = $('bizLogo').files[0];
+
+            if (!data.name || !data.owner || !data.email) {
+                showMessage(msg, 'Please fill in the business name, owner and email.', 'error');
+                return;
+            }
+            if (!data.category) {
+                showMessage(msg, 'Please choose the type of business.', 'error');
+                return;
+            }
+            const hoursResult = readHours();
+            if (hoursResult.error) {
+                showMessage(msg, hoursResult.error, 'error');
+                return;
+            }
+            data.hours = hoursResult.hours;
+            const thisYear = new Date().getFullYear();
+            if (data.establishedYear !== null &&
+                (!Number.isInteger(data.establishedYear) || data.establishedYear < 1800 || data.establishedYear > thisYear)) {
+                showMessage(msg, `Please enter the year established as a 4-digit year up to ${thisYear}.`, 'error');
+                return;
+            }
+            if (data.establishedMonth && data.establishedYear === null) {
+                showMessage(msg, 'Please add the year your business was established, or clear the month.', 'error');
+                return;
+            }
+            if (data.hideStreet && !data.addressCity) {
+                showMessage(msg, 'Please add your city so people know where you are, even with the street hidden.', 'error');
+                return;
+            }
+            if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(data.email)) {
+                showMessage(msg, 'Please enter a valid business email.', 'error');
+                return;
+            }
+            if (data.website) {
+                try { new URL(data.website); } catch {
+                    showMessage(msg, 'Please enter a valid website address.', 'error');
+                    return;
+                }
+            }
+            if (!file && !business?.logoUrl) {
+                showMessage(msg, 'Please upload your business logo.', 'error');
+                return;
+            }
+            // Editing a live listing takes it out of the directory, so ask once on the page (no browser dialog).
+            if (business?.status === 'approved' && !resubmitArmed) {
+                resubmitArmed = true;
+                show($('resubmitWarn'), true);
+                btn.innerHTML = '<i class="fas fa-check"></i> Yes, Resubmit for Review';
+                return;
+            }
+            resubmitArmed = false;
+            show($('resubmitWarn'), false);
+
+            btn.disabled = true;
+            const original = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving…';
+            show(msg, false);
+
+            try {
+                let logoUrl = business?.logoUrl;
+                let logoPath = business?.logoPath;
+                const oldLogoPath = logoPath;
+                if (file) {
+                    logoPath = `business-logos/${user.uid}/logo-${Date.now()}.${LOGO_TYPES[file.type]}`;
+                    const logoRef = ref(storage, logoPath);
+                    await uploadBytes(logoRef, file, { contentType: file.type });
+                    logoUrl = await getDownloadURL(logoRef);
+                }
+
+                await setDoc(doc(db, 'businesses', user.uid), {
+                    ...data,
+                    logoUrl,
+                    logoPath,
+                    status: 'pending',
+                    ...(business?.submittedAt ? {} : { submittedAt: serverTimestamp() }),
+                    updatedAt: serverTimestamp()
+                }, { merge: true });
+
+                if (file && oldLogoPath && oldLogoPath !== logoPath) {
+                    deleteObject(ref(storage, oldLogoPath)).catch(() => {});
+                }
+                $('bizLogo').value = '';
+                showMessage(msg, 'Your listing was submitted for review. We will take a look soon!', 'success');
+            } catch (err) {
+                console.error(err);
+                showMessage(msg, 'We could not save your listing. Please check the fields and try again.', 'error');
+            }
+            btn.disabled = false;
+            btn.innerHTML = original;
+        });
+    </script>
+    <script type="module" src="account-status.js"></script>
+</body>
+</html>
