@@ -132,8 +132,8 @@
                     </div>
                     <div class="form-group">
                         <label for="signupPassword">Password <span class="required">*</span></label>
-                        <input type="password" id="signupPassword" class="form-input" autocomplete="new-password" minlength="8" required>
-                        <span class="form-hint">At least 8 characters.</span>
+                        <input type="password" id="signupPassword" class="form-input" autocomplete="new-password" minlength="12" required>
+                        <span class="form-hint">At least 12 characters.</span>
                     </div>
                     <div class="form-group">
                         <label class="checkbox-label">
@@ -159,6 +159,15 @@
                         <i class="fas fa-sign-out-alt"></i> Sign Out
                     </button>
                 </div>
+
+                <!-- GET LISTED: ticks itself off from the member's dues and listing status (renderListingSteps) -->
+                <section class="listing-steps hidden" id="listingSteps" aria-labelledby="listingStepsTitle">
+                    <div class="listing-steps-head">
+                        <h3 id="listingStepsTitle">Get your business in the directory</h3>
+                        <button type="button" class="link-button" id="listingStepsHide">Not a business? Hide this</button>
+                    </div>
+                    <ol class="listing-steps-list" id="listingStepsList"></ol>
+                </section>
 
                 <div class="portal-tabs" role="tablist" aria-label="Member portal sections">
                     <button type="button" class="portal-tab" role="tab" id="tab-dues" data-tab="dues" aria-controls="dues" aria-selected="true">
@@ -342,8 +351,22 @@
 
                     <div class="dues-status hidden" id="badgeLocked">
                         <span class="status-badge warn"><i class="fas fa-lock"></i> Not available yet</span>
-                        <p id="badgeLockedText"></p>
+                        <p>Your badges unlock when your dues are current. You can pay on the Dues tab.</p>
                     </div>
+
+                    <div class="badge-downloads hidden" id="supporterReady">
+                        <figure class="badge-option">
+                            <img src="supportbadge.png" alt="Proud Supporter of A Rai of Sunshine badge" width="1278" height="1230" loading="lazy">
+                            <figcaption>
+                                <strong>Proud Supporter</strong>
+                                <span>Round, 1278 × 1230. For social media, email signatures or print.</span>
+                                <a class="btn-primary" href="supportbadge.png" download="rai-of-sunshine-proud-supporter.png"><i class="fas fa-download"></i> Download</a>
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <p class="form-hint hidden" id="badgeBusinessHint">
+                        Own a business? Once your listing is approved, badges with your business name show up here too.
+                    </p>
 
                     <div class="badge-downloads hidden" id="badgeReady">
                         <figure class="badge-option">
@@ -424,12 +447,12 @@
                         <div class="form-row">
                             <div class="form-group" style="margin-bottom: 0;">
                                 <label for="newPassword">New Password</label>
-                                <input type="password" id="newPassword" class="form-input" autocomplete="new-password" minlength="8" required>
-                                <span class="form-hint">At least 8 characters.</span>
+                                <input type="password" id="newPassword" class="form-input" autocomplete="new-password" minlength="12" required>
+                                <span class="form-hint">At least 12 characters.</span>
                             </div>
                             <div class="form-group" style="margin-bottom: 0;">
                                 <label for="confirmPassword">Confirm New Password</label>
-                                <input type="password" id="confirmPassword" class="form-input" autocomplete="new-password" minlength="8" required>
+                                <input type="password" id="confirmPassword" class="form-input" autocomplete="new-password" minlength="12" required>
                             </div>
                         </div>
                         <button type="submit" class="btn-secondary" id="passwordSaveBtn" style="cursor: pointer;">
@@ -526,6 +549,7 @@
         let dues = await getDuesSettings();
         let member = null;
         let business = null;
+        let businessLoaded = false;
         let businessFormFilled = false;
         let accountFormFilled = false;
         let resubmitArmed = false;
@@ -547,7 +571,8 @@
             switch (err.code) {
                 case 'auth/email-already-in-use': return 'An account with that email already exists. Try signing in instead.';
                 case 'auth/invalid-email': return 'Please enter a valid email address.';
-                case 'auth/weak-password': return 'Please choose a stronger password (at least 8 characters).';
+                case 'auth/weak-password':
+                case 'auth/password-does-not-meet-requirements': return 'Please choose a stronger password (at least 12 characters).';
                 case 'auth/invalid-credential':
                 case 'auth/wrong-password':
                 case 'auth/user-not-found': return 'Incorrect email or password.';
@@ -652,8 +677,10 @@
             unsubscribers = [];
             member = null;
             business = null;
+            businessLoaded = false;
             businessFormFilled = false;
             accountFormFilled = false;
+            show($('listingSteps'), false);
             $('memberName').textContent = user.displayName || user.email;
             // Open the tab named in the link (#dues, #business, #account); returning from checkout opens Dues once.
             selectTab(openDuesAfterCheckout ? 'dues' : location.hash.slice(1));
@@ -678,6 +705,7 @@
                 renderDues();
                 renderBusinessStatus();
                 renderBadge();
+                renderListingSteps();
             }));
 
             unsubscribers.push(onSnapshot(
@@ -687,9 +715,11 @@
 
             unsubscribers.push(onSnapshot(doc(db, 'businesses', user.uid), (snap) => {
                 business = snap.exists() ? snap.data() : null;
+                businessLoaded = true;
                 if (!businessFormFilled) fillBusinessForm(user);
                 renderBusinessStatus();
                 renderBadge();
+                renderListingSteps();
             }));
         }
 
@@ -863,8 +893,8 @@
                 showMessage(msg, 'Please enter your current password.', 'error');
                 return;
             }
-            if (next.length < 8) {
-                showMessage(msg, 'Your new password needs at least 8 characters.', 'error');
+            if (next.length < 12) {
+                showMessage(msg, 'Your new password needs at least 12 characters.', 'error');
                 return;
             }
             if (next !== $('confirmPassword').value) {
@@ -912,6 +942,63 @@
 
         window.addEventListener('hashchange', () => {
             if (!$('portalView').classList.contains('hidden')) selectTab(location.hash.slice(1));
+        });
+
+        // ---------- Get listed checklist ----------
+        // Shows business owners where they are on the way to the directory, and disappears once they're listed.
+        // Members without a business can hide it (remembered in this browser only).
+        const stepsHiddenKey = () => `listingStepsHidden:${auth.currentUser?.uid}`;
+
+        function listingStepsHidden() {
+            try { return localStorage.getItem(stepsHiddenKey()) === '1'; } catch { return false; }
+        }
+
+        $('listingStepsHide').addEventListener('click', () => {
+            try { localStorage.setItem(stepsHiddenKey(), '1'); } catch { /* private browsing: hide for now only */ }
+            show($('listingSteps'), false);
+        });
+
+        function renderListingSteps() {
+            if (!member || !businessLoaded) return;
+            const paidUp = isPaidUp(member);
+            const status = business?.status;
+            const listed = paidUp && status === 'approved';
+            show($('listingSteps'), !listed && !listingStepsHidden());
+            if (listed) return;
+
+            const steps = [
+                { title: 'Create your account', done: true, detail: 'Done' },
+                {
+                    title: 'Pay your dues', done: paidUp, tab: 'dues', action: 'Go to Dues',
+                    detail: paidUp ? `Paid through ${formatDate(member.paidThrough)}` : 'Autopay or pay ahead'
+                },
+                {
+                    title: status === 'rejected' ? 'Update your listing' : 'Submit your listing',
+                    done: !!business && status !== 'rejected', tab: 'business',
+                    action: business ? 'See the changes' : 'Start your listing',
+                    detail: !business ? 'Your business details and logo' : (status === 'rejected' ? 'Our team asked for changes' : 'Submitted')
+                },
+                {
+                    title: 'Get approved', done: status === 'approved',
+                    detail: status === 'approved' ? 'Approved' : (status === 'pending' ? 'Our team is reviewing it' : 'Our team reviews each listing')
+                },
+                { title: 'Appear in the directory', done: false, detail: 'While your dues are current' }
+            ];
+            const current = steps.findIndex((s) => !s.done);
+            $('listingStepsList').innerHTML = steps.map((s, i) => {
+                const state = s.done ? 'done' : (i === current ? 'current' : '');
+                const marker = s.done ? '<i class="fas fa-check"></i>' : i + 1;
+                const action = i === current && s.tab
+                    ? `<button type="button" class="link-button" data-tab="${s.tab}">${s.action}</button>` : '';
+                return `<li class="listing-step ${state}"${i === current ? ' aria-current="step"' : ''}>`
+                    + `<span class="step-marker" aria-hidden="true">${marker}</span>`
+                    + `<span><strong>${escapeHtml(s.title)}</strong>${escapeHtml(s.detail)}${action}</span></li>`;
+            }).join('');
+        }
+
+        $('listingStepsList').addEventListener('click', (e) => {
+            const btn = e.target.closest('button[data-tab]');
+            if (btn) selectTab(btn.dataset.tab, { focus: true });
         });
 
         // ---------- Address ----------
@@ -1159,17 +1246,16 @@
 
         async function renderBadge() {
             if (!member) return;
+            const paidUp = isPaidUp(member);
             const approved = business?.status === 'approved';
-            const ready = isPaidUp(member) && approved;
-            show($('badgeLocked'), !ready);
+            const ready = paidUp && approved;
+            // Every paid-up member gets the supporter badge; the personalized ones also need an approved listing.
+            show($('badgeLocked'), !paidUp);
+            show($('supporterReady'), paidUp);
+            show($('badgeBusinessHint'), paidUp && !approved);
             show($('badgeReady'), ready);
             show($('badgeLinkHint'), ready);
-            if (!ready) {
-                $('badgeLockedText').textContent = !approved
-                    ? 'Your badge unlocks once your business listing is approved and your dues are current.'
-                    : 'Your badge unlocks when your dues are current. You can pay on the Dues tab.';
-                return;
-            }
+            if (!ready) return;
 
             const since = formatMonthYear(member.createdAt);
             const key = [business.name, since, business.logoUrl].join('|');

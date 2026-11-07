@@ -91,6 +91,98 @@
     font-size: var(--heading-3);
 }
 
+/* "Get your business in the directory" checklist above the portal tabs */
+.listing-steps {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    padding: 24px 28px;
+    margin-bottom: var(--spacing-md);
+}
+
+.listing-steps-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px 16px;
+    margin-bottom: var(--spacing-sm);
+}
+
+.listing-steps-head h3 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.listing-steps-head .link-button {
+    font-size: 14px;
+    color: var(--medium-gray);
+}
+
+.listing-steps-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 16px;
+}
+
+@media (min-width: 768px) {
+    .listing-steps-list {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+
+.listing-step {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 14px;
+    color: var(--medium-gray);
+}
+
+.listing-step strong {
+    display: block;
+    font-size: 15px;
+    color: var(--dark-text);
+}
+
+.listing-step .link-button {
+    display: block;
+    margin-top: 4px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.step-marker {
+    flex: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 14px;
+    font-weight: 700;
+    background: var(--light-gray);
+    color: var(--medium-gray);
+}
+
+.listing-step.done .step-marker {
+    background: #d4edda;
+    color: #155724;
+}
+
+.listing-step.current .step-marker {
+    background: var(--warm-orange);
+    color: white;
+}
+
+@media (max-width: 575px) {
+    .listing-steps {
+        padding: 20px 16px;
+    }
+}
+
 /* Portal tabs */
 .portal-tabs {
     display: flex;
@@ -273,6 +365,11 @@
     .badge-downloads {
         grid-template-columns: 1fr 1.4fr;
     }
+}
+
+/* The supporter badge sits above a business owner's personalized badges. */
+#supporterReady {
+    margin-bottom: var(--spacing-md);
 }
 
 .badge-option {

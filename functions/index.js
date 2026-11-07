@@ -23,7 +23,7 @@
 
 const { setGlobalOptions } = require('firebase-functions/v2');
 const { onCall, onRequest, HttpsError } = require('firebase-functions/v2/https');
-const { onDocumentWritten } = require('firebase-functions/v2/firestore');
+const { onDocumentCreated, onDocumentWritten } = require('firebase-functions/v2/firestore');
 const { onSchedule } = require('firebase-functions/v2/scheduler');
 const { defineSecret, defineString } = require('firebase-functions/params');
 const logger = require('firebase-functions/logger');
@@ -32,7 +32,7 @@ const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestor
 const { getAuth } = require('firebase-admin/auth');
 const { getStorage } = require('firebase-admin/storage');
 const Stripe = require('stripe');
-const { createMailer, duesReminder, listingSubmitted, memberInvite } = require('./email');
+const { createMailer, duesReminder, listingSubmitted, listingReviewed, memberInvite, welcomeMember } = require('./email');
 const crypto = require('crypto');
 const { reminderFor, DAY_MS } = require('./reminders');
 
@@ -927,6 +927,30 @@ exports.notifyAdminsOfListing = onDocumentWritten({ document: 'businesses/{uid}'
   const member = (await db.doc(`members/${event.params.uid}`).get()).data();
   const { subject, content } = listingSubmitted(after, member);
   await mailer.send({ to: await adminEmails(), subject, content, kind: 'admin-listing', uid: event.params.uid });
+});
+
+// ---------- Member notices ----------
+
+/** Welcomes people who sign up on the website. Members an admin adds get the "choose your password" invite instead. */
+exports.welcomeNewMember = onDocumentCreated({ document: 'members/{uid}', secrets: [SMTP_URL] }, async (event) => {
+  const member = event.data?.data();
+  if (!member?.email || member.addedBy) return;
+  const { subject, content } = welcomeMember(member);
+  await mailer.send({ to: member.email, subject, content, kind: 'welcome', uid: event.params.uid });
+});
+
+/** Tells the member when an admin approves their listing or asks for changes. */
+exports.notifyMemberOfReview = onDocumentWritten({ document: 'businesses/{uid}', secrets: [SMTP_URL] }, async (event) => {
+  const before = event.data.before.data();
+  const after = event.data.after.data();
+  if (!after || !['approved', 'rejected'].includes(after.status) || before?.status === after.status) return;
+  const member = (await db.doc(`members/${event.params.uid}`).get()).data();
+  if (!member?.email) return;
+  // Same test as syncDirectoryEntry: approved listings show while dues (plus the grace period) are current.
+  const paidThrough = toDate(member.paidThrough);
+  const listed = after.status === 'approved' && !!paidThrough && paidThrough.getTime() + GRACE_MS > Date.now();
+  const { subject, content } = listingReviewed(after, member, { listed });
+  await mailer.send({ to: member.email, subject, content, kind: `listing-${after.status}`, uid: event.params.uid });
 });
 
 /**

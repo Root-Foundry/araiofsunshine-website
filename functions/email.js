@@ -1,5 +1,5 @@
 /**
- * Outgoing email: dues reminders and admin notices.
+ * Outgoing email: dues reminders, member welcome and listing-review notices, and admin notices.
  *
  * SMTP_URL (a Firebase secret) chooses how mail goes out:
  *   smtps://USER:PASSWORD@smtp.example.com:465   -> sent through that provider (SendGrid, Mailgun, Google Workspace...)
@@ -137,6 +137,59 @@ function listingSubmitted(business, member) {
   };
 }
 
+/** Sent when someone creates an account on the website. */
+function welcomeMember(member) {
+  return {
+    subject: `Welcome to ${ORG}`,
+    content: {
+      heading: 'Welcome to the community!',
+      paragraphs: [
+        `Hi ${escapeHtml(firstName(member.name))},`,
+        'Thank you for joining. Your member account is ready.',
+        'Have a business? Members can list it in our directory in three steps:',
+        '<strong>1.</strong> Pay your dues, with monthly autopay or by paying ahead.',
+        '<strong>2.</strong> Submit your business details and logo.',
+        '<strong>3.</strong> Our team reviews your listing, and it appears in the directory while your dues are current.',
+        'Your member portal shows where you are at each step.',
+      ],
+      button: { label: 'Go to my member portal', url: `${SITE_URL}/member` },
+      footnote: 'Questions? Just reply to this email.',
+    },
+  };
+}
+
+/** Sent when an admin approves a listing or asks for changes. `listed` = it's in the directory now (dues current). */
+function listingReviewed(business, member, { listed }) {
+  const hi = `Hi ${escapeHtml(firstName(member.name || business.owner))},`;
+  const name = `<strong>${escapeHtml(business.name)}</strong>`;
+  if (business.status === 'approved') {
+    return {
+      subject: `${business.name} is approved for the member directory`,
+      content: {
+        heading: listed ? 'Your business is in the directory' : 'Your listing is approved',
+        paragraphs: [hi, `Good news: our team approved ${name}.`,
+          listed
+            ? 'It\'s live in the member directory now, and your member badges are ready to download in the portal.'
+            : 'It will appear in the member directory as soon as your dues are paid.'],
+        button: listed
+          ? { label: 'See the directory', url: `${SITE_URL}/directory` }
+          : { label: 'Pay my dues', url: `${SITE_URL}/member#dues` },
+        footnote: listed ? 'Tip: link your badge to araiofsunshine.org/directory so customers can find you.' : '',
+      },
+    };
+  }
+  return {
+    subject: `Changes requested for your ${business.name} listing`,
+    content: {
+      heading: 'A few changes before we list your business',
+      paragraphs: [hi, `Thanks for submitting ${name}. Our team asked for a few changes before it goes in the directory.`,
+        ...(business.reviewNote ? [`<strong>Note from our team:</strong> ${escapeHtml(business.reviewNote)}`] : []),
+        'Update your listing in the member portal and resubmit it, and we\'ll take another look.'],
+      button: { label: 'Update my listing', url: `${SITE_URL}/member#business` },
+    },
+  };
+}
+
 function memberInvite(member, link) {
   return {
     subject: `Set up your ${ORG} member account`,
@@ -152,4 +205,4 @@ function memberInvite(member, link) {
   };
 }
 
-module.exports = { createMailer, duesReminder, listingSubmitted, memberInvite, longDate };
+module.exports = { createMailer, duesReminder, listingSubmitted, listingReviewed, memberInvite, welcomeMember, longDate };

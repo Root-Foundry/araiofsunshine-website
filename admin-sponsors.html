@@ -105,38 +105,6 @@
             }
         }
         
-        @media (max-width: 768px) {
-            .sponsor-item {
-                flex-direction: column;
-                padding: 16px;
-                gap: 16px;
-            }
-            
-            .sponsor-info {
-                flex-direction: column;
-                gap: 16px;
-                width: 100%;
-            }
-            
-            .sponsor-logo-preview {
-                width: 100%;
-                max-width: 150px;
-                height: 150px;
-                margin: 0 auto;
-            }
-            
-            .sponsor-actions {
-                flex-direction: row;
-                width: 100%;
-                justify-content: center;
-                gap: 16px;
-            }
-            
-            .btn-icon {
-                flex: 0 0 auto;
-            }
-        }
-        
         .admin-card {
             background: white;
             padding: var(--spacing-xl);
@@ -261,7 +229,7 @@
             background: #e67a35;
         }
         
-        .sponsor-item {
+        .sponsor-row {
             background: white;
             padding: 20px;
             border-radius: 12px;
@@ -278,7 +246,7 @@
             box-sizing: border-box;
         }
         
-        .sponsor-item:hover {
+        .sponsor-row:hover {
             border-color: var(--warm-orange);
             box-shadow: 0 4px 12px rgba(255,140,66,0.2);
             transform: translateY(-2px);
@@ -396,7 +364,40 @@
             border-color: #e74c3c;
             background: #ffebee;
         }
-        
+
+        /* Small screens: stack each sponsor card. Kept after the base card rules above so it overrides them. */
+        @media (max-width: 768px) {
+            .sponsor-row {
+                flex-direction: column;
+                padding: 16px;
+                gap: 16px;
+            }
+
+            .sponsor-info {
+                flex-direction: column;
+                gap: 16px;
+                width: 100%;
+            }
+
+            .sponsor-logo-preview {
+                width: 100%;
+                max-width: 150px;
+                height: 150px;
+                margin: 0 auto;
+            }
+
+            .sponsor-actions {
+                flex-direction: row;
+                width: 100%;
+                justify-content: center;
+                gap: 16px;
+            }
+
+            .btn-icon {
+                flex: 0 0 auto;
+            }
+        }
+
         .empty-state {
             text-align: center;
             padding: 40px 20px;
@@ -632,7 +633,7 @@
                     const sponsor = doc.data();
                     
                     const sponsorItem = document.createElement('div');
-                    sponsorItem.className = 'sponsor-item';
+                    sponsorItem.className = 'sponsor-row';
                     
                     // Build description HTML
                     let descriptionHTML = '';

@@ -124,8 +124,9 @@ firebase functions:secrets:set SMTP_URL               # "log" for now, or the pr
 
 ### 4b. Email (dues reminders and admin notices)
 
-The site emails members who pay manually (a week before dues run out, right after, and 30 days later) and emails
-the admins when a listing needs review. Admins can also run reminders on demand and see every email on
+The site emails members who pay manually (a week before dues run out, right after, and 30 days later), welcomes
+people who sign up on the website (with the three steps to get listed), tells members when their listing is approved
+or needs changes (with the admin's note), and emails the admins when a listing needs review. Admins can also run reminders on demand and see every email on
 `/admin-members` (**Dues Reminders**).
 
 - **Until an email provider is set up**, use `SMTP_URL=log`: emails are recorded on that admin page but not sent.
