@@ -10,6 +10,7 @@
 
 html {
     scroll-behavior: smooth;
+    scroll-padding-top: 100px; /* keeps #anchor targets clear of the sticky header */
 }
 
 body {
@@ -38,6 +39,7 @@ body {
     --sunshine-gold: #FFD700;
     --sky-blue: #4A90E2;
     --warm-orange: #FF8C42;
+    --warm-orange-text: #C2410C; /* orange for text on white (5.2:1); --warm-orange is only 2.3:1 */
     --pure-white: #FFFFFF;
     --soft-cream: #FFF9E6;
     --dark-text: #333333;
@@ -90,7 +92,7 @@ a {
 }
 
 a:hover {
-    color: var(--warm-orange);
+    color: var(--warm-orange-text);
 }
 
 /* ============================================
@@ -243,7 +245,7 @@ a:hover {
 
 .btn-primary {
     background-color: var(--warm-orange);
-    color: white;
+    color: var(--dark-text); /* white on this orange is 2.3:1; dark text is 5.5:1 */
     padding: 16px 32px;
     font-size: 16px;
     font-weight: 700;
@@ -259,7 +261,7 @@ a:hover {
     background-color: #E67A35;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(255, 140, 66, 0.3);
-    color: white;
+    color: var(--dark-text);
 }
 
 .btn-secondary {
@@ -387,6 +389,14 @@ a:hover {
     text-align: center;
     color: white;
     overflow: hidden;
+    /* First slide, shown before script.js builds the crossfade layers (keep in sync with images[0] there). */
+    background: url('pictures/1000057667-1.webp') center / cover no-repeat;
+}
+
+@media (max-width: 768px) {
+    .hero {
+        background-image: url('pictures/1000057667-1-sm.webp');
+    }
 }
 
 .hero-bg-layer {
@@ -591,7 +601,7 @@ a:hover {
 .impact-number {
     font-size: 48px;
     font-weight: 700;
-    color: var(--warm-orange);
+    color: var(--warm-orange-text);
     margin-bottom: var(--spacing-sm);
 }
 
@@ -806,6 +816,11 @@ a:hover {
 
 .footer-credit {
     margin-top: 8px;
+}
+
+/* Inside a sentence, a link needs more than color to stand out. */
+.footer-credit .footer-link {
+    text-decoration: underline;
 }
 
 /* ============================================
@@ -1236,15 +1251,17 @@ select.form-input {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 10px;
+    flex-wrap: wrap;
     margin-top: 20px;
 }
 
+/* A 10px dot inside a 24px tap target (the transparent border is the extra tap area). */
 .carousel-dot {
-    width: 10px;
-    height: 10px;
+    width: 24px;
+    height: 24px;
     padding: 0;
-    border: none;
+    border: 7px solid transparent;
+    background-clip: content-box;
     border-radius: 50%;
     background: var(--light-gray);
     cursor: pointer;
@@ -1257,7 +1274,7 @@ select.form-input {
 
 .carousel-dot.active {
     background: var(--warm-orange);
-    transform: scale(1.2);
+    border-width: 6px; /* 12px dot; scaling the button would shrink its neighbors' tap space */
 }
 
 /* ============================================
@@ -1438,7 +1455,7 @@ select.form-input {
 }
 
 .sponsor-detail-contact a:hover {
-    color: var(--warm-orange);
+    color: var(--warm-orange-text);
     text-decoration: underline;
 }
 

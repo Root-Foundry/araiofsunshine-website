@@ -44,10 +44,13 @@ const db = getFirestore();
 
 const STRIPE_SECRET_KEY = defineSecret('STRIPE_SECRET_KEY');
 const STRIPE_WEBHOOK_SECRET = defineSecret('STRIPE_WEBHOOK_SECRET');
-// Email: SMTP_URL = "log" (record only) or an smtps:// URL from the email provider. See email.js.
+// Email: SMTP_URL = "log" (record only), "gmail" (Workspace mailbox via a service account) or an smtps:// URL from
+// the email provider. See email.js.
 const SMTP_URL = defineSecret('SMTP_URL');
 const MAIL_FROM = defineString('MAIL_FROM', { default: '"A Rai of Sunshine of North Florida" <araiofsunshineofnorthflorida@gmail.com>' });
-const mailer = createMailer({ db, FieldValue, smtpSecret: SMTP_URL, mailFrom: MAIL_FROM });
+const MAIL_REPLY_TO = defineString('MAIL_REPLY_TO', { default: 'araiofsunshineofnorthflorida@gmail.com' });
+const GMAIL_SERVICE_ACCOUNT = defineString('GMAIL_SERVICE_ACCOUNT', { default: 'mailer@araiofsunshine.iam.gserviceaccount.com' });
+const mailer = createMailer({ db, FieldValue, smtpSecret: SMTP_URL, mailFrom: MAIL_FROM, replyTo: MAIL_REPLY_TO, gmailServiceAccount: GMAIL_SERVICE_ACCOUNT });
 
 const DEFAULT_DUES = { amountCents: 2500, interval: 'month' };
 const MAX_PREPAY_PERIODS = 12;

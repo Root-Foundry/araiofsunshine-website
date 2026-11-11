@@ -44,7 +44,7 @@ await db.doc(`admins/${admin.uid}`).set({ email: ADMIN_EMAIL });
 await db.doc('settings/dues').set({ amountCents: 2500, interval: 'month' }, { merge: true });
 await db.doc('events/local-sample').set({
   title: 'Monthly Family Support Meeting',
-  date: isoDay(now + 7 * DAY), time: '6:00 PM', location: '805 N. Jefferson Street, Monticello, FL',
+  date: isoDay(now + 7 * DAY), time: '6:00 PM', location: '850 N. Jefferson Street, Unit 805, Monticello, FL',
   description: 'Connect with other families, share experiences and hear from local service providers.'
 });
 
@@ -152,7 +152,7 @@ async function seedDemo() {
   const events = [
     ['Caregiver Entrepreneurship Workshop', 14, '10:00 AM', 'Jefferson County Public Library', 'Hands-on session on starting a home-based business while caregiving.'],
     ['Community Resource Fair', 28, '11:00 AM', 'Monticello Courthouse Square', 'Meet agencies and nonprofits that support individuals with disabilities.'],
-    ['Holiday Family Gathering', 45, '4:00 PM', '805 N. Jefferson Street, Monticello, FL', 'Food, crafts and fellowship for the whole family.'],
+    ['Holiday Family Gathering', 45, '4:00 PM', '850 N. Jefferson Street, Unit 805, Monticello, FL', 'Food, crafts and fellowship for the whole family.'],
   ];
   for (const [i, [title, days, time, location, description]] of events.entries()) {
     await db.doc(`events/demo-${i + 1}`).set({ title, date: isoDay(now + days * DAY), time, location, description });

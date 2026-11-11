@@ -119,7 +119,7 @@ gsutil cors set cors.json gs://araiofsunshine.firebasestorage.app
 ```bash
 firebase functions:secrets:set STRIPE_SECRET_KEY      # paste sk_test_…
 firebase functions:secrets:set STRIPE_WEBHOOK_SECRET  # paste whsec_…
-firebase functions:secrets:set SMTP_URL               # "log" for now, or the provider URL (see 4b)
+firebase functions:secrets:set SMTP_URL               # "log" for now, then "gmail" or a provider URL (see 4b)
 ```
 
 ### 4b. Email (dues reminders and admin notices)
@@ -130,12 +130,49 @@ or needs changes (with the admin's note), and emails the admins when a listing n
 `/admin-members` (**Dues Reminders**).
 
 - **Until an email provider is set up**, use `SMTP_URL=log`: emails are recorded on that admin page but not sent.
-- **To send for real**, pick any provider with SMTP (SendGrid, Mailgun, Postmark or a Google Workspace mailbox).
-  Verify the sending domain or address with them, then set `SMTP_URL` to their SMTP URL, for example
-  `smtps://USERNAME:PASSWORD@smtp.sendgrid.net:465`, and redeploy the functions.
+- **To send for real (current setup)**, the site sends as a Root Foundry Google Workspace mailbox through the Gmail
+  API, using a service account. There's no password or key file; see *Sending through Google Workspace* below.
+- **Or** use any provider with SMTP (SendGrid, Mailgun, Postmark). Verify the sending domain or address with them,
+  then set `SMTP_URL` to their SMTP URL, for example `smtps://USERNAME:PASSWORD@smtp.sendgrid.net:465`, and redeploy
+  the functions.
 - The **From** address is `MAIL_FROM` in `functions/.env` (not a secret). It must be an address the provider lets you
-  send from. A Gmail address usually isn't accepted by providers; an address on the organization's own domain is
-  best.
+  send from. Keep the organization's name as the sender name. **Replies** go to `MAIL_REPLY_TO` (the organization's
+  Gmail), not the sending mailbox.
+- Every email's footer says why the person got it (member account, account set up for them, or website admin) and
+  that Root Foundry sends these emails for the organization.
+
+#### Sending through Google Workspace (`SMTP_URL=gmail`)
+
+The `mailer` service account has domain-wide delegation for `gmail.send` in Root Foundry's Workspace, and sends as
+the mailbox in `MAIL_FROM`. The Cloud Functions' own identity signs its token request, so no key file exists.
+
+1. Choose the sending mailbox: the **main address** of a root-foundry.com Workspace user (a dedicated user such as
+   `notifications@root-foundry.com` is best; sent emails show in its Sent folder and bounces land in its inbox).
+2. Create the service account and let the functions use it:
+   ```bash
+   gcloud services enable gmail.googleapis.com iamcredentials.googleapis.com --project araiofsunshine
+   gcloud iam service-accounts create mailer --display-name "Website email sender" --project araiofsunshine
+   gcloud iam service-accounts add-iam-policy-binding mailer@araiofsunshine.iam.gserviceaccount.com \
+     --project araiofsunshine --role roles/iam.serviceAccountTokenCreator \
+     --member serviceAccount:741022041696-compute@developer.gserviceaccount.com
+   gcloud iam service-accounts describe mailer@araiofsunshine.iam.gserviceaccount.com \
+     --project araiofsunshine --format "value(oauth2ClientId)"   # the Client ID for step 3
+   ```
+3. As a Workspace super admin, open [admin.google.com](https://admin.google.com) → **Security → Access and data
+   control → API controls → Manage Domain Wide Delegation → Add new**. Paste the Client ID, enter the scope
+   `https://www.googleapis.com/auth/gmail.send`, and click **Authorize**. It usually takes effect within minutes.
+4. In `functions/.env`, set `MAIL_FROM="A Rai of Sunshine of North Florida" <notifications@root-foundry.com>` (your
+   mailbox from step 1).
+5. `firebase functions:secrets:set SMTP_URL` → enter `gmail`, then `firebase deploy --only functions`.
+6. Test by signing up a new member account: the welcome email should arrive, and **Dues Reminders** on
+   `/admin-members` should show it as *sent*. A *failed* email shows the reason:
+   - `oauth2.googleapis.com 401: Client is unauthorized…`: step 3 isn't done or hasn't taken effect yet, or the scope
+     doesn't match exactly, or `MAIL_FROM` isn't a Workspace user's main address.
+   - `iamcredentials.googleapis.com 403`: the Token Creator grant in step 2 is missing.
+   - `gmail.googleapis.com 403`: the Gmail API isn't enabled (step 2).
+
+Delegation lets the `mailer` account send as **any** root-foundry.com user, so keep it for this one job and don't give
+anything else Token Creator on it. Only the site's functions (and project owners) can use it.
 
 ### 4c. Firebase Authentication emails and domains
 

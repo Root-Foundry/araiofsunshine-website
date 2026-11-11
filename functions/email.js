@@ -3,6 +3,9 @@
  *
  * SMTP_URL (a Firebase secret) chooses how mail goes out:
  *   smtps://USER:PASSWORD@smtp.example.com:465   -> sent through that provider (SendGrid, Mailgun, Google Workspace...)
+ *   gmail                                        -> sent through the Gmail API as the Google Workspace mailbox in
+ *                                                   MAIL_FROM, by the GMAIL_SERVICE_ACCOUNT service account
+ *                                                   (domain-wide delegation; no key file, see MEMBERSHIP-SETUP.md 4b)
  *   log                                          -> nothing is sent; each email is only recorded (local testing, or
  *                                                   until a provider is set up)
  * Every email, sent or not, is recorded in outbox/{id} so admins can see what went out (admin-members.html).
@@ -13,13 +16,20 @@ const logger = require('firebase-functions/logger');
 const ORG = 'A Rai of Sunshine of North Florida';
 const SITE_URL = 'https://araiofsunshine.org';
 const DEFAULT_FROM = `"${ORG}" <araiofsunshineofnorthflorida@gmail.com>`;
+// Mail goes out from a Root Foundry address, so the footer says whose email this is and why it was sent.
+const SENT_BY = 'Root Foundry runs the araiofsunshine.org website and sends these emails for A Rai of Sunshine.';
+const REASONS = {
+  member: `You're getting this email because you have a member account with ${ORG} at araiofsunshine.org.`,
+  invite: `You're getting this email because ${ORG} set up a member account for you at araiofsunshine.org.`,
+  admin: `You're getting this email because you're an admin for the ${ORG} website.`,
+};
 
 const escapeHtml = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const firstName = (name) => (name || '').trim().split(/\s+/)[0] || 'there';
 const longDate = (d) => d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'America/New_York' });
 
 /** Simple branded layout that renders in every mail client (tables + inline styles). */
-function layout({ heading, paragraphs, button, footnote }) {
+function layout({ heading, paragraphs, button, footnote, reason = REASONS.member }) {
   const body = paragraphs.map((p) => `<p style="margin:0 0 16px;font-size:16px;line-height:1.6;color:#333333;">${p}</p>`).join('');
   const cta = button
     ? `<p style="margin:24px 0;"><a href="${escapeHtml(button.url)}" style="background:#FF8C42;color:#ffffff;text-decoration:none;font-weight:bold;padding:12px 24px;border-radius:8px;display:inline-block;">${escapeHtml(button.label)}</a></p>`
@@ -33,18 +43,73 @@ function layout({ heading, paragraphs, button, footnote }) {
 ${body}${cta}
 ${footnote ? `<p style="margin:16px 0 0;font-size:13px;line-height:1.5;color:#666666;">${footnote}</p>` : ''}
 </td></tr></table>
-<p style="font-size:12px;color:#888888;margin:16px 0 0;">${ORG} · 805 N. Jefferson Street, Monticello, FL</p>
+<p style="max-width:560px;font-size:12px;line-height:1.5;color:#888888;margin:16px 0 0;">${escapeHtml(reason)} ${SENT_BY}<br>${ORG} · 850 N. Jefferson Street, Unit 805, Monticello, FL 32344</p>
 </td></tr></table></body></html>`;
 }
 
 /** Plain-text version for clients that don't show HTML. */
-function plain({ heading, paragraphs, button, footnote }) {
+function plain({ heading, paragraphs, button, footnote, reason = REASONS.member }) {
   const strip = (s) => s.replace(/<[^>]+>/g, '');
-  return [heading, '', ...paragraphs.map(strip), button ? `${button.label}: ${button.url}` : '', footnote ? strip(footnote) : '', '', ORG]
+  return [heading, '', ...paragraphs.map(strip), button ? `${button.label}: ${button.url}` : '', footnote ? strip(footnote) : '', '',
+    `${reason} ${SENT_BY}`, ORG]
     .filter((line, i, all) => line !== '' || all[i - 1] !== '').join('\n');
 }
 
-function createMailer({ db, FieldValue, smtpSecret, mailFrom }) {
+async function fetchJson(url, init) {
+  const res = await fetch(url, init);
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const detail = body.error_description || body.error?.message || body.error || res.statusText;
+    throw new Error(`${new URL(url).hostname} ${res.status}: ${detail}`);
+  }
+  return body;
+}
+
+/**
+ * Sends as a Google Workspace mailbox through the Gmail API. The service account has domain-wide delegation for
+ * gmail.send in the Workspace admin console. There's no key file: the function's own identity has Google sign the
+ * service account's token request (IAM Credentials signJwt), which needs Token Creator on that service account.
+ */
+function gmailTransport(serviceAccount, from) {
+  if (!serviceAccount) throw new Error('Set GMAIL_SERVICE_ACCOUNT in functions/.env to send with SMTP_URL=gmail.');
+  const mailbox = (from.match(/<([^>]+)>/)?.[1] || from).trim();
+  const compose = nodemailer.createTransport({ streamTransport: true, buffer: true, newline: 'crlf' });
+  let token = null;
+
+  async function accessToken() {
+    if (token && token.expires > Date.now() + 60_000) return token.value;
+    const runtime = await fetchJson('http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token',
+      { headers: { 'Metadata-Flavor': 'Google' } });
+    const now = Math.floor(Date.now() / 1000);
+    const claims = { iss: serviceAccount, sub: mailbox, scope: 'https://www.googleapis.com/auth/gmail.send',
+      aud: 'https://oauth2.googleapis.com/token', iat: now, exp: now + 3600 };
+    const { signedJwt } = await fetchJson(
+      `https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/${encodeURIComponent(serviceAccount)}:signJwt`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${runtime.access_token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ payload: JSON.stringify(claims) }),
+      });
+    const grant = await fetchJson('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      body: new URLSearchParams({ grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer', assertion: signedJwt }),
+    });
+    token = { value: grant.access_token, expires: Date.now() + grant.expires_in * 1000 };
+    return token.value;
+  }
+
+  return {
+    async sendMail(message) {
+      const { message: mime } = await compose.sendMail(message);
+      await fetchJson('https://gmail.googleapis.com/gmail/v1/users/me/messages/send', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${await accessToken()}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ raw: mime.toString('base64url') }),
+      });
+    },
+  };
+}
+
+function createMailer({ db, FieldValue, smtpSecret, mailFrom, replyTo, gmailServiceAccount }) {
   let transport = null;
 
   async function send({ to, subject, content, kind, uid = null }) {
@@ -60,9 +125,11 @@ function createMailer({ db, FieldValue, smtpSecret, mailFrom }) {
       return { status: 'logged' };
     }
     try {
-      transport = transport || nodemailer.createTransport(url);
+      const from = mailFrom.value() || DEFAULT_FROM;
+      transport = transport || (url === 'gmail' ? gmailTransport(gmailServiceAccount.value(), from) : nodemailer.createTransport(url));
       await transport.sendMail({
-        from: mailFrom.value() || DEFAULT_FROM,
+        from,
+        replyTo: replyTo.value() || undefined, // replies reach the organization, not the sending mailbox
         to: recipients.join(', '),
         subject,
         html: layout(content),
@@ -133,6 +200,7 @@ function listingSubmitted(business, member) {
         'Approve it or request changes on the admin Businesses page.',
       ],
       button: { label: 'Review listings', url: `${SITE_URL}/admin-businesses` },
+      reason: REASONS.admin,
     },
   };
 }
@@ -201,6 +269,7 @@ function memberInvite(member, link) {
       ],
       button: { label: 'Choose my password', url: link },
       footnote: 'This link expires after a while. If it stops working, use "Forgot your password?" on the member sign-in page.',
+      reason: REASONS.invite,
     },
   };
 }

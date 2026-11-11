@@ -5,17 +5,20 @@ document.addEventListener('DOMContentLoaded', function() {
     if (hero) {
         // Array of background images from the pictures folder
         const images = [
-            'pictures/1000057667-1.jpg',
-            'pictures/1000057698.jpg',
-            'pictures/1765820837120.jpg',
-            'pictures/571256292_1205811701577881_8532757700362765109_n.jpg',
-            'pictures/571274867_1206477381511313_6460864454838217308_n.jpg',
-            'pictures/571351855_1205811724911212_4181540521471198377_n.jpg',
-            'pictures/571374457_1205811461577905_4848722281407988578_n.jpg',
-            'pictures/702676692_1457713459731741_6817820080791380090_n.jpg',
-            'pictures/711116410_1026842980012722_3840939579753963428_n.jpg'
-        ];
-        
+            'pictures/1000057667-1.webp',
+            'pictures/1000057698.webp',
+            'pictures/1765820837120.webp',
+            'pictures/571256292_1205811701577881_8532757700362765109_n.webp',
+            'pictures/571274867_1206477381511313_6460864454838217308_n.webp',
+            'pictures/571351855_1205811724911212_4181540521471198377_n.webp',
+            'pictures/571374457_1205811461577905_4848722281407988578_n.webp',
+            'pictures/702676692_1457713459731741_6817820080791380090_n.webp',
+            'pictures/711116410_1026842980012722_3840939579753963428_n.webp'
+        ].map(function(src) {
+            // Phones get the 900px "-sm" copies (same breakpoint as the .hero rule in styles.css).
+            return window.matchMedia('(max-width: 768px)').matches ? src.replace('.webp', '-sm.webp') : src;
+        });
+
         let currentIndex = 0;
         
         // Create background layers for crossfade effect
@@ -30,7 +33,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         hero.insertBefore(bg2, hero.firstChild);
         hero.insertBefore(bg1, hero.firstChild);
-        
+        // The layers take over from the CSS first slide, so it doesn't show through mid-crossfade.
+        hero.style.backgroundImage = 'none';
+
         let isFirstLayer = true;
         
         // Change background every 5 seconds with crossfade
@@ -81,8 +86,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const dots = Array.from(dotsContainer.querySelectorAll('.carousel-dot'));
 
+        // Later photos are in index.html as data-src, so they don't compete with the page's first load.
+        // Load each one when it becomes the current or next slide.
+        function loadSlide(index) {
+            const img = slides[(index + slides.length) % slides.length].querySelector('img[data-src]');
+            if (img) {
+                img.src = img.dataset.src;
+                img.removeAttribute('data-src');
+            }
+        }
+
         function goToSlide(index) {
             currentIndex = (index + slides.length) % slides.length;
+            loadSlide(currentIndex);
+            loadSlide(currentIndex + 1);
             track.style.transform = 'translateX(-' + (currentIndex * 100) + '%)';
             dots.forEach(function(dot, i) {
                 dot.classList.toggle('active', i === currentIndex);

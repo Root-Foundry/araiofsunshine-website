@@ -7,7 +7,7 @@ const HINT_KEY = 'rai.signedIn';
 
 function render(signedIn) {
     const label = signedIn ? 'My Account' : 'Log In / Sign Up';
-    const href = signedIn ? 'member.html#account' : 'member.html';
+    const href = signedIn ? '/member#account' : '/member';
 
     document.querySelectorAll('.btn-login').forEach((btn) => {
         btn.href = href;

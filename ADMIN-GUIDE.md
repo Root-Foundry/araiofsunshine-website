@@ -52,7 +52,7 @@ firebase auth:import --project araiofsunshine admin-user.json
    - **Event Title** (required): e.g., "Monthly Support Group Meeting"
    - **Date** (required): Select from calendar picker
    - **Time** (optional): e.g., "3:00 PM"
-   - **Location** (optional): e.g., "805 N. Jefferson Street, Monticello, FL"
+   - **Location** (optional): e.g., "850 N. Jefferson Street, Unit 805, Monticello, FL"
    - **Description** (optional): Details about the event
 3. Click **"Save Event"**
 4. The event will appear immediately on the public calendar!

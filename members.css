@@ -174,7 +174,7 @@
 
 .listing-step.current .step-marker {
     background: var(--warm-orange);
-    color: white;
+    color: var(--dark-text);
 }
 
 @media (max-width: 575px) {
@@ -846,7 +846,7 @@
 }
 
 .spotlight-contact a:hover {
-    color: var(--warm-orange);
+    color: var(--warm-orange-text);
 }
 
 .spotlight-contact i {
