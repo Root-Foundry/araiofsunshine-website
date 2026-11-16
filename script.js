@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function() {
         slides.forEach(function(slide, index) {
             const dot = document.createElement('button');
             dot.className = 'carousel-dot';
-            dot.setAttribute('aria-label', 'Go to photo ' + (index + 1));
+            dot.setAttribute('aria-label', 'Go to slide ' + (index + 1));
             dot.addEventListener('click', function() {
                 goToSlide(index);
                 restartAutoplay();
@@ -86,13 +86,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const dots = Array.from(dotsContainer.querySelectorAll('.carousel-dot'));
 
-        // Later photos are in index.html as data-src, so they don't compete with the page's first load.
-        // Load each one when it becomes the current or next slide.
+        const videos = Array.from(track.querySelectorAll('video'));
+
+        // Later photos (and the video posters) are in index.html as data-src / data-poster, so they don't
+        // compete with the page's first load. Load each one when it becomes the current or next slide.
         function loadSlide(index) {
-            const img = slides[(index + slides.length) % slides.length].querySelector('img[data-src]');
+            const slide = slides[(index + slides.length) % slides.length];
+            const img = slide.querySelector('img[data-src]');
             if (img) {
                 img.src = img.dataset.src;
                 img.removeAttribute('data-src');
+            }
+            const video = slide.querySelector('video[data-poster]');
+            if (video) {
+                video.poster = video.dataset.poster;
+                video.removeAttribute('data-poster');
             }
         }
 
@@ -100,6 +108,9 @@ document.addEventListener('DOMContentLoaded', function() {
             currentIndex = (index + slides.length) % slides.length;
             loadSlide(currentIndex);
             loadSlide(currentIndex + 1);
+            videos.forEach(function(video) {
+                if (!slides[currentIndex].contains(video)) video.pause();
+            });
             track.style.transform = 'translateX(-' + (currentIndex * 100) + '%)';
             dots.forEach(function(dot, i) {
                 dot.classList.toggle('active', i === currentIndex);
@@ -107,6 +118,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         function startAutoplay() {
+            // Don't slide away from a video someone is watching.
+            if (videos.some(function(video) { return !video.paused; })) return;
             autoplayTimer = setInterval(function() {
                 goToSlide(currentIndex + 1);
             }, 5000);
@@ -133,6 +146,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
         carousel.addEventListener('mouseleave', function() {
             restartAutoplay();
+        });
+
+        videos.forEach(function(video) {
+            video.addEventListener('play', function() {
+                clearInterval(autoplayTimer);
+            });
+            video.addEventListener('pause', restartAutoplay);
         });
 
         goToSlide(0);
