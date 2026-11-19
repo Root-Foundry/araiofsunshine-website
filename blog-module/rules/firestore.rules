@@ -1,0 +1,25 @@
+rules_version = '2';
+// Standalone Firestore rules for a site that only uses the blog. If the
+// project already has rules, copy the isBlogAdmin/isValidPost functions and
+// the /posts block into its existing file instead.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isBlogAdmin() {
+      return request.auth != null && request.auth.token.admin == true;
+    }
+
+    function isValidPost(post) {
+      return post.title is string && post.title.size() > 0 && post.title.size() <= 200
+        && post.slug is string && post.slug.matches('^[a-z0-9]+(-[a-z0-9]+)*$') && post.slug.size() <= 100
+        && post.status in ['draft', 'published']
+        && post.body is string && post.body.size() <= 500000
+        && post.tags is list && post.tags.size() <= 30;
+    }
+
+    match /posts/{postId} {
+      allow read: if resource.data.status == 'published' || isBlogAdmin();
+      allow create, update: if isBlogAdmin() && isValidPost(request.resource.data);
+      allow delete: if isBlogAdmin();
+    }
+  }
+}

@@ -169,5 +169,25 @@ service cloud.firestore {
       allow read: if true;
       allow write: if isAdmin();
     }
+
+    // Blog (blog-module/). Editors carry the `admin: true` custom claim, granted with
+    // blog-module/scripts/grant-blog-admin.mjs. That's separate from the `admins` collection above.
+    function isBlogAdmin() {
+      return request.auth != null && request.auth.token.admin == true;
+    }
+
+    function isValidPost(post) {
+      return post.title is string && post.title.size() > 0 && post.title.size() <= 200
+        && post.slug is string && post.slug.matches('^[a-z0-9]+(-[a-z0-9]+)*$') && post.slug.size() <= 100
+        && post.status in ['draft', 'published']
+        && post.body is string && post.body.size() <= 500000
+        && post.tags is list && post.tags.size() <= 30;
+    }
+
+    match /posts/{postId} {
+      allow read: if resource.data.status == 'published' || isBlogAdmin();
+      allow create, update: if isBlogAdmin() && isValidPost(request.resource.data);
+      allow delete: if isBlogAdmin();
+    }
   }
 }

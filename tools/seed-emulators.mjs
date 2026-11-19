@@ -1,11 +1,12 @@
 // Seeds the LOCAL Firebase emulators with an admin account and default settings for testing.
 // Run while `firebase emulators:start` is running:
-//   node tools/seed-emulators.mjs          admin + dues setting + a sample event
+//   node tools/seed-emulators.mjs          admin + dues setting + a sample event, plus a blog editor and sample posts
 //   node tools/seed-emulators.mjs --demo   also sample members, approved listings, upcoming events and donations,
 //                                          so the directory and admin pages look realistic for a demo
 // It only ever talks to the local emulators.
 import { createRequire } from 'node:module';
 import { randomUUID } from 'node:crypto';
+import { readFile } from 'node:fs/promises';
 
 process.env.FIRESTORE_EMULATOR_HOST ||= '127.0.0.1:8080';
 process.env.FIREBASE_AUTH_EMULATOR_HOST ||= '127.0.0.1:9099';
@@ -25,6 +26,8 @@ const DEMO = process.argv.includes('--demo');
 
 const ADMIN_EMAIL = 'admin@araiofsunshine.org';
 const ADMIN_PASSWORD = 'admin1234';
+const BLOG_EDITOR_EMAIL = 'blog@araiofsunshine.org';
+const BLOG_EDITOR_PASSWORD = 'blog1234';
 const MEMBER_PASSWORD = 'demo1234';
 const DAY = 86400000;
 const now = Date.now();
@@ -48,11 +51,14 @@ await db.doc('events/local-sample').set({
   description: 'Connect with other families, share experiences and hear from local service providers.'
 });
 
+await seedBlog();
 if (DEMO) await seedDemo();
 
 console.log('Local emulators seeded:');
 console.log(`  Admin login: ${ADMIN_EMAIL} / ${ADMIN_PASSWORD}   (http://localhost:5000/admin-login)`);
 console.log('  Dues: $25.00 per month');
+console.log(`  Blog editor: ${BLOG_EDITOR_EMAIL} / ${BLOG_EDITOR_PASSWORD}   (http://localhost:5000/blog-admin; the site admin above has no blog access)`);
+console.log('  Blog: 4 published sample posts and 1 draft   (http://localhost:5000/blog)');
 if (DEMO) console.log(`  Demo members (password ${MEMBER_PASSWORD}): denise@, marcus@, gloria@, darnell@, priya@, lena@, tonya@ and angela@example.com`);
 console.log('  New members: create one at http://localhost:5000/member');
 process.exit(0);
@@ -170,4 +176,79 @@ async function seedDemo() {
     await db.doc(`donations/${id}`).set({ frequency, amountCents, donorName, email, note, anonymous, paidAt: ts(now - daysAgo * DAY), createdAt: ts(now - daysAgo * DAY) });
   }
   await db.doc('donationSubscriptions/demo_sub1').set({ donorName: 'Rachel Kim', email: 'rachel@example.com', anonymous: false, status: 'active', active: true, amountCents: 2000, startedAt: ts(now - 50 * DAY), canceledAt: null });
+}
+
+// ---------------------------------------------------------------------------------------------------------------
+// Blog (blog-module/): an editor with the `admin: true` claim the blog's rules check (separate from the `admins`
+// collection), and sample posts: four published, three with cover images, one without (for the fallback), and one
+// draft that must never appear on /blog, a tag page, the feeds or the homepage.
+async function seedBlog() {
+  const editor = await ensureUser(BLOG_EDITOR_EMAIL, BLOG_EDITOR_PASSWORD, 'Blog Editor');
+  await auth.setCustomUserClaims(editor.uid, { ...(editor.customClaims ?? {}), admin: true });
+
+  const bucket = getStorage().bucket();
+  async function uploadCover(file) {
+    const path = `blog-images/sample-${file.split('/').pop()}`;
+    const token = randomUUID();
+    const data = await readFile(new URL(`../pictures/${file}`, import.meta.url));
+    await bucket.file(path).save(data, { contentType: 'image/webp', metadata: { metadata: { firebaseStorageDownloadTokens: token } } });
+    return `http://${process.env.FIREBASE_STORAGE_EMULATOR_HOST}/v0/b/${BUCKET}/o/${encodeURIComponent(path)}?alt=media&token=${token}`;
+  }
+
+  // [slug, title, excerpt, tags, status, publishedDaysAgo, cover file or null, cover alt, body]
+  const posts = [
+    ['welcome-to-our-blog', 'Welcome to Our New Blog', 'News, event recaps and stories from A Rai of Sunshine, all in one place.',
+      ['news'], 'published', 2, '1000057667-1.webp', 'Members of A Rai of Sunshine working together at a community workshop',
+      `This is where we'll share what's happening at A Rai of Sunshine of North Florida: news, recaps of our monthly meetings, and stories from the families we serve.
+
+## What you'll find here
+
+- **Event recaps** with photos from our gatherings
+- **Resources** for families and caregivers
+- **Stories** from our members and partners
+
+Want to be part of the next story? [Join our community](/join).`],
+    ['sunnie-washington-2026-trailblazer', 'Sunnie Washington Named a 2026 Trailblazer', "Our founder was honored by the Big Bend Minority Chamber of Commerce Women's Business Council.",
+      ['news', 'awards'], 'published', 10, 'events/e17.webp', 'Sunnie Washington holding her 2026 Trailblazer Award',
+      `Our founder, Sunnie Washington, received the **2026 Trailblazer Award** from the Big Bend Minority Chamber of Commerce Women's Business Council.
+
+> Thank you to everyone who has been part of this journey.
+
+See more photos in the [Community Moments gallery](/).`],
+    ['october-community-meeting-recap', 'Recap: Our October Community Meeting', 'Families, caregivers and local providers came together to share resources and encouragement.',
+      ['events', 'community'], 'published', 20, 'events/e3.webp', 'Families gathered around tables at the October community meeting',
+      `Thank you to everyone who joined us for our October meeting.
+
+## Highlights
+
+1. Updates on local services
+2. Small-group conversations for caregivers
+3. Plans for the holiday season
+
+Our meetings are held on the last Sunday of each month at 3:00 PM in Monticello. Everyone is welcome.`],
+    ['questions-for-your-iep-meeting', "Five Questions to Ask at Your Child's IEP Meeting", '',
+      ['resources', 'education'], 'published', 5, null, '',
+      `An IEP meeting can feel overwhelming. These questions can help you prepare.
+
+1. What are my child's current strengths?
+2. Which goals matter most this year?
+3. How will progress be measured?
+4. What supports are available in the classroom?
+5. Who do I contact with questions?
+
+Find more help on our [Resources page](/resources).`],
+    ['holiday-family-gathering', 'Holiday Family Gathering: Save the Date', 'Draft: details to come.',
+      ['events'], 'draft', null, null, '',
+      'Food, crafts and fellowship for the whole family. Details coming soon.'],
+  ];
+
+  for (const [slug, title, excerpt, tags, status, daysAgo, coverFile, coverImageAlt, body] of posts) {
+    const publishedAt = daysAgo == null ? null : ts(now - daysAgo * DAY);
+    await db.doc(`posts/sample-${slug}`).set({
+      title, slug, excerpt, body, tags, status, author: '', seoTitle: '', seoDescription: '',
+      coverImageUrl: coverFile ? await uploadCover(coverFile) : '', coverImageAlt,
+      updatedAt: publishedAt ?? ts(now - DAY),
+      ...(publishedAt ? { publishedAt } : {}),
+    });
+  }
 }

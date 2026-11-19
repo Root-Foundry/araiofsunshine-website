@@ -12,5 +12,15 @@ service firebase.storage {
         && request.resource.contentType.matches('image/(png|jpeg|webp|gif)');
       allow delete: if request.auth != null && request.auth.uid == uid;
     }
+
+    // Blog images (blog-module/), uploaded from the editor at /blog-admin by accounts with the
+    // `admin: true` claim. SVG is refused here too.
+    match /blog-images/{fileName} {
+      allow read: if true;
+      allow create, update: if request.auth != null && request.auth.token.admin == true
+        && request.resource.size <= 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/(png|jpeg|webp|gif)');
+      allow delete: if request.auth != null && request.auth.token.admin == true;
+    }
   }
 }

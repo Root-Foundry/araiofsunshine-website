@@ -1,0 +1,9 @@
+{
+  "name": "blog-module-scripts",
+  "private": true,
+  "description": "Lets Node run blog.config.ts and scripts/*.mjs from this folder (the site's root package.json is CommonJS), and gives grant-blog-admin.mjs its firebase-admin. Install once with: npm install --prefix blog-module",
+  "type": "module",
+  "devDependencies": {
+    "firebase-admin": "^14.5.0"
+  }
+}

@@ -25,6 +25,12 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://araiofsunshine.org/blog</loc>
+    <lastmod>2026-11-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://araiofsunshine.org/events</loc>
     <lastmod>2026-11-11</lastmod>
     <changefreq>weekly</changefreq>

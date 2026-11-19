@@ -1,0 +1,4 @@
+node_modules/
+lib/
+# Copied from ../core and ../blog.config.ts at build time.
+src/shared/

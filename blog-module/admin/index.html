@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Blog Editor</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde@2.21.0/dist/easymde.min.css">
+  <link rel="stylesheet" href="admin.css">
+  <script src="https://cdn.jsdelivr.net/npm/easymde@2.21.0/dist/easymde.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
+  <!-- Generated from blog-module/blog.config.ts by scripts/build-admin.mjs -->
+  <script src="config.js"></script>
+  <script type="module" src="admin.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" id="site-link" href="/">
+        <img id="site-logo" src="" alt="" width="32" height="26">
+        <span id="site-name">Blog</span> <span class="brand-sub">Blog editor</span>
+      </a>
+      <div class="topbar-actions" id="account" hidden>
+        <span class="account-email" id="account-email"></span>
+        <button type="button" class="btn btn-quiet" id="logout-btn">Log out</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <main class="container">
+    <p class="loading" id="view-loading">Loading…</p>
+
+    <!-- Log in -->
+    <section id="view-login" class="card narrow" hidden>
+      <h1>Log in</h1>
+      <p class="hint">Sign in with the email and password for your blog account.</p>
+      <form id="login-form" novalidate>
+        <label for="login-email">Email</label>
+        <input id="login-email" type="email" autocomplete="username" required>
+        <label for="login-password">Password</label>
+        <input id="login-password" type="password" autocomplete="current-password" required>
+        <p class="error" id="login-error" role="alert" hidden></p>
+        <button type="submit" class="btn btn-primary btn-block" id="login-btn">Log in</button>
+      </form>
+      <button type="button" class="link-btn" id="forgot-btn">Forgot your password?</button>
+    </section>
+
+    <!-- Signed in without the admin claim -->
+    <section id="view-noaccess" class="card narrow" hidden>
+      <h1>No blog access</h1>
+      <p>You're signed in, but this account isn't allowed to edit the blog yet. Ask your site administrator to grant access, then log out and back in.</p>
+      <button type="button" class="btn btn-primary" id="noaccess-logout">Log out</button>
+    </section>
+
+    <!-- Post list -->
+    <section id="view-list" hidden>
+      <div class="list-header">
+        <h1>Posts</h1>
+        <button type="button" class="btn btn-primary" id="new-post-btn">+ New post</button>
+      </div>
+      <p class="hint" id="list-empty" hidden>No posts yet. Tap “New post” to write your first one.</p>
+      <ul class="post-list" id="post-list"></ul>
+    </section>
+
+    <!-- Editor -->
+    <section id="view-editor" hidden>
+      <button type="button" class="link-btn back" id="back-btn">← All posts</button>
+      <h1 id="editor-heading">New post</h1>
+      <p class="status-line"><span class="badge" id="editor-status">Draft</span> <a id="view-post-link" href="#" target="_blank" rel="noopener" hidden>View post ↗</a></p>
+
+      <form id="editor-form" novalidate>
+        <div class="card">
+          <label for="f-title">Title <span class="req">*</span></label>
+          <input id="f-title" type="text" maxlength="160" required>
+
+          <label for="f-slug">Web address</label>
+          <div class="slug-row"><span class="slug-prefix" id="slug-prefix"></span><input id="f-slug" type="text" maxlength="100" inputmode="url" autocapitalize="off" spellcheck="false"></div>
+          <p class="hint" id="slug-hint">Created from the title. Lowercase letters, numbers and dashes only.</p>
+
+          <label for="f-excerpt">Summary</label>
+          <textarea id="f-excerpt" rows="2" maxlength="300"></textarea>
+          <p class="hint">One or two sentences shown on the blog page and in search results.</p>
+        </div>
+
+        <div class="card">
+          <label for="f-body">Post</label>
+          <p class="hint">Use the toolbar for headings, bold and lists. Drag a photo into the editor (or paste one) to add it to the post.</p>
+          <textarea id="f-body"></textarea>
+        </div>
+
+        <div class="card">
+          <h2>Cover image</h2>
+          <div class="cover" id="cover-preview" hidden><img id="cover-img" src="" alt=""></div>
+          <div class="cover-actions">
+            <label class="btn btn-quiet file-btn">Choose image<input type="file" id="f-cover" accept="image/png,image/jpeg,image/webp,image/gif"></label>
+            <button type="button" class="btn btn-quiet" id="cover-remove" hidden>Remove</button>
+          </div>
+          <p class="hint">PNG, JPG, WebP or GIF, up to 5 MB. Wide images (about 1200 × 675) look best.</p>
+          <label for="f-cover-alt">Describe the image</label>
+          <input id="f-cover-alt" type="text" maxlength="200">
+          <p class="hint">For people using screen readers, e.g. “A finished website shown on a laptop and phone”.</p>
+        </div>
+
+        <div class="card">
+          <label for="f-tags">Tags</label>
+          <input id="f-tags" type="text" placeholder="e.g. web design, seo">
+          <p class="hint">Separate with commas.</p>
+
+          <label for="f-author">Author</label>
+          <input id="f-author" type="text" maxlength="100">
+        </div>
+
+        <details class="card">
+          <summary>Search engine settings (optional)</summary>
+          <label for="f-seo-title">Search title <span class="counter" id="seo-title-count"></span></label>
+          <input id="f-seo-title" type="text" maxlength="70">
+          <p class="hint">Leave blank to use the post title. Aim for under 60 characters.</p>
+          <label for="f-seo-desc">Search description <span class="counter" id="seo-desc-count"></span></label>
+          <textarea id="f-seo-desc" rows="2" maxlength="200"></textarea>
+          <p class="hint">Leave blank to use the summary. Aim for under 155 characters.</p>
+        </details>
+
+        <div class="danger-zone" id="danger-zone" hidden>
+          <button type="button" class="btn btn-danger" id="delete-btn">Delete post</button>
+        </div>
+      </form>
+
+      <div class="action-bar">
+        <button type="button" class="btn btn-quiet" id="save-draft-btn">Save draft</button>
+        <button type="button" class="btn btn-quiet" id="unpublish-btn" hidden>Unpublish</button>
+        <button type="button" class="btn btn-primary" id="publish-btn">Publish</button>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

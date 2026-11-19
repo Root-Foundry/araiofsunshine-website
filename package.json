@@ -4,7 +4,9 @@
   "description": "",
   "main": "account-status.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:blog-admin": "node --experimental-strip-types blog-module/scripts/build-admin.mjs blog-admin",
+    "blog:grant-admin": "node tools/grant-blog-admin.mjs"
   },
   "repository": {
     "type": "git",

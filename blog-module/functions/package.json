@@ -1,0 +1,24 @@
+{
+  "name": "blog-function",
+  "private": true,
+  "description": "The blog module's Cloud Function adapter, for sites on Firebase Hosting.",
+  "main": "lib/index.js",
+  "engines": {
+    "node": "24"
+  },
+  "scripts": {
+    "build": "node build.mjs",
+    "deploy": "npm run build && firebase deploy --only functions:blog"
+  },
+  "dependencies": {
+    "firebase-admin": "^14.5.0",
+    "firebase-functions": "^7.4.0",
+    "marked": "^18.1.2",
+    "sanitize-html": "^2.18.1"
+  },
+  "devDependencies": {
+    "@types/sanitize-html": "^2.16.2",
+    "esbuild": "^0.28.2",
+    "typescript": "^5.9.0"
+  }
+}

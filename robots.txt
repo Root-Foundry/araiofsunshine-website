@@ -3,3 +3,4 @@ Allow: /
 Disallow: /admin-
 
 Sitemap: https://araiofsunshine.org/sitemap.xml
+Sitemap: https://araiofsunshine.org/blog/sitemap.xml

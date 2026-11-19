@@ -19,3 +19,8 @@ desktop.ini
 
 # Local emulator data
 .emulator-data/
+
+# Blog editor, built from blog-module/ (npm run build:blog-admin)
+blog-admin/
+# firebase-admin for blog-module/scripts (npm install --prefix blog-module)
+blog-module/node_modules/

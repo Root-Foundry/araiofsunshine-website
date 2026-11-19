@@ -11,10 +11,15 @@
       "functions/**",
       "storage.rules",
       "tools/**",
+      "blog-module/**",
       "**/*-original.mp4"
     ],
     "cleanUrls": true,
     "trailingSlash": false,
+    "rewrites": [
+      { "source": "/blog", "function": { "functionId": "blog", "region": "us-east4" } },
+      { "source": "/blog/**", "function": { "functionId": "blog", "region": "us-east4" } }
+    ],
     "headers": [
       {
         "source": "**/*.@(webp|png|jpg|jpeg|gif|svg|ico|mp4)",
@@ -37,6 +42,11 @@
         ".git",
         "*.local"
       ]
+    },
+    {
+      "source": "blog-module/functions",
+      "codebase": "blog",
+      "predeploy": ["npm --prefix \"$RESOURCE_DIR\" run build"]
     }
   ],
   "storage": {
