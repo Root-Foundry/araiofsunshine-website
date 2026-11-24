@@ -413,7 +413,7 @@
 
     <script src="script.js"></script>
     <script type="module">
-        import { app } from './firebase-config.js';
+        import { app, loadAppCheck } from './firebase-config.js';
         import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js';
         import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
@@ -471,12 +471,16 @@
             }
         }
 
+        // Start reCAPTCHA once someone starts filling in the form, so it's ready when they give.
+        $('donateForm').addEventListener('focusin', () => { loadAppCheck().catch(() => {}); }, { once: true });
+
         $('donateForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = $('giveBtn');
             btn.disabled = true;
             $('giveBtnText').textContent = 'Opening secure checkout…';
             try {
+                await loadAppCheck(); // checkout requires App Check (invisible reCAPTCHA)
                 const { data } = await httpsCallable(getFunctions(app, 'us-east4'), 'createDonationCheckout')({
                     amountCents: Math.round(state.amount * 100),
                     frequency: state.frequency,

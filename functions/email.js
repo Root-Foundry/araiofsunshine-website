@@ -50,7 +50,7 @@ ${footnote ? `<p style="margin:16px 0 0;font-size:13px;line-height:1.5;color:#66
 
 /** Plain-text version for clients that don't show HTML. */
 function plain({ heading, paragraphs, button, footnote, reason = REASONS.member }) {
-  const strip = (s) => s.replace(/<[^>]+>/g, '');
+  const strip = (s) => s.replace(/<br>/g, '\n').replace(/<[^>]+>/g, '');
   return [heading, '', ...paragraphs.map(strip), button ? `${button.label}: ${button.url}` : '', footnote ? strip(footnote) : '', '',
     `${reason} ${SENT_BY}`, ORG]
     .filter((line, i, all) => line !== '' || all[i - 1] !== '').join('\n');
@@ -113,7 +113,8 @@ function gmailTransport(serviceAccount, from) {
 function createMailer({ db, FieldValue, smtpSecret, mailFrom, replyTo, gmailServiceAccount }) {
   let transport = null;
 
-  async function send({ to, subject, content, kind, uid = null }) {
+  /** `replyTo` overrides the organization's reply address (e.g. a contact-form message goes back to its sender). */
+  async function send({ to, subject, content, kind, uid = null, replyTo: messageReplyTo = null }) {
     const recipients = (Array.isArray(to) ? to : [to]).filter(Boolean);
     if (!recipients.length) return { status: 'skipped' };
     const url = (smtpSecret.value() || '').trim();
@@ -130,7 +131,7 @@ function createMailer({ db, FieldValue, smtpSecret, mailFrom, replyTo, gmailServ
       transport = transport || (url === 'gmail' ? gmailTransport(gmailServiceAccount.value(), from) : nodemailer.createTransport(url));
       await transport.sendMail({
         from,
-        replyTo: replyTo.value() || undefined, // replies reach the organization, not the sending mailbox
+        replyTo: messageReplyTo || replyTo.value() || undefined, // replies reach the organization, not the sending mailbox
         to: recipients.join(', '),
         subject,
         html: layout(content),
@@ -260,6 +261,39 @@ function listingReviewed(business, member, { listed }) {
   };
 }
 
+/** Sent to the admins for each message from the website's contact form. Replies go straight to the sender. */
+function contactMessage(msg) {
+  const from = [msg.email, msg.phone].filter(Boolean).map(escapeHtml).join(', ');
+  return {
+    subject: `Website message: ${msg.subject}`,
+    content: {
+      heading: 'New message from the website',
+      paragraphs: [
+        `<strong>From:</strong> ${escapeHtml(msg.name)} (${from})`,
+        `<strong>About:</strong> ${escapeHtml(msg.subject)}`,
+        ...msg.message.split(/\n\s*\n/).map((p) => escapeHtml(p.trim()).replace(/\n/g, '<br>')),
+      ],
+      footnote: 'Reply to this email to answer them directly.',
+      reason: REASONS.admin,
+    },
+  };
+}
+
+/** Sent to the admins when someone signs up for the newsletter on the website. */
+function newsletterSignup(email) {
+  return {
+    subject: `New newsletter sign-up: ${email}`,
+    content: {
+      heading: 'Someone signed up for the newsletter',
+      paragraphs: [
+        `<strong>${escapeHtml(email)}</strong> signed up on the website.`,
+        'Every sign-up is saved in the newsletterSubscribers collection in Firestore, ready to import into a newsletter tool.',
+      ],
+      reason: REASONS.admin,
+    },
+  };
+}
+
 function memberInvite(member, link) {
   return {
     subject: `Set up your ${ORG} member account`,
@@ -276,4 +310,6 @@ function memberInvite(member, link) {
   };
 }
 
-module.exports = { createMailer, duesReminder, listingSubmitted, listingReviewed, memberInvite, welcomeMember, longDate };
+module.exports = {
+  createMailer, duesReminder, listingSubmitted, listingReviewed, memberInvite, welcomeMember, contactMessage, newsletterSignup, longDate,
+};

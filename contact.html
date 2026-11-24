@@ -221,6 +221,7 @@
                         name="message" 
                         class="form-input" 
                         rows="6" 
+                        maxlength="5000"
                         required
                         aria-required="true"
                     ></textarea>
@@ -229,7 +230,7 @@
                 <div class="form-group">
                     <label class="checkbox-label">
                         <input type="checkbox" id="privacy" name="privacy" required>
-                        <span>I agree to the <a href="#privacy-policy" style="color: var(--sky-blue-text);">privacy policy</a> <span class="required">*</span></span>
+                        <span>I agree to the <a href="/privacy" target="_blank" rel="noopener" style="color: var(--sky-blue-text);">privacy policy</a> <span class="required">*</span></span>
                     </label>
                 </div>
 
@@ -237,7 +238,7 @@
                     <i class="fas fa-paper-plane"></i> Send Message
                 </button>
 
-                <div id="formMessage" class="form-message" style="display: none;"></div>
+                <div id="formMessage" class="form-message" role="status" style="display: none;"></div>
             </form>
         </div>
     </section>
@@ -283,7 +284,7 @@
                     >
                     <button type="submit" class="btn-primary">Subscribe</button>
                 </form>
-                <div id="newsletterMessage" class="form-message" style="display: none; margin-top: 16px;"></div>
+                <div id="newsletterMessage" class="form-message" role="status" style="display: none; margin-top: 16px;"></div>
             </div>
         </div>
     </section>
@@ -357,6 +358,7 @@
     </footer>
 
     <script src="script.js"></script>
+    <script type="module" src="contact-forms.js"></script>
     <script type="module" src="account-status.js"></script>
 </body>
 </html>

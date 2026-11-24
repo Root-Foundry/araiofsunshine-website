@@ -33,7 +33,9 @@ const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestor
 const { getAuth } = require('firebase-admin/auth');
 const { getStorage } = require('firebase-admin/storage');
 const Stripe = require('stripe');
-const { createMailer, duesReminder, listingSubmitted, listingReviewed, memberInvite, welcomeMember } = require('./email');
+const {
+  createMailer, duesReminder, listingSubmitted, listingReviewed, memberInvite, welcomeMember, contactMessage, newsletterSignup,
+} = require('./email');
 const crypto = require('crypto');
 const { reminderFor, DAY_MS } = require('./reminders');
 
@@ -71,6 +73,10 @@ function reportProblem(message, details) {
 
 // Firestore lives in us-east4; triggers must run in the same region.
 setGlobalOptions({ region: 'us-east4', maxInstances: 10 });
+
+// The public callables behind the website's forms reject requests without a valid App Check token (invisible
+// reCAPTCHA; see loadAppCheck in firebase-config.js). Pages served by the emulators get no tokens, so they skip it.
+const APP_CHECK = { enforceAppCheck: process.env.FUNCTIONS_EMULATOR !== 'true' };
 
 initializeApp();
 const db = getFirestore();
@@ -193,7 +199,7 @@ async function uidForCustomer(stripe, customerId) {
  *   { type: 'autopay', returnUrl }            -> recurring subscription
  *   { type: 'prepay', periods: 1-12, returnUrl } -> one-time payment covering N periods
  */
-exports.createDuesCheckout = onCall({ secrets: [STRIPE_SECRET_KEY] }, async (request) => {
+exports.createDuesCheckout = onCall({ ...APP_CHECK, secrets: [STRIPE_SECRET_KEY] }, async (request) => {
   const auth = requireAuth(request);
   const uid = auth.uid;
   const { type, periods, returnUrl } = request.data || {};
@@ -272,7 +278,7 @@ exports.createDuesCheckout = onCall({ secrets: [STRIPE_SECRET_KEY] }, async (req
 });
 
 /** Opens the Stripe customer portal (update card, cancel autopay, see receipts). */
-exports.createBillingPortal = onCall({ secrets: [STRIPE_SECRET_KEY] }, async (request) => {
+exports.createBillingPortal = onCall({ ...APP_CHECK, secrets: [STRIPE_SECRET_KEY] }, async (request) => {
   const auth = requireAuth(request);
   const base = returnBase((request.data || {}).returnUrl);
   const member = (await db.doc(`members/${auth.uid}`).get()).data() || {};
@@ -289,7 +295,7 @@ exports.createBillingPortal = onCall({ secrets: [STRIPE_SECRET_KEY] }, async (re
  * Starts a donation checkout. Public: donors don't need an account.
  *   { amountCents, frequency: 'once' | 'monthly', donorName?, note?, anonymous?, returnUrl }
  */
-exports.createDonationCheckout = onCall({ secrets: [STRIPE_SECRET_KEY] }, async (request) => {
+exports.createDonationCheckout = onCall({ ...APP_CHECK, secrets: [STRIPE_SECRET_KEY] }, async (request) => {
   const { amountCents, frequency, donorName, note, anonymous, returnUrl } = request.data || {};
   const base = returnBase(returnUrl);
   if (!Number.isInteger(amountCents) || amountCents < DONATION_MIN_CENTS || amountCents > DONATION_MAX_CENTS) {
@@ -974,6 +980,47 @@ exports.notifyAdminsOfListing = onDocumentWritten({ document: 'businesses/{uid}'
   const member = (await db.doc(`members/${event.params.uid}`).get()).data();
   const { subject, content } = listingSubmitted(after, member);
   await mailer.send({ to: await adminEmails(), subject, content, kind: 'admin-listing', uid: event.params.uid });
+});
+
+// ---------- Contact form and newsletter (contact.html, index.html) ----------
+const textField = (value, max) => (typeof value === 'string' ? value.trim().slice(0, max) : '');
+
+/** Saves a contact-form message (contactMessages, admin-readable) and emails it to the admins; replies go to the sender. */
+exports.submitContactMessage = onCall({ ...APP_CHECK, secrets: [SMTP_URL] }, async (request) => {
+  const data = request.data || {};
+  const msg = {
+    firstName: textField(data.firstName, 60),
+    lastName: textField(data.lastName, 60),
+    email: textField(data.email, 254).toLowerCase(),
+    phone: textField(data.phone, 30),
+    subject: textField(data.subject, 100) || 'Other',
+    message: textField(data.message, 5000),
+  };
+  if (!msg.firstName || !msg.lastName || !msg.message) throw new HttpsError('invalid-argument', 'Please fill in all required fields.');
+  if (!EMAIL_RE.test(msg.email)) throw new HttpsError('invalid-argument', 'Please enter a valid email address.');
+  msg.name = `${msg.firstName} ${msg.lastName}`;
+  const ref = await db.collection('contactMessages').add({ ...msg, createdAt: FieldValue.serverTimestamp() });
+  const { subject, content } = contactMessage(msg);
+  const { status } = await mailer.send({ to: await adminEmails(), subject, content, kind: 'admin-contact', replyTo: msg.email });
+  await ref.update({ emailStatus: status });
+  return { ok: true };
+});
+
+/** Adds an email to the newsletter list (newsletterSubscribers, admin-readable) and tells the admins about each new one. */
+exports.subscribeNewsletter = onCall({ ...APP_CHECK, secrets: [SMTP_URL] }, async (request) => {
+  const email = textField(request.data?.email, 254).toLowerCase();
+  if (!EMAIL_RE.test(email)) throw new HttpsError('invalid-argument', 'Please enter a valid email address.');
+  // Keyed by a hash: document ids can't hold every character an email address can.
+  const id = crypto.createHash('sha256').update(email).digest('hex');
+  try {
+    await db.doc(`newsletterSubscribers/${id}`).create({ email, source: 'website', createdAt: FieldValue.serverTimestamp() });
+  } catch (err) {
+    if (err.code !== 6) throw err; // 6 = ALREADY_EXISTS: already on the list, nothing to tell the admins
+    return { ok: true };
+  }
+  const { subject, content } = newsletterSignup(email);
+  await mailer.send({ to: await adminEmails(), subject, content, kind: 'admin-newsletter' });
+  return { ok: true };
 });
 
 // ---------- Member notices ----------

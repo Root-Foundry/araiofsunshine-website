@@ -546,6 +546,7 @@
         fillMemberTypeSelect(document.getElementById('profileMemberType'));
         import { onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, signOut, updateProfile, EmailAuthProvider, reauthenticateWithCredential, updatePassword } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
         import { doc, getDoc, setDoc, onSnapshot, collection, query, orderBy, limit, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { loadAppCheck } from './firebase-config.js';
         import { ref, uploadBytes, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
         import { httpsCallable } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js';
 
@@ -821,6 +822,7 @@
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Opening secure checkout…';
             try {
+                await loadAppCheck(); // the checkout functions require App Check (invisible reCAPTCHA)
                 const { data } = await httpsCallable(functions, 'createDuesCheckout')({
                     ...payload,
                     returnUrl: location.origin + location.pathname
@@ -842,6 +844,7 @@
             const btn = e.currentTarget;
             btn.disabled = true;
             try {
+                await loadAppCheck();
                 const { data } = await httpsCallable(functions, 'createBillingPortal')({ returnUrl: location.origin + location.pathname });
                 location.href = data.url;
             } catch (err) {

@@ -164,6 +164,17 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Contact-form messages and newsletter sign-ups, saved by functions (submitContactMessage,
+    // subscribeNewsletter) behind App Check: admins only.
+    match /contactMessages/{messageId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+    match /newsletterSubscribers/{subscriberId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
     // Site settings: settings/dues, settings/spotlight and settings/donations.
     match /settings/{docId} {
       allow read: if true;

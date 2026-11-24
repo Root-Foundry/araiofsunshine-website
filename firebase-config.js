@@ -34,3 +34,25 @@ if (usingEmulators) {
 export function getFirebaseApp() {
     return app;
 }
+
+// Bot protection: Firebase App Check with an invisible reCAPTCHA Enterprise key (araiofsunshine.org and the Firebase
+// domains). The contact form, newsletter, donation and dues functions reject requests without an App Check token, so
+// pages call loadAppCheck() before using them; reCAPTCHA loads only then. The emulated functions don't check tokens.
+const RECAPTCHA_SITE_KEY = '6LdiajAuAAAAAFTsB5ubh4ntYiPV4eLhGHLteqH4';
+let appCheck = null;
+
+export function loadAppCheck() {
+    if (usingEmulators) return Promise.resolve(null);
+    appCheck ??= import('https://www.gstatic.com/firebasejs/10.7.1/firebase-app-check.js')
+        .then(({ initializeAppCheck, ReCaptchaEnterpriseProvider }) => initializeAppCheck(app, {
+            provider: new ReCaptchaEnterpriseProvider(RECAPTCHA_SITE_KEY),
+            // Tokens are fetched when a protected function is called, not refreshed in the background, so pages left
+            // open don't use up reCAPTCHA's free monthly checks.
+            isTokenAutoRefreshEnabled: false
+        }))
+        .catch((err) => {
+            appCheck = null; // let the next attempt retry (e.g. after a network hiccup)
+            throw err;
+        });
+    return appCheck;
+}
