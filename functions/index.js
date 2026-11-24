@@ -21,10 +21,11 @@
  *   removedMembers/{uid}       a short record of members removed by an admin (who, when, by whom)
  */
 
+const Sentry = require('./instrument'); // first, so Sentry is set up before anything else loads
 const { setGlobalOptions } = require('firebase-functions/v2');
-const { onCall, onRequest, HttpsError } = require('firebase-functions/v2/https');
-const { onDocumentCreated, onDocumentWritten } = require('firebase-functions/v2/firestore');
-const { onSchedule } = require('firebase-functions/v2/scheduler');
+const httpsTriggers = require('firebase-functions/v2/https');
+const firestoreTriggers = require('firebase-functions/v2/firestore');
+const schedulerTriggers = require('firebase-functions/v2/scheduler');
 const { defineSecret, defineString } = require('firebase-functions/params');
 const logger = require('firebase-functions/logger');
 const { initializeApp } = require('firebase-admin/app');
@@ -35,6 +36,38 @@ const Stripe = require('stripe');
 const { createMailer, duesReminder, listingSubmitted, listingReviewed, memberInvite, welcomeMember } = require('./email');
 const crypto = require('crypto');
 const { reminderFor, DAY_MS } = require('./reminders');
+
+const { HttpsError } = httpsTriggers;
+
+// Every trigger below reports unexpected errors to Sentry, then lets Firebase handle them as before. HttpsErrors are
+// the messages people see (bad input, not signed in), so they aren't reported. (Sentry's automatic Firebase
+// instrumentation only supports firebase-functions 6.)
+function withSentry(trigger) {
+  return (...args) => {
+    const handler = args.pop();
+    return trigger(...args, async (...handlerArgs) => {
+      try {
+        return await handler(...handlerArgs);
+      } catch (err) {
+        if (!(err instanceof HttpsError)) Sentry.captureException(err);
+        throw err;
+      } finally {
+        await Sentry.flush(2000); // the instance can be paused as soon as the handler finishes
+      }
+    });
+  };
+}
+const onCall = withSentry(httpsTriggers.onCall);
+const onRequest = withSentry(httpsTriggers.onRequest);
+const onDocumentCreated = withSentry(firestoreTriggers.onDocumentCreated);
+const onDocumentWritten = withSentry(firestoreTriggers.onDocumentWritten);
+const onSchedule = withSentry(schedulerTriggers.onSchedule);
+
+/** Logs a problem someone needs to look at (e.g. a payment with no member) and reports it to Sentry. */
+function reportProblem(message, details) {
+  logger.error(message, details);
+  Sentry.captureMessage(message, { level: 'error', extra: details });
+}
 
 // Firestore lives in us-east4; triggers must run in the same region.
 setGlobalOptions({ region: 'us-east4', maxInstances: 10 });
@@ -50,6 +83,8 @@ const SMTP_URL = defineSecret('SMTP_URL');
 const MAIL_FROM = defineString('MAIL_FROM', { default: '"A Rai of Sunshine of North Florida" <araiofsunshineofnorthflorida@gmail.com>' });
 const MAIL_REPLY_TO = defineString('MAIL_REPLY_TO', { default: 'araiofsunshineofnorthflorida@gmail.com' });
 const GMAIL_SERVICE_ACCOUNT = defineString('GMAIL_SERVICE_ACCOUNT', { default: 'mailer@araiofsunshine.iam.gserviceaccount.com' });
+// Where errors are reported (instrument.js reads it). Not a secret: it only allows sending error reports.
+defineString('SENTRY_DSN', { default: 'https://c562b546becdb7f82eb544e41ed26901@o4510944939474944.ingest.us.sentry.io/4512488459337728' });
 const mailer = createMailer({ db, FieldValue, smtpSecret: SMTP_URL, mailFrom: MAIL_FROM, replyTo: MAIL_REPLY_TO, gmailServiceAccount: GMAIL_SERVICE_ACCOUNT });
 
 const DEFAULT_DUES = { amountCents: 2500, interval: 'month' };
@@ -438,7 +473,7 @@ async function handlePrepaySession(session) {
   const periods = parseInt(md.periods, 10);
   const interval = md.interval === 'week' ? 'week' : 'month';
   if (!md.uid || !periods) {
-    logger.error('Prepay session missing metadata', { id: session.id });
+    reportProblem('Prepay session missing metadata', { id: session.id });
     return;
   }
   await recordPayment(md.uid, session.id, {
@@ -458,7 +493,7 @@ async function handleInvoicePaid(stripe, invoice) {
   if (!periodEnds.length) return;
   const uid = await uidForCustomer(stripe, invoice.customer);
   if (!uid) {
-    logger.error('No member for Stripe customer', { customer: invoice.customer, invoice: invoice.id });
+    reportProblem('No member for Stripe customer', { customer: invoice.customer, invoice: invoice.id });
     return;
   }
   const periodEnd = new Date(Math.max(...periodEnds) * 1000);
@@ -550,7 +585,7 @@ async function handleDispute(dispute) {
 async function handleSubscriptionChange(stripe, sub) {
   const uid = sub.metadata?.uid || (await uidForCustomer(stripe, sub.customer));
   if (!uid) {
-    logger.error('No member for subscription', { subscription: sub.id });
+    reportProblem('No member for subscription', { subscription: sub.id });
     return;
   }
   // A member removed by an admin: their subscription was cancelled on the way out; don't re-create them.
@@ -618,9 +653,12 @@ exports.stripeWebhook = onRequest({ secrets: [STRIPE_SECRET_KEY, STRIPE_WEBHOOK_
       default:
         break;
     }
+    await Sentry.flush(2000); // send any reportProblem() first: the instance can be paused once we respond
     res.json({ received: true });
   } catch (err) {
     logger.error('Webhook handler failed', { type: event.type, id: event.id, error: err.message });
+    Sentry.captureException(err, { tags: { stripeEvent: event.type }, extra: { stripeEventId: event.id } });
+    await Sentry.flush(2000);
     res.status(500).send('Handler error'); // Stripe will retry
   }
 });
@@ -907,7 +945,13 @@ async function runDuesReminders(now = Date.now()) {
 
 exports.sendDuesReminders = onSchedule(
   { schedule: 'every day 09:00', timeZone: 'America/New_York', secrets: [SMTP_URL] },
-  () => runDuesReminders(),
+  // Sentry's cron monitor alerts if a run is missed, fails or hangs. Keep its schedule in step with the one above.
+  () => Sentry.withMonitor('send-dues-reminders', () => runDuesReminders(), {
+    schedule: { type: 'crontab', value: '0 9 * * *' },
+    timezone: 'America/New_York',
+    checkinMargin: 30, // minutes late before a run counts as missed
+    maxRuntime: 10, // minutes before a run counts as hung
+  }),
 );
 
 /** "Send today's reminders now" on admin-members.html (also how reminders are tested locally). */

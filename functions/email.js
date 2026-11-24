@@ -12,6 +12,7 @@
  */
 const nodemailer = require('nodemailer');
 const logger = require('firebase-functions/logger');
+const Sentry = require('@sentry/node');
 
 const ORG = 'A Rai of Sunshine of North Florida';
 const SITE_URL = 'https://araiofsunshine.org';
@@ -139,6 +140,7 @@ function createMailer({ db, FieldValue, smtpSecret, mailFrom, replyTo, gmailServ
       return { status: 'sent' };
     } catch (err) {
       logger.error('Email failed', { kind, to: recipients, error: err.message });
+      Sentry.captureException(err, { tags: { emailKind: kind } }); // no recipients: they're member addresses
       await ref.set({ ...record, status: 'failed', error: err.message.slice(0, 300) });
       return { status: 'failed' };
     }
